@@ -2,3 +2,10 @@ node_modules
 dist
 *.local
 .DS_Store
+
+# Privacy safety net — never commit project documents
+*.docx
+*.pdf
+*.xlsx
+*.csv
+docs-private/
