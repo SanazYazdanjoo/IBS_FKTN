@@ -31,10 +31,46 @@ function assertCanRead(actor: SessionUser, participantId: string): void {
   );
 }
 
-export function createMockStorage(): StorageAdapter {
+export interface MockStorageAdapter extends StorageAdapter {
+  /** Prototype convenience: returns the record, creating an empty one if none exists yet. */
+  getOrCreateMonthRecord(
+    actor: SessionUser,
+    participantId: string,
+    participantName: string,
+    month: string,
+  ): Promise<MonthRecord>;
+}
+
+export function createMockStorage(): MockStorageAdapter {
   const records: MonthRecord[] = clone(seedRecords);
 
   return {
+    async getOrCreateMonthRecord(actor, participantId, participantName, month) {
+      assertCanRead(actor, participantId);
+      let record = records.find(
+        (r) => r.participantId === participantId && r.month === month,
+      );
+      if (!record) {
+        record = {
+          participantId,
+          participantName,
+          month,
+          ticketType: 'ABO',
+          ticketPriceEur: 49,
+          distanceKm: 7.4,
+          hasPraktikum: false,
+          workdaysInMonth: 22,
+          documents: [],
+          attendance: [],
+          status: 'NOT_SUBMITTED',
+          signature: { mode: 'PAPER' },
+          exceptions: [],
+        };
+        records.push(clone(record));
+      }
+      return clone(record);
+    },
+
     async listMonthRecords(actor, month) {
       const inMonth = records.filter((r) => r.month === month);
       if (STAFF_ROLES.includes(actor.role)) return clone(inMonth);

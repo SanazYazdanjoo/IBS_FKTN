@@ -1,117 +1,115 @@
-/**
- * App shell — deliberately minimal. It proves the wiring
- * (auth → adapter → domain engine → screen), not the final design.
- * Build the real screens per the Claude-Design wireframes inside
- * src/features/<role>/, replacing these placeholders.
- */
-import { useEffect, useMemo, useState } from 'react';
-import { createMockAuth, createMockStorage } from '../adapters/mock/mockAdapters';
-import { MONTH, vmtSingleFaresEur } from '../adapters/mock/seed';
-import { summarizeAttendance } from '../domain/attendance';
-import { calculateReimbursement } from '../domain/reimbursement';
-import { defaultRules } from '../domain/rules';
-import type { MonthRecord, SessionUser } from '../domain/types';
+import { HashRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { SessionProvider, useSession } from './session';
+import { RulesProvider } from './rules-context';
+import TnFlow from '../features/tn/TnFlow';
+import TnCorrection from '../features/tn/Correction';
+import AdminDashboard from '../features/admin/Dashboard';
+import AdminPipeline from '../features/admin/Pipeline';
+import TnDetail from '../features/admin/TnDetail';
+import DozentAttendance from '../features/dozent/Attendance';
+import ManagerQueue from '../features/manager/Queue';
+import SignatureSettings from '../features/settings/SignatureSettings';
 
-const auth = createMockAuth('u-selin');
-const storage = createMockStorage();
+function roleHome(role: string): string {
+  switch (role) {
+    case 'TN':
+      return '/tn';
+    case 'ADMIN':
+      return '/admin';
+    case 'DOZENT':
+      return '/dozent';
+    case 'MANAGER':
+      return '/manager';
+    default:
+      return '/admin';
+  }
+}
 
-export default function App() {
-  const [user, setUser] = useState<SessionUser>(auth.currentUser());
-  const [records, setRecords] = useState<MonthRecord[]>([]);
-  const [error, setError] = useState<string>('');
+function Nav() {
+  const { user, demoUsers, switchUser } = useSession();
+  const location = useLocation();
 
-  useEffect(() => {
-    setError('');
-    storage
-      .listMonthRecords(user, MONTH)
-      .then(setRecords)
-      .catch((e: Error) => setError(e.message));
-  }, [user]);
-
-  const rows = useMemo(
-    () =>
-      records.map((record) => {
-        const attendance = summarizeAttendance(record.attendance, defaultRules);
-        const result = calculateReimbursement(
-          {
-            ticketPriceEur: record.ticketPriceEur,
-            workdaysInMonth: record.workdaysInMonth,
-            reimbursableDays: attendance.reimbursableDays,
-            unexcusedDays: attendance.unexcusedDays,
-            vmtSingleFareEur: vmtSingleFaresEur[record.participantId],
-            eligibility: {
-              distanceKm: record.distanceKm,
-              hasApprovedDistanceException: record.exceptions.some(
-                (e) => e.approvedByManager,
-              ),
-            },
-          },
-          defaultRules,
-        );
-        return { record, attendance, result };
-      }),
-    [records],
-  );
+  const links: { to: string; label: string; roles: string[] }[] = [
+    { to: '/tn', label: 'TN · Mein Monat', roles: ['TN'] },
+    { to: '/tn/correction', label: 'TN · Korrektur', roles: ['TN'] },
+    { to: '/admin', label: 'Admin · Dashboard', roles: ['ADMIN'] },
+    { to: '/dozent', label: 'Dozent · Anwesenheit', roles: ['DOZENT'] },
+    { to: '/manager', label: 'Kristin · Freigaben', roles: ['MANAGER'] },
+    { to: '/settings', label: 'Einstellungen', roles: ['ADMIN'] },
+  ];
 
   return (
-    <div className="mx-auto max-w-3xl p-6 font-body">
-      <header className="mb-6">
-        <h1 className="font-display text-2xl font-bold">
-          IBS Fahrtkostenerstattung <span className="text-primary">· Prototyp-Scaffold</span>
-        </h1>
-        <p className="text-ink-dim text-sm">
-          Rolle wechseln, um die Datenisolation live zu sehen — ein TN hält nie fremde
-          Daten im Zustand (NFR-01).
-        </p>
-      </header>
-
-      <div className="mb-6 flex flex-wrap gap-2">
-        {auth.listDemoUsers?.().map((u) => (
-          <button
-            key={u.id}
-            onClick={() => {
-              auth.switchUser?.(u.id);
-              setUser(auth.currentUser());
-            }}
-            className={`rounded-full border px-3 py-1 text-sm ${
-              u.id === user.id
-                ? 'border-primary bg-primary text-white'
-                : 'border-line bg-surface text-ink'
-            }`}
-          >
-            {u.name}
-          </button>
-        ))}
+    <header className="border-b border-line bg-surface">
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 p-4">
+        <Link to={roleHome(user.role)} className="font-display text-lg font-bold">
+          IBS <span className="text-primary">Fahrtkostenerstattung</span>
+        </Link>
+        <nav className="flex flex-wrap gap-2">
+          {links
+            .filter((l) => l.roles.includes(user.role))
+            .map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                className={`rounded-full px-3 py-1 text-sm ${
+                  location.pathname === l.to
+                    ? 'bg-primary text-white'
+                    : 'text-ink-dim hover:bg-muted'
+                }`}
+              >
+                {l.label}
+              </Link>
+            ))}
+        </nav>
+        <div className="flex flex-wrap gap-1">
+          {demoUsers.map((u) => (
+            <button
+              key={u.id}
+              onClick={() => switchUser(u.id)}
+              title="Prototyp-Rollenwechsel — keine echte Anmeldung"
+              className={`rounded-full border px-2 py-1 text-xs ${
+                u.id === user.id ? 'border-primary bg-blush-weak' : 'border-line text-ink-dim'
+              }`}
+            >
+              {u.name}
+            </button>
+          ))}
+        </div>
       </div>
+    </header>
+  );
+}
 
-      {error && <p className="text-danger">{error}</p>}
-
-      <ul className="space-y-3">
-        {rows.map(({ record, attendance, result }) => (
-          <li key={record.participantId} className="rounded-lg border border-line p-4">
-            <div className="flex items-baseline justify-between">
-              <strong className="font-display">{record.participantName}</strong>
-              <span className="text-lg font-semibold text-primary">
-                {result.eligible ? result.phrases[0] : 'nicht erstattungsfähig'}
-              </span>
-            </div>
-            <p className="text-ink-dim mt-1 text-sm">
-              {attendance.reimbursableDays}/{record.workdaysInMonth} erstattungsfähige Tage ·{' '}
-              {attendance.unexcusedDays} unentschuldigt · Status: {record.status}
-              {result.comparisonTriggered && ' · Vergleichsrechnung ✓'}
-              {record.exceptions.length > 0 && ' · ✎ Ausnahme'}
-              {result.blockers.length > 0 && ` · ⚠ ${result.blockers[0]}`}
-            </p>
-            {result.trace.vmt && (
-              <p className="mt-1 text-sm">
-                A: {result.trace.proRata?.formula} = {result.trace.proRata?.amountEur} € · B:{' '}
-                {result.trace.vmt.formula} = {result.trace.vmt.amountEur} € →{' '}
-                {result.trace.chosenBecause}
-              </p>
-            )}
-          </li>
-        ))}
-      </ul>
+function Shell() {
+  const { user } = useSession();
+  return (
+    <div className="min-h-screen bg-bg">
+      <Nav />
+      <main className="mx-auto max-w-5xl p-4">
+        <Routes>
+          <Route path="/" element={<Navigate to={roleHome(user.role)} replace />} />
+          <Route path="/tn" element={<TnFlow />} />
+          <Route path="/tn/correction" element={<TnCorrection />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/pipeline" element={<AdminPipeline />} />
+          <Route path="/admin/tn/:participantId" element={<TnDetail />} />
+          <Route path="/dozent" element={<DozentAttendance />} />
+          <Route path="/manager" element={<ManagerQueue />} />
+          <Route path="/settings" element={<SignatureSettings />} />
+        </Routes>
+      </main>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <SessionProvider>
+      <RulesProvider>
+        <HashRouter>
+          <Shell />
+        </HashRouter>
+      </RulesProvider>
+    </SessionProvider>
   );
 }
