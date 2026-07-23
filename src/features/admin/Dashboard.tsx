@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
-import { Card, Eyebrow, ExceptionFlag, KnownFlag, PrimaryButton, statusLabel } from '../../app/ui';
+import { Card, Eyebrow, ExceptionFlag, KnownFlag, PrimaryButton, statusLabel, TnName } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
@@ -159,11 +159,10 @@ export default function AdminDashboard() {
                   <td className="py-2 pr-3">
                     <Link
                       to={`/admin/tn/${record.participantId}`}
-                      className="font-semibold text-primary hover:underline"
+                      className="hover:underline"
                     >
-                      {record.participantName}
+                      <TnName id={record.participantId} name={record.participantName} />
                     </Link>
-                    <CourseChip id={record.participantId} />
                     {record.hasPraktikum && (
                       <span className="ml-1 text-xs text-ink-dim">Praktikum</span>
                     )}
@@ -215,19 +214,3 @@ export default function AdminDashboard() {
 }
 
 
-/** Course-identity chip: PK (Präsenz, teal) / BL (Blended, deep blue).
- *  Identity only — never used for status (WCAG 1.4.1: text + color). */
-function CourseChip({ id }: { id: string }) {
-  const type = courseTypeFromId(id);
-  if (!type) return null;
-  return (
-    <span
-      className={`ml-1 rounded px-1.5 py-0.5 text-[10px] font-bold text-white ${
-        type === 'BL' ? 'bg-course-bl' : 'bg-course-pk'
-      }`}
-      title={type === 'BL' ? 'Blended Course' : 'Präsenzkurs'}
-    >
-      {type}
-    </span>
-  );
-}

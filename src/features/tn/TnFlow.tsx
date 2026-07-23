@@ -6,7 +6,7 @@ import { Card, Eyebrow, PrimaryButton, SecondaryButton, StatusPipeline } from '.
 import { computeMonthView } from '../../domain/compute';
 import { checkCompleteness, requiredProofs } from '../../domain/submission';
 import { formatEuro } from '../../domain/reimbursement';
-import { MONTH, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { MONTH, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import type { MonthRecord, ProofKind, TicketType } from '../../domain/types';
 
 const PROOF_LABELS: Record<ProofKind, string> = {
@@ -114,7 +114,7 @@ export default function TnFlow() {
   return (
     <div className="space-y-4">
       <Card>
-        <Eyebrow>Juli 2026 · Home</Eyebrow>
+        <Eyebrow>{monthLabel(MONTH)} 2026 · Home</Eyebrow>
         {record.status === 'NOT_SUBMITTED' && daysLeft > 0 && (
           <p className="mt-1 font-display text-lg text-primary">
             Noch {daysLeft} Tage bis zum 15.!

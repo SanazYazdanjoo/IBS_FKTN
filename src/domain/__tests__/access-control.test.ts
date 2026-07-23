@@ -5,27 +5,27 @@ import { MONTH } from '../../adapters/mock/seed';
 
 describe('data isolation (NFR-01: privacy by design, not by CSS)', () => {
   it('a TN receives ONLY their own record from list queries', async () => {
-    const auth = createMockAuth('u-yusuf');
+    const auth = createMockAuth('u-safaa');
     const storage = createMockStorage();
     const records = await storage.listMonthRecords(auth.currentUser(), MONTH);
     expect(records).toHaveLength(1);
-    expect(records[0].participantId).toBe('tn-yusuf');
+    expect(records[0].participantId).toBe('PK01');
   });
 
   it("a TN requesting another TN's record gets AccessDeniedError", async () => {
-    const auth = createMockAuth('u-yusuf');
+    const auth = createMockAuth('u-safaa');
     const storage = createMockStorage();
     await expect(
-      storage.getMonthRecord(auth.currentUser(), 'tn-maria', MONTH),
+      storage.getMonthRecord(auth.currentUser(), 'PK19', MONTH),
     ).rejects.toThrow(AccessDeniedError);
   });
 
   it("a TN cannot write another TN's record", async () => {
-    const auth = createMockAuth('u-maria');
+    const auth = createMockAuth('u-sueheyl');
     const storage = createMockStorage();
     const foreign = await storage.getMonthRecord(
-      { id: 'u-selin', name: 'Selin', role: 'ADMIN' },
-      'tn-yusuf',
+      { id: 'u-sanaz', name: 'Sanaz', role: 'ADMIN' },
+      'PK01',
       MONTH,
     );
     await expect(
@@ -34,7 +34,7 @@ describe('data isolation (NFR-01: privacy by design, not by CSS)', () => {
   });
 
   it('staff roles see all records', async () => {
-    const auth = createMockAuth('u-selin');
+    const auth = createMockAuth('u-sanaz');
     const storage = createMockStorage();
     const records = await storage.listMonthRecords(auth.currentUser(), MONTH);
     expect(records.length).toBeGreaterThanOrEqual(5);
@@ -42,9 +42,9 @@ describe('data isolation (NFR-01: privacy by design, not by CSS)', () => {
 
   it('only staff can record exceptions', async () => {
     const storage = createMockStorage();
-    const tn = createMockAuth('u-yusuf').currentUser();
+    const tn = createMockAuth('u-safaa').currentUser();
     await expect(
-      storage.addException(tn, 'tn-yusuf', MONTH, {
+      storage.addException(tn, 'PK01', MONTH, {
         id: 'x',
         category: 'FRIST',
         reason: 'test',

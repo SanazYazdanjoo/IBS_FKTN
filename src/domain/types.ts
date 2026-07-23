@@ -113,6 +113,8 @@ export interface MonthRecord {
    * day-level data when present, falls back to the override.
    */
   attendanceDaysOverride?: number;
+  /** Wöchentliche Anmerkungen aus der Anwesenheitsliste, Schlüssel = ISO-Datum des Wochenanfangs. */
+  attendanceNotes?: Record<string, string>;
   /** Amount as recorded in Excel (may differ from the engine → shown as a diff, never silently replaced). */
   amountOverride?: number;
   status: ProcessStatus;

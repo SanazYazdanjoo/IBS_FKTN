@@ -2,11 +2,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
-import { Card, ExceptionFlag, Eyebrow, KnownFlag, PrimaryButton, SecondaryButton } from '../../app/ui';
+import { Card, ExceptionFlag, Eyebrow, KnownFlag, PrimaryButton, SecondaryButton, TnName } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
-import { MONTH, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { MONTH, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import type { MonthRecord } from '../../domain/types';
 
 export default function ManagerQueue() {
@@ -68,7 +68,7 @@ export default function ManagerQueue() {
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-semibold">{record.participantName}</span>
+                <TnName id={record.participantId} name={record.participantName} />
                 <span>{result.eligible ? formatEuro(result.amountEur) : '—'}</span>
               </div>
               <div className="mt-1 flex flex-wrap gap-1">
@@ -98,7 +98,7 @@ export default function ManagerQueue() {
         {current && (
           <Card>
             <Eyebrow>
-              {current.record.participantName} · Juli 2026
+              <TnName id={current.record.participantId} name={current.record.participantName} /> · {monthLabel(MONTH)} 2026
             </Eyebrow>
             <p className="font-display text-xl font-bold">
               {formatEuro(current.result.amountEur)}

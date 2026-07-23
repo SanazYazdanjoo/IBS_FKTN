@@ -3,19 +3,17 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
-import {
-  Card,
+import { Card,
   CheckItem,
   ExceptionFlag,
   Eyebrow,
   KnownFlag,
   PrimaryButton,
   SecondaryButton,
-  statusLabel,
-} from '../../app/ui';
+  statusLabel, TnName } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
-import { MONTH, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { MONTH, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import type { ExceptionCategory, MonthRecord, ProofKind } from '../../domain/types';
 
 const PROOF_LABELS: Record<ProofKind, string> = {
@@ -81,7 +79,7 @@ export default function TnDetail() {
         <div className="flex items-baseline justify-between">
           <div>
             <Eyebrow>
-              {record.participantName} · Juli 2026
+              <TnName id={record.participantId} name={record.participantName} /> · {monthLabel(MONTH)} 2026
               {record.hasPraktikum && ' · Praktikum ✓'}
             </Eyebrow>
             <p className="font-display text-xl font-bold">

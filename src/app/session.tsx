@@ -46,7 +46,7 @@ interface SessionContextValue {
 const SessionContext = createContext<SessionContextValue | null>(null);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const auth = useMemo(() => createMockAuth('u-selin'), []);
+  const auth = useMemo(() => createMockAuth('u-sanaz'), []);
   const mock = useMemo(() => createMockStorage(), []);
   const [user, setUser] = useState<SessionUser>(auth.currentUser());
   const [storage, setStorage] = useState<AppStorage>(mock);

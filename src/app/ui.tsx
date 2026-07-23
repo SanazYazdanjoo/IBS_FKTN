@@ -146,3 +146,55 @@ export function CheckItem({ ok, children }: { ok: boolean; children: ReactNode }
     </li>
   );
 }
+
+// ── Kurs-Identität (PK/BL) ────────────────────────────────────────────────
+// Farben laut Design-Entscheidung: BL #0e4c84 (Dunkelblau), PK #45818e (Teal).
+// Identität, nie Status (WCAG 1.4.1: Chip mit Text-Präfix, nie Farbe allein).
+
+export function courseTypeOf(id: string): 'PK' | 'BL' | null {
+  if (/^PK/i.test(id)) return 'PK';
+  if (/^BL/i.test(id)) return 'BL';
+  return null;
+}
+
+/** Gefüllter Kurs-Chip [PK]/[BL] mit weißer Schrift. */
+export function CourseChip({ id }: { id: string }) {
+  const type = courseTypeOf(id);
+  if (!type) return null;
+  return (
+    <span
+      className={`ml-1 rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white ${
+        type === 'BL' ? 'bg-course-bl' : 'bg-course-pk'
+      }`}
+      title={type === 'BL' ? 'Blended Course' : 'Präsenzkurs'}
+    >
+      {type}
+    </span>
+  );
+}
+
+/**
+ * TN-Name in Kursfarbe + Kurs-Chip. Zentraler Baustein für alle Ansichten,
+ * damit die Farbcodierung überall identisch ist (Wireframe-Vorgabe).
+ */
+export function TnName({
+  id,
+  name,
+  chip = true,
+  className = '',
+}: {
+  id: string;
+  name: string;
+  chip?: boolean;
+  className?: string;
+}) {
+  const type = courseTypeOf(id);
+  const color =
+    type === 'BL' ? 'text-course-bl' : type === 'PK' ? 'text-course-pk' : 'text-ink';
+  return (
+    <span className={`font-semibold ${color} ${className}`.trim()}>
+      {name}
+      {chip && <CourseChip id={id} />}
+    </span>
+  );
+}

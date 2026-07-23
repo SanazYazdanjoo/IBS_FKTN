@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
-import { Card, Eyebrow } from '../../app/ui';
-import { MONTH } from '../../adapters/mock/seed';
+import { Card, Eyebrow, TnName } from '../../app/ui';
+import { MONTH, monthLabel } from '../../adapters/mock/seed';
 import type { MonthRecord, ProcessStatus } from '../../domain/types';
 
 const COLUMNS: { statuses: ProcessStatus[]; label: string }[] = [
@@ -25,7 +25,7 @@ export default function AdminPipeline() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Eyebrow>Juli 2026 · Karten wandern automatisch — Selin greift nur bei Rot ein</Eyebrow>
+        <Eyebrow>{monthLabel(MONTH)} 2026 · Karten wandern automatisch — Admin greift nur bei Rot ein</Eyebrow>
         <Link to="/admin" className="text-sm font-semibold text-primary underline">
           ← Kontrollturm
         </Link>
@@ -42,7 +42,7 @@ export default function AdminPipeline() {
                 {cards.map((r) => (
                   <Link key={r.participantId} to={`/admin/tn/${r.participantId}`}>
                     <Card className="!p-3 hover:border-primary">
-                      <p className="text-sm font-semibold">{r.participantName}</p>
+                      <p className="text-sm"><TnName id={r.participantId} name={r.participantName} /></p>
                       <p className="text-xs text-ink-dim">
                         {r.exceptions.length > 0 ? 'Ausnahme offen' : '—'}
                       </p>
