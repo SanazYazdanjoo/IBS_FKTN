@@ -1,9 +1,4 @@
-/**
- * Signature-mode setting — screen 5a. One switch instead of an assumption:
- * the prototype shows both realities. Modus B is explicitly gated behind
- * Datenschutzbeauftragte approval — this UI does not grant that approval,
- * it only demonstrates what flipping the switch would look like.
- */
+/** Einstellungen: Unterschrifts-Modus (Papier/digital) und Abrechnungsregel. */
 import { useRules } from '../../app/rules-context';
 import { Card, Eyebrow } from '../../app/ui';
 
@@ -50,18 +45,19 @@ export default function SignatureSettings() {
       </p>
 
       <Card>
-        <Eyebrow>⚠︎ Regelklärung: K-Tage erstattungsfähig?</Eyebrow>
+        <Eyebrow>✓ Abrechnungsregel (aufgelöst durch die Anwesenheitsliste-Legende)</Eyebrow>
         <label className="mt-2 flex items-center gap-2 text-sm">
           <input
             type="checkbox"
             checked={rules.sickDaysAreReimbursable}
             onChange={(e) => setRules({ ...rules, sickDaysAreReimbursable: e.target.checked })}
           />
-          K-Tage (krank, AU) zählen als erstattungsfähige Anwesenheitstage
+          Legende-Modus: E/K/X/(x) zählen als anwesend (Standard). Abwählen = historisch
+          strikte Lesart (nur x/E), z. B. für die Prüfung alter Monate.
         </label>
         <p className="mt-1 text-xs text-ink-dim">
-          Entscheidung: Kristin. Diese eine Einstellung steuert die gesamte Berechnung —
-          siehe src/domain/rules.ts.
+          Quelle: „E / K / X / (x) können als anwesend abgerechnet werden. A / U gelten als
+          Fehltag." — Anwesenheitsliste 2026, Legende.
         </p>
       </Card>
     </div>

@@ -1,8 +1,4 @@
-/**
- * Seed data — the wireframe cast, so every screen you build can be
- * checked pixel-for-number against the Claude-Design frames.
- * All persons and data are fictional.
- */
+/** Beispieldaten für den Demo-Modus. Alle Personen und Daten sind fiktiv. */
 import type { DayMarks, MonthRecord, SessionUser } from '../../domain/types';
 
 export const MONTH = '2026-07';
@@ -43,7 +39,7 @@ export const demoUsers: SessionUser[] = [
 
 export const seedRecords: MonthRecord[] = [
   {
-    // Yusuf — standard case: 19 reimbursable, 2 AU, 1 unexcused → 42,32 €
+    // Standardfall
     participantId: 'tn-yusuf',
     participantName: 'Yusuf A.',
     month: MONTH,
@@ -73,7 +69,7 @@ export const seedRecords: MonthRecord[] = [
     ],
   },
   {
-    // Maria — waiting on TN: Kontoauszug missing, full attendance
+    // Wartet auf TN: Kontoauszug fehlt
     participantId: 'tn-maria',
     participantName: 'Maria K.',
     month: MONTH,
@@ -89,7 +85,7 @@ export const seedRecords: MonthRecord[] = [
     exceptions: [],
   },
   {
-    // Ahmad — 8 days < 2 weeks → VMT comparison, 17,60 € wins
+    // Unter 2 Wochen: Vergleichsrechnung
     participantId: 'tn-ahmad',
     participantName: 'Ahmad S.',
     month: MONTH,
@@ -109,7 +105,7 @@ export const seedRecords: MonthRecord[] = [
     exceptions: [],
   },
   {
-    // Omar — 21/22, signature pending 6 days (Modus A visibility, P7) → 46,77 €
+    // Unterschrift ausstehend
     participantId: 'tn-omar',
     participantName: 'Omar B.',
     month: MONTH,
@@ -128,7 +124,7 @@ export const seedRecords: MonthRecord[] = [
     exceptions: [],
   },
   {
-    // Deniz — 2,8 km: needs a < 3-km distance exception approved by Kristin
+    // Unter 3 km: Ausnahme erforderlich
     participantId: 'tn-deniz',
     participantName: 'Deniz Ö.',
     month: MONTH,
@@ -145,7 +141,7 @@ export const seedRecords: MonthRecord[] = [
   },
 ];
 
-/** VMT single-fare table — replaces Selin's manual lookup (P15). Maintained data, not code. */
+/** VMT-Einzelfahrpreise (gepflegte Daten, P15). */
 export const vmtSingleFaresEur: Record<string, number> = {
   'tn-ahmad': 1.1,
 };

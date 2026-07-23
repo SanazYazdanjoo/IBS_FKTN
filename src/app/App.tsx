@@ -1,21 +1,22 @@
-import { HashRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { HashRouter, Link, Navigate, NavLink, Route, Routes } from 'react-router-dom';
 import { SessionProvider, useSession } from './session';
 import { RulesProvider } from './rules-context';
+import HeaderSearch from './HeaderSearch';
 import TnFlow from '../features/tn/TnFlow';
 import TnCorrection from '../features/tn/Correction';
 import AdminDashboard from '../features/admin/Dashboard';
 import AdminPipeline from '../features/admin/Pipeline';
 import TnDetail from '../features/admin/TnDetail';
+import FormularScreen from '../features/admin/Formular';
 import DozentAttendance from '../features/dozent/Attendance';
 import ManagerQueue from '../features/manager/Queue';
 import SignatureSettings from '../features/settings/SignatureSettings';
+import DataSourceSettings from '../features/settings/DataSourceSettings';
 
 function roleHome(role: string): string {
   switch (role) {
     case 'TN':
       return '/tn';
-    case 'ADMIN':
-      return '/admin';
     case 'DOZENT':
       return '/dozent';
     case 'MANAGER':
@@ -25,48 +26,74 @@ function roleHome(role: string): string {
   }
 }
 
-function Nav() {
-  const { user, demoUsers, switchUser } = useSession();
-  const location = useLocation();
+interface NavItem {
+  to: string;
+  label: string;
+  roles: string[];
+  end?: boolean;
+}
 
-  const links: { to: string; label: string; roles: string[] }[] = [
-    { to: '/tn', label: 'TN · Mein Monat', roles: ['TN'] },
-    { to: '/tn/correction', label: 'TN · Korrektur', roles: ['TN'] },
-    { to: '/admin', label: 'Admin · Dashboard', roles: ['ADMIN'] },
-    { to: '/dozent', label: 'Dozent · Anwesenheit', roles: ['DOZENT'] },
-    { to: '/manager', label: 'Kristin · Freigaben', roles: ['MANAGER'] },
-    { to: '/settings', label: 'Einstellungen', roles: ['ADMIN'] },
-  ];
+const NAV_ITEMS: NavItem[] = [
+  { to: '/tn', label: 'Mein Monat', roles: ['TN'], end: true },
+  { to: '/tn/correction', label: 'Korrektur', roles: ['TN'] },
+  { to: '/admin', label: 'Dashboard', roles: ['ADMIN'], end: true },
+  { to: '/admin/pipeline', label: 'Pipeline', roles: ['ADMIN'] },
+  { to: '/dozent', label: 'Anwesenheit', roles: ['DOZENT', 'ADMIN'] },
+  { to: '/manager', label: 'Freigaben', roles: ['MANAGER', 'ADMIN'] },
+  { to: '/settings', label: 'Einstellungen', roles: ['ADMIN'], end: true },
+  { to: '/settings/data', label: 'Datenquelle', roles: ['ADMIN'] },
+];
+
+function Sidebar() {
+  const { user, dataSource } = useSession();
+  const items = NAV_ITEMS.filter((l) => l.roles.includes(user.role));
 
   return (
+    <aside className="hidden w-56 shrink-0 border-r border-line bg-surface md:flex md:flex-col">
+      <nav className="flex-1 space-y-1 p-3">
+        {items.map((l) => (
+          <NavLink
+            key={l.to}
+            to={l.to}
+            end={l.end}
+            className={({ isActive }) =>
+              `block rounded-lg px-3 py-2 text-sm font-medium transition ${
+                isActive ? 'bg-primary text-white' : 'text-ink hover:bg-muted'
+              }`
+            }
+          >
+            {l.label}
+          </NavLink>
+        ))}
+      </nav>
+      <div className="border-t border-line p-3 text-xs text-ink-dim">
+        Datenquelle:{' '}
+        {dataSource.kind === 'MOCK' ? (
+          'Demo'
+        ) : (
+          <span className="font-semibold text-ink">
+            {dataSource.fileName} · {dataSource.month}/{dataSource.year}
+          </span>
+        )}
+      </div>
+    </aside>
+  );
+}
+
+function Header() {
+  const { user, demoUsers, switchUser } = useSession();
+  return (
     <header className="border-b border-line bg-surface">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 p-4">
-        <Link to={roleHome(user.role)} className="font-display text-lg font-bold">
+      <div className="flex flex-wrap items-center gap-3 px-4 py-3">
+        <Link to={roleHome(user.role)} className="mr-2 font-display text-lg font-bold">
           IBS <span className="text-primary">Fahrtkostenerstattung</span>
         </Link>
-        <nav className="flex flex-wrap gap-2">
-          {links
-            .filter((l) => l.roles.includes(user.role))
-            .map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                className={`rounded-full px-3 py-1 text-sm ${
-                  location.pathname === l.to
-                    ? 'bg-primary text-white'
-                    : 'text-ink-dim hover:bg-muted'
-                }`}
-              >
-                {l.label}
-              </Link>
-            ))}
-        </nav>
-        <div className="flex flex-wrap gap-1">
+        <HeaderSearch />
+        <div className="ml-auto flex flex-wrap gap-1">
           {demoUsers.map((u) => (
             <button
               key={u.id}
               onClick={() => switchUser(u.id)}
-              title="Prototyp-Rollenwechsel — keine echte Anmeldung"
               className={`rounded-full border px-2 py-1 text-xs ${
                 u.id === user.id ? 'border-primary bg-blush-weak' : 'border-line text-ink-dim'
               }`}
@@ -76,7 +103,32 @@ function Nav() {
           ))}
         </div>
       </div>
+      {/* Mobile-Navigation */}
+      <MobileNav />
     </header>
+  );
+}
+
+function MobileNav() {
+  const { user } = useSession();
+  const items = NAV_ITEMS.filter((l) => l.roles.includes(user.role));
+  return (
+    <nav className="flex gap-1 overflow-x-auto px-4 pb-2 md:hidden">
+      {items.map((l) => (
+        <NavLink
+          key={l.to}
+          to={l.to}
+          end={l.end}
+          className={({ isActive }) =>
+            `whitespace-nowrap rounded-full px-3 py-1 text-sm ${
+              isActive ? 'bg-primary text-white' : 'text-ink-dim hover:bg-muted'
+            }`
+          }
+        >
+          {l.label}
+        </NavLink>
+      ))}
+    </nav>
   );
 }
 
@@ -84,20 +136,25 @@ function Shell() {
   const { user } = useSession();
   return (
     <div className="min-h-screen bg-bg">
-      <Nav />
-      <main className="mx-auto max-w-5xl p-4">
-        <Routes>
-          <Route path="/" element={<Navigate to={roleHome(user.role)} replace />} />
-          <Route path="/tn" element={<TnFlow />} />
-          <Route path="/tn/correction" element={<TnCorrection />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/pipeline" element={<AdminPipeline />} />
-          <Route path="/admin/tn/:participantId" element={<TnDetail />} />
-          <Route path="/dozent" element={<DozentAttendance />} />
-          <Route path="/manager" element={<ManagerQueue />} />
-          <Route path="/settings" element={<SignatureSettings />} />
-        </Routes>
-      </main>
+      <Header />
+      <div className="flex">
+        <Sidebar />
+        <main className="min-w-0 flex-1 p-4 md:p-6">
+          <Routes>
+            <Route path="/" element={<Navigate to={roleHome(user.role)} replace />} />
+            <Route path="/tn" element={<TnFlow />} />
+            <Route path="/tn/correction" element={<TnCorrection />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/pipeline" element={<AdminPipeline />} />
+            <Route path="/admin/tn/:participantId" element={<TnDetail />} />
+            <Route path="/admin/tn/:participantId/formular" element={<FormularScreen />} />
+            <Route path="/dozent" element={<DozentAttendance />} />
+            <Route path="/manager" element={<ManagerQueue />} />
+            <Route path="/settings" element={<SignatureSettings />} />
+            <Route path="/settings/data" element={<DataSourceSettings />} />
+          </Routes>
+        </main>
+      </div>
     </div>
   );
 }
@@ -106,8 +163,7 @@ export default function App() {
   return (
     <SessionProvider>
       <RulesProvider>
-        {/* Add the future prop right here */}
-        <HashRouter future={{ v7_startTransition: true }}>
+        <HashRouter>
           <Shell />
         </HashRouter>
       </RulesProvider>

@@ -1,52 +1,62 @@
-/**
- * Admin dashboard — "Kontrollturm" table variant (screen 1d, FR-05).
- * Primary variant per the formative-evaluation hypothesis (fast for
- * monthly closing). The pipeline variant (1e) lives at /admin/pipeline
- * for the P4/handover use case — swap which is default once your
- * evaluation settles the question (see Formative_Evaluation_Script).
- */
+/** Admin-Dashboard (FR-05): Tabelle TN × Monat, Single Source of Truth. */
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
 import { Card, Eyebrow, ExceptionFlag, KnownFlag, PrimaryButton, statusLabel } from '../../app/ui';
-import { summarizeAttendance } from '../../domain/attendance';
-import { calculateReimbursement, formatEuro } from '../../domain/reimbursement';
+import { computeMonthView } from '../../domain/compute';
+import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
+import { courseTypeFromId } from '../../adapters/excel/values';
 import { MONTH, vmtSingleFaresEur } from '../../adapters/mock/seed';
-import type { MonthRecord } from '../../domain/types';
+import { GERMAN_MONTHS } from '../../adapters/excel/attendanceWorkbook';
+import type { MonthRecord, ProcessStatus } from '../../domain/types';
+
+const STATUS_FILTERS: ProcessStatus[] = [
+  'NOT_SUBMITTED',
+  'IN_REVIEW',
+  'AWAITING_CORRECTION',
+  'AWAITING_SIGNATURE',
+  'READY_FOR_APPROVAL',
+  'APPROVED',
+  'SENT_TO_ACCOUNTING',
+  'PAID',
+];
 
 export default function AdminDashboard() {
-  const { user, storage } = useSession();
+  const { user, storage, storageVersion, dataSource } = useSession();
   const { rules } = useRules();
   const [records, setRecords] = useState<MonthRecord[]>([]);
+  const defaultMonth = dataSource.kind === 'EXCEL' ? dataSource.month : 7;
+  const year = dataSource.kind === 'EXCEL' ? dataSource.year : 2026;
+  const [month, setMonth] = useState(defaultMonth);
+  const [courseFilter, setCourseFilter] = useState<'ALLE' | 'PK' | 'BL'>('ALLE');
+  const [statusFilter, setStatusFilter] = useState<ProcessStatus | 'ALLE'>('ALLE');
+
+  useEffect(() => setMonth(defaultMonth), [defaultMonth]);
+
+  const monthStr = dataSource.kind === 'EXCEL'
+    ? `${year}-${String(month).padStart(2, '0')}`
+    : MONTH;
 
   useEffect(() => {
-    storage.listMonthRecords(user, MONTH).then(setRecords);
-  }, [user, storage]);
+    storage.listMonthRecords(user, monthStr).then(setRecords).catch(() => setRecords([]));
+  }, [user, storage, storageVersion, monthStr]);
 
   const rows = useMemo(
     () =>
-      records.map((record) => {
-        const attendance = summarizeAttendance(record.attendance, rules);
-        const result = calculateReimbursement(
-          {
-            ticketPriceEur: record.ticketPriceEur,
-            workdaysInMonth: record.workdaysInMonth,
-            reimbursableDays: attendance.reimbursableDays,
-            unexcusedDays: attendance.unexcusedDays,
-            vmtSingleFareEur: vmtSingleFaresEur[record.participantId],
-            eligibility: {
-              distanceKm: record.distanceKm,
-              hasApprovedDistanceException: record.exceptions.some((e) => e.approvedByManager),
-            },
-          },
-          rules,
-        );
-        return { record, attendance, result, bulkOk: isBulkApprovable(record, rules) };
-      }),
-    [records, rules],
+      records
+        .filter((r) => courseFilter === 'ALLE' || courseTypeFromId(r.participantId) === courseFilter)
+        .filter((r) => statusFilter === 'ALLE' || r.status === statusFilter)
+        .map((record) => {
+          const view = computeMonthView(record, rules, vmtSingleFaresEur[record.participantId]);
+          return { record, ...view, bulkOk: isBulkApprovable(record, rules) };
+        }),
+    [records, rules, courseFilter, statusFilter],
   );
+
+  const pkCount = records.filter((r) => courseTypeFromId(r.participantId) === 'PK').length;
+  const blCount = records.filter((r) => courseTypeFromId(r.participantId) === 'BL').length;
 
   const complete = rows.filter((r) => r.record.status === 'READY_FOR_APPROVAL').length;
   const waiting = rows.filter((r) =>
@@ -69,17 +79,61 @@ export default function AdminDashboard() {
       <Card>
         <div className="flex items-center justify-between">
           <div>
-            <Eyebrow>Juli schließen</Eyebrow>
+            <Eyebrow>{GERMAN_MONTHS[month - 1]} {year} schließen</Eyebrow>
             <p className="mt-1 text-sm text-ink-dim">
-              {rows.length} TN · {complete} vollständig · {waiting} warten · {problems} Probleme ·{' '}
-              {signaturesPending} Unterschriften ausstehend (Papier · Modus A, P7)
+              {rows.length} TN ({pkCount} PK / {blCount} BL) · {complete} vollständig ·{' '}
+              {waiting} warten · {problems} Probleme · {signaturesPending} Unterschriften
+              ausstehend
             </p>
           </div>
           <Link to="/admin/pipeline" className="text-sm font-semibold text-primary underline">
             Pipeline-Ansicht →
           </Link>
         </div>
-        <p className="mt-1 text-xs text-ink-dim">
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+          <label className="flex items-center gap-1">
+            Monat
+            <select
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              className="rounded-lg border border-line p-1"
+            >
+              {GERMAN_MONTHS.map((m, i) => (
+                <option key={m} value={i + 1}>
+                  {m}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex items-center gap-1">
+            Kurs
+            <select
+              value={courseFilter}
+              onChange={(e) => setCourseFilter(e.target.value as typeof courseFilter)}
+              className="rounded-lg border border-line p-1"
+            >
+              <option value="ALLE">Alle</option>
+              <option value="PK">PK · Präsenz</option>
+              <option value="BL">BL · Blended</option>
+            </select>
+          </label>
+          <label className="flex items-center gap-1">
+            Status
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+              className="rounded-lg border border-line p-1"
+            >
+              <option value="ALLE">Alle</option>
+              {STATUS_FILTERS.map((st) => (
+                <option key={st} value={st}>
+                  {statusLabel(st)}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <p className="mt-2 text-xs text-ink-dim">
           Erinnerungen: automatisch am 10. + 14. ✓ (FR-01)
         </p>
       </Card>
@@ -97,7 +151,7 @@ export default function AdminDashboard() {
             </tr>
           </thead>
           <tbody>
-            {rows.map(({ record, attendance, result }) => {
+            {rows.map(({ record, attendance, result, amountMismatch }) => {
               const docsOk = record.documents.filter((d) => d.state === 'VERIFIED' || d.state === 'UPLOADED').length;
               const docsTotal = Math.max(record.documents.length, docsOk);
               return (
@@ -109,6 +163,7 @@ export default function AdminDashboard() {
                     >
                       {record.participantName}
                     </Link>
+                    <CourseChip id={record.participantId} />
                     {record.hasPraktikum && (
                       <span className="ml-1 text-xs text-ink-dim">Praktikum</span>
                     )}
@@ -121,6 +176,14 @@ export default function AdminDashboard() {
                   </td>
                   <td className="py-2 pr-3">
                     {result.eligible ? formatEuro(result.amountEur) : '—'}
+                    {amountMismatch && (
+                      <span
+                        className="ml-1 cursor-help text-danger"
+                        title={`Excel: ${formatEuro(amountMismatch.excel)} ≠ Engine: ${formatEuro(amountMismatch.engine)} — bitte prüfen`}
+                      >
+                        ≠
+                      </span>
+                    )}
                   </td>
                   <td className="py-2 pr-3">
                     <div className="flex flex-wrap gap-1">
@@ -144,9 +207,27 @@ export default function AdminDashboard() {
         freigeben
       </PrimaryButton>
       <p className="text-xs text-ink-dim">
-        ✎-Ausnahmen nie im Stapel — immer einzeln · Zeile anklicken → TN-Detail mit Formel-Trace
+        Ausnahmen nie im Stapel — immer einzeln · Zeile anklicken → TN-Detail mit Formel-Trace
         &amp; Belegen (FR-06)
       </p>
     </div>
+  );
+}
+
+
+/** Course-identity chip: PK (Präsenz, teal) / BL (Blended, deep blue).
+ *  Identity only — never used for status (WCAG 1.4.1: text + color). */
+function CourseChip({ id }: { id: string }) {
+  const type = courseTypeFromId(id);
+  if (!type) return null;
+  return (
+    <span
+      className={`ml-1 rounded px-1.5 py-0.5 text-[10px] font-bold text-white ${
+        type === 'BL' ? 'bg-course-bl' : 'bg-course-pk'
+      }`}
+      title={type === 'BL' ? 'Blended Course' : 'Präsenzkurs'}
+    >
+      {type}
+    </span>
   );
 }

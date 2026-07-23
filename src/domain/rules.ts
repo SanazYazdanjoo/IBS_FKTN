@@ -1,8 +1,4 @@
-/**
- * Rule configuration — every organizational rule is DATA, not scattered code.
- * When IBS changes a rule (or Kristin answers the open question below),
- * exactly one value changes here.
- */
+/** Zentrale Regelkonfiguration. Organisatorische Regeln sind Daten, nicht Code. */
 
 export interface RuleConfig {
   /** Deutschlandticket monthly price in EUR (Instruction §I). */
@@ -15,14 +11,14 @@ export interface RuleConfig {
    */
   comparisonThresholdDays: number;
   /**
-   * ⚠ OPEN RULE QUESTION (annotated in wireframe 2a; decision: Kristin):
-   * Do K days (sick, AU-covered) count as REIMBURSABLE attendance days?
-   *  - Fahrkosten Instruction §III lists only "x, E = present".
-   *  - Anwesenheitsberechnung counts E, K, X, (x) as presence days.
-   * Default: false — conservative reading (no travel occurred on sick days).
-   * Flip this single flag once decided; tests cover both paths.
+   * Legende der Anwesenheitsliste: E/K/X/(x) zählen als anwesend (K = Kulanztag).
+   * true = Legende (Standard) · false = strikte Lesart (nur x/E) für Alt-Monate.
    */
   sickDaysAreReimbursable: boolean;
+  /** Sozial-Deutschlandticket (Stadtwirtschaft Weimar): reduzierter Preis je Jahr. */
+  sozialTicketPriceByYear: Record<number, number>;
+  /** PKW-Satz je km (Abrechnungsformular): Tage × km × 2 (Hin+Rück) × Satz. */
+  pkwRatePerKmEur: number;
   /** FR-09 two-mode signature. PAPER = today's reality; DIGITAL = pending DSB approval. */
   signatureMode: 'PAPER' | 'DIGITAL';
   /** Approval deputy activates after this many days of manager absence (P16). */
@@ -33,7 +29,9 @@ export const defaultRules: RuleConfig = {
   deutschlandticketPriceEur: 49.0,
   minDistanceKm: 3,
   comparisonThresholdDays: 10,
-  sickDaysAreReimbursable: false,
+  sickDaysAreReimbursable: true,
+  sozialTicketPriceByYear: { 2025: 29.0, 2026: 34.0 },
+  pkwRatePerKmEur: 0.2,
   signatureMode: 'PAPER',
   deputyActivatesAfterDays: 3,
 };

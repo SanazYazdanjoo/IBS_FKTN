@@ -33,14 +33,25 @@ export interface SubmittedDocument {
   kind: ProofKind;
   fileName: string;
   state: DocumentState;
-  /** Plain-language reason shown to the TN when state === 'ILLEGIBLE' (screen 3b). */
+  /** Begründung in einfacher Sprache bei state === 'ILLEGIBLE'. */
   correctionReason?: string;
   uploadedAt?: string;
 }
 
 // ── Attendance (Anwesenheitsberechnung) ──────────────────────────────────
-/** Valid cell entries in the Anwesenheitsliste. Empty string = no entry. */
-export type AttendanceCode = 'x' | 'X' | '(x)' | 'E' | 'K' | 'U' | '';
+/**
+ * Valid cell entries per the Anwesenheitsliste 2026 legend (authoritative):
+ *  X    = anwesend
+ *  (x)  = anwesend, zu spät gekommen / früher gegangen
+ *  E    = entschuldigtes Fehlen MIT Nachweis
+ *  K    = Kulanztag (vor 9 Uhr abgemeldet; 1 Tag krank/Kind krank, kein Nachweis nötig)
+ *  A    = abgemeldet per Mail, ohne Nachweis / kein Kulanztag
+ *  U    = nicht abgemeldet + kein Nachweis
+ * Legend rule: E/K/X/(x) zählen als "anwesend" für die Abrechnung;
+ * A/U gelten als Fehltag und werden bei der Erstattung rausgerechnet.
+ * Empty string = no entry.
+ */
+export type AttendanceCode = 'x' | 'X' | '(x)' | 'E' | 'K' | 'A' | 'U' | '';
 
 export interface DayMarks {
   date: string;
@@ -71,7 +82,7 @@ export interface SignatureRecord {
   pendingSinceDays?: number;
 }
 
-// ── Exceptions (generic ✎ mechanism) ──────────────────────────────────────
+// ── Exceptions (generic mechanism) ──────────────────────────────────────
 export type ExceptionCategory = 'FRIST' | 'NACHWEIS' | 'BERECHNUNG' | 'SONSTIGES';
 
 export interface ProcessException {
@@ -96,6 +107,14 @@ export interface MonthRecord {
   workdaysInMonth: number;
   documents: SubmittedDocument[];
   attendance: DayMarks[];
+  /**
+   * When data comes from the Excel Übersicht, day-level marks don't exist —
+   * only totals. These overrides carry them; domain/compute.ts prefers
+   * day-level data when present, falls back to the override.
+   */
+  attendanceDaysOverride?: number;
+  /** Amount as recorded in Excel (may differ from the engine → shown as a diff, never silently replaced). */
+  amountOverride?: number;
   status: ProcessStatus;
   signature: SignatureRecord;
   exceptions: ProcessException[];

@@ -1,19 +1,16 @@
-/**
- * Kristin's approval queue — screen 4a. Summary, not files. ✎ exceptions
- * and known flags are never bulk-approved — always individually reviewed.
- */
+/** Freigabe-Queue: Zusammenfassung je TN; Ausnahmen immer einzeln. */
 import { useEffect, useMemo, useState } from 'react';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
 import { Card, ExceptionFlag, Eyebrow, KnownFlag, PrimaryButton, SecondaryButton } from '../../app/ui';
-import { summarizeAttendance } from '../../domain/attendance';
-import { calculateReimbursement, formatEuro } from '../../domain/reimbursement';
+import { computeMonthView } from '../../domain/compute';
+import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
 import { MONTH, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import type { MonthRecord } from '../../domain/types';
 
 export default function ManagerQueue() {
-  const { user, storage } = useSession();
+  const { user, storage, storageVersion } = useSession();
   const { rules } = useRules();
   const [records, setRecords] = useState<MonthRecord[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
@@ -21,29 +18,15 @@ export default function ManagerQueue() {
   const reload = () => storage.listMonthRecords(user, MONTH).then(setRecords);
   useEffect(() => {
     reload();
-  }, [user, storage]);
+  }, [user, storage, storageVersion]);
 
   const queue = useMemo(
     () =>
       records
         .filter((r) => ['READY_FOR_APPROVAL', 'APPROVED'].includes(r.status))
         .map((record) => {
-          const attendance = summarizeAttendance(record.attendance, rules);
-          const result = calculateReimbursement(
-            {
-              ticketPriceEur: record.ticketPriceEur,
-              workdaysInMonth: record.workdaysInMonth,
-              reimbursableDays: attendance.reimbursableDays,
-              unexcusedDays: attendance.unexcusedDays,
-              vmtSingleFareEur: vmtSingleFaresEur[record.participantId],
-              eligibility: {
-                distanceKm: record.distanceKm,
-                hasApprovedDistanceException: record.exceptions.some((e) => e.approvedByManager),
-              },
-            },
-            rules,
-          );
-          return { record, attendance, result, bulkOk: isBulkApprovable(record, rules) };
+          const view = computeMonthView(record, rules, vmtSingleFaresEur[record.participantId]);
+          return { record, ...view, bulkOk: isBulkApprovable(record, rules) };
         }),
     [records, rules],
   );
@@ -108,7 +91,7 @@ export default function ManagerQueue() {
         >
           {bulkApprovableCount} ohne Flags &amp; ohne Ausnahmen: alle auf einmal freigeben
         </PrimaryButton>
-        <p className="mt-1 text-xs text-ink-dim">✎-Ausnahmen nie im Stapel — immer einzeln</p>
+        <p className="mt-1 text-xs text-ink-dim">Ausnahmen nie im Stapel — immer einzeln</p>
       </div>
 
       <div>

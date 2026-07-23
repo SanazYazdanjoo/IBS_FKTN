@@ -1,7 +1,4 @@
-/**
- * Shared UI primitives. Kept dumb and presentational on purpose — all
- * business logic lives in src/domain/, all data access in src/adapters/.
- */
+/** Gemeinsame UI-Bausteine (rein präsentational). */
 import type { ReactNode } from 'react';
 import type { ExceptionCategory, ProcessStatus } from '../domain/types';
 
@@ -85,7 +82,7 @@ export function statusLabel(status: ProcessStatus): string {
   return STATUS_LABELS[status];
 }
 
-/** The 5/6-stage TN status tracker seen on screens 1b/1c/3a. */
+/** Status-Tracker des TN-Prozesses. */
 export function StatusPipeline({ status }: { status: ProcessStatus }) {
   const activeIndex =
     status === 'NOT_SUBMITTED' || status === 'AWAITING_CORRECTION'
@@ -123,16 +120,16 @@ export function exceptionLabel(category: ExceptionCategory): string {
   return EXCEPTION_LABELS[category];
 }
 
-/** ✎ generic-exception badge — visually distinct from known-rule flags (blush). */
+/** Badge für vermerkte Ausnahmen — visuell getrennt von Regel-Flags. */
 export function ExceptionFlag({ category }: { category: ExceptionCategory }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-highlight-weak px-2 py-1 text-xs font-semibold text-ink">
-      ✎ Ausnahme: {exceptionLabel(category)}
+    <span className="inline-flex items-center gap-1 rounded-full border border-highlight bg-highlight-weak px-2 py-1 text-xs font-semibold text-ink">
+      Ausnahme: {exceptionLabel(category)}
     </span>
   );
 }
 
-/** Known-rule flag (3-km exception, Vergleichsrechnung) — blush tint. */
+/** Flag für bekannte Regeln (3-km, Vergleichsrechnung). */
 export function KnownFlag({ children }: { children: ReactNode }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-blush-weak px-2 py-1 text-xs font-semibold text-ink">

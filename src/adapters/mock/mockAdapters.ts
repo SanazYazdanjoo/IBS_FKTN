@@ -1,10 +1,4 @@
-/**
- * Mock adapters — in-memory, seeded, and ACCESS-CONTROLLED.
- *
- * The isolation rule is enforced here even in the prototype, so the demo
- * can show that a TN actor literally never receives another TN's record —
- * not "hidden in the UI", but absent from the data the app holds.
- */
+/** Demo-Adapter: im Speicher, mit denselben Zugriffsregeln wie produktiv. */
 import type { MonthRecord, ProcessException, SessionUser } from '../../domain/types';
 import { AccessDeniedError, STAFF_ROLES, type AuthAdapter, type StorageAdapter } from '../types';
 import { demoUsers, seedRecords } from './seed';
@@ -32,7 +26,7 @@ function assertCanRead(actor: SessionUser, participantId: string): void {
 }
 
 export interface MockStorageAdapter extends StorageAdapter {
-  /** Prototype convenience: returns the record, creating an empty one if none exists yet. */
+  /** Liefert den Datensatz; legt bei Bedarf einen leeren an. */
   getOrCreateMonthRecord(
     actor: SessionUser,
     participantId: string,

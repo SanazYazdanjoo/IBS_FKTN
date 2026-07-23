@@ -1,7 +1,4 @@
-/**
- * TN-Detail — screens 2a (standard) and 2b (VMT special case) combined,
- * plus the ✎ generic exception panel and the ⚠ open-rule annotation.
- */
+/** TN-Detail: Belege, Anwesenheit, Formel-Trace, Ausnahmen. */
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useSession } from '../../app/session';
@@ -16,8 +13,8 @@ import {
   SecondaryButton,
   statusLabel,
 } from '../../app/ui';
-import { summarizeAttendance } from '../../domain/attendance';
-import { calculateReimbursement, formatEuro } from '../../domain/reimbursement';
+import { computeMonthView } from '../../domain/compute';
+import { formatEuro } from '../../domain/reimbursement';
 import { MONTH, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import type { ExceptionCategory, MonthRecord, ProofKind } from '../../domain/types';
 
@@ -45,20 +42,10 @@ export default function TnDetail() {
 
   if (!record) return <p className="text-ink-dim">Lädt…</p>;
 
-  const attendance = summarizeAttendance(record.attendance, rules);
-  const result = calculateReimbursement(
-    {
-      ticketPriceEur: record.ticketPriceEur,
-      workdaysInMonth: record.workdaysInMonth,
-      reimbursableDays: attendance.reimbursableDays,
-      unexcusedDays: attendance.unexcusedDays,
-      vmtSingleFareEur: vmtSingleFaresEur[record.participantId],
-      eligibility: {
-        distanceKm: record.distanceKm,
-        hasApprovedDistanceException: record.exceptions.some((e) => e.approvedByManager),
-      },
-    },
+  const { attendance, result, amountMismatch } = computeMonthView(
+    record,
     rules,
+    vmtSingleFaresEur[record.participantId],
   );
 
   const persist = async (next: MonthRecord) => {
@@ -156,14 +143,12 @@ export default function TnDetail() {
           Regeln angewendet: Vormittag oder Nachmittag zählt als 1 Tag · (x) zählt · Wochen →
           Monat aggregiert
         </p>
-        <p className="mt-2 rounded-lg bg-highlight-weak p-2 text-xs">
-          ⚠︎ Regelklärung offen: zählen K-Tage (krank, AU) als erstattungsfähige
-          Anwesenheitstage? Instruction sagt x/E, Anwesenheitsregeln sagen E/K/X/(x) —
-          Entscheidung Kristin.{' '}
+        <p className="mt-2 rounded-lg bg-muted p-2 text-xs">
+          ✓ Regel (Legende der Anwesenheitsliste): E/K/X/(x) zählen als anwesend für die
+          Abrechnung · A/U gelten als Fehltag und werden rausgerechnet. K = Kulanztag.
           <span className="font-semibold">
-            Aktuell: {rules.sickDaysAreReimbursable ? 'ja' : 'nein'}
-          </span>{' '}
-          (Einstellungen).
+            {' '}Aktiver Modus: {rules.sickDaysAreReimbursable ? 'Legende (Standard)' : 'historisch strikt (x/E)'}
+          </span>
         </p>
       </Card>
 
@@ -193,17 +178,28 @@ export default function TnDetail() {
         <p className="mt-3 rounded-lg bg-muted p-2 text-sm font-semibold">
           {result.phrases[0]}
         </p>
-        <PrimaryButton
-          className="mt-3"
-          onClick={() => persist({ ...record, status: 'READY_FOR_APPROVAL' })}
-        >
-          Bestätigen → an Kristin
-        </PrimaryButton>
+        {amountMismatch && (
+          <p className="mt-2 rounded-lg bg-blush-weak p-2 text-sm text-danger">
+            ≠ In der Excel steht {formatEuro(amountMismatch.excel)}, die Engine berechnet{' '}
+            {formatEuro(amountMismatch.engine)} — bitte klären, bevor bestätigt wird.
+          </p>
+        )}
+        <div className="mt-3 flex flex-wrap gap-2">
+          <PrimaryButton onClick={() => persist({ ...record, status: 'READY_FOR_APPROVAL' })}>
+            Bestätigen → an Kristin
+          </PrimaryButton>
+          <Link
+            to={`/admin/tn/${record.participantId}/formular`}
+            className="rounded-full border border-line bg-surface px-5 py-2 font-semibold text-ink transition hover:border-primary hover:text-primary"
+          >
+            Formular ansehen →
+          </Link>
+        </div>
       </Card>
 
       <Card>
         <div className="flex items-center justify-between">
-          <Eyebrow>✎ Ausnahme vermerken · sichtbar für Team, nie versteckt</Eyebrow>
+          <Eyebrow>Ausnahme vermerken · sichtbar für Team, nie versteckt</Eyebrow>
           <SecondaryButton onClick={() => setShowExceptionForm((v) => !v)}>
             {showExceptionForm ? 'Abbrechen' : 'Ausnahme vermerken'}
           </SecondaryButton>
@@ -236,7 +232,7 @@ export default function TnDetail() {
           />
         )}
         <p className="mt-2 text-xs text-ink-dim">
-          taucht als ✎-Flag im Dashboard auf, blockiert Stapel-Freigabe bei Kristin
+          erscheint als Flag im Dashboard, blockiert die Stapel-Freigabe
         </p>
       </Card>
     </div>

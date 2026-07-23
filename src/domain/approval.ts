@@ -1,7 +1,6 @@
 /**
- * Approval rules — Kristin's queue (screen 4a).
- * Generic ✎ exceptions and known-rule flags are never hidden and never
- * bulk-approved ("✎-Ausnahmen nie im Stapel — immer einzeln").
+ * Freigabe-Regeln. Vermerkte Ausnahmen und Regel-Flags werden nie im
+ * Stapel freigegeben, sondern immer einzeln geprüft.
  */
 import type { MonthRecord } from './types';
 import type { RuleConfig } from './rules';
@@ -19,7 +18,7 @@ export function approvalFlags(record: MonthRecord, rules: RuleConfig): ApprovalF
   return {
     hasGenericException,
     hasUnapprovedException: record.exceptions.some((e) => !e.approvedByManager),
-    needsComparison: false, // computed by caller from attendance summary
+    needsComparison: false,
     needsDistanceException: record.distanceKm <= rules.minDistanceKm,
     signaturePending: record.signature.signedAt === undefined,
   };

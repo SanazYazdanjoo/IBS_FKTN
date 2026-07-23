@@ -18,6 +18,8 @@ export default {
         muted: 'var(--muted)',
         line: 'var(--line)',
         ink: 'var(--text)',
+        'course-bl': '#0e4c84',
+        'course-pk': '#45818e',
         'ink-dim': 'var(--text-dim)',
       },
       fontFamily: {

@@ -1,14 +1,9 @@
-/**
- * TN mobile flow — screen 3a ("Home aus 1c" + "geführter Wizard aus 1b").
- * One component, internal step state, mirrors the wireframe's 4-screen
- * sequence: Home → Ticketart → Upload-Checkliste → zurück auf Home.
- */
+/** TN-Ansicht: Home, Ticketart, Upload-Checkliste, Signatur-Aufgabe. */
 import { useEffect, useState } from 'react';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
 import { Card, Eyebrow, PrimaryButton, SecondaryButton, StatusPipeline } from '../../app/ui';
-import { summarizeAttendance } from '../../domain/attendance';
-import { calculateReimbursement } from '../../domain/reimbursement';
+import { computeMonthView } from '../../domain/compute';
 import { checkCompleteness, requiredProofs } from '../../domain/submission';
 import { formatEuro } from '../../domain/reimbursement';
 import { MONTH, vmtSingleFaresEur } from '../../adapters/mock/seed';
@@ -47,9 +42,10 @@ export default function TnFlow() {
 
   useEffect(() => {
     if (!user.participantId) return;
-    storage
-      .getOrCreateMonthRecord(user, user.participantId, user.name, MONTH)
-      .then(setRecord);
+    const load = storage.getOrCreateMonthRecord
+      ? storage.getOrCreateMonthRecord(user, user.participantId, user.name, MONTH)
+      : storage.getMonthRecord(user, user.participantId, MONTH);
+    load.then(setRecord).catch(() => setRecord(null));
   }, [user, storage]);
 
   if (!user.participantId) {
@@ -62,20 +58,10 @@ export default function TnFlow() {
     setRecord(next);
   };
 
-  const attendance = summarizeAttendance(record.attendance, rules);
-  const result = calculateReimbursement(
-    {
-      ticketPriceEur: record.ticketPriceEur,
-      workdaysInMonth: record.workdaysInMonth,
-      reimbursableDays: attendance.reimbursableDays,
-      unexcusedDays: attendance.unexcusedDays,
-      vmtSingleFareEur: vmtSingleFaresEur[record.participantId],
-      eligibility: {
-        distanceKm: record.distanceKm,
-        hasApprovedDistanceException: record.exceptions.some((e) => e.approvedByManager),
-      },
-    },
+  const { attendance, result } = computeMonthView(
+    record,
     rules,
+    vmtSingleFaresEur[record.participantId],
   );
   const completeness = checkCompleteness(
     {

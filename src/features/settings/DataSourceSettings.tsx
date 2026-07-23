@@ -1,0 +1,267 @@
+/** Einstellungen: Datenquelle (Demo oder Excel/Projektordner) mit Strukturprüfung. */
+import { useState } from 'react';
+import { useSession } from '../../app/session';
+import { Card, Eyebrow, PrimaryButton, SecondaryButton } from '../../app/ui';
+import {
+  createBrowserPersistence,
+  ExcelStorageAdapter,
+} from '../../adapters/excel/excelStorage';
+import { AttendanceWorkbook } from '../../adapters/excel/attendanceWorkbook';
+import { createFolderPersistence, openProjectFolder } from '../../adapters/excel/folderSource';
+import type { ExcelValidationReport } from '../../adapters/excel/workbook';
+
+export default function DataSourceSettings() {
+  const {
+    dataSource,
+    setExcelStorage,
+    setAttendanceSource,
+    attendanceSource,
+    setFormularContext,
+    formularContext,
+    resetToMock,
+  } = useSession();
+  const [month, setMonth] = useState(1);
+  const [year, setYear] = useState(2026);
+  const [report, setReport] = useState<ExcelValidationReport | null>(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const openFolder = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      if (!('showDirectoryPicker' in window)) {
+        throw new Error(
+          'Ordner-Modus benötigt Chrome/Edge (File System Access API). Alternativ unten die Einzeldatei öffnen.',
+        );
+      }
+      const root: FileSystemDirectoryHandle = await (window as any).showDirectoryPicker({
+        mode: 'readwrite',
+      });
+      const project = await openProjectFolder(root);
+
+      // Hauptdatei (Übersicht)
+      const hauptBuf = await (await project.hauptFile.getFile()).arrayBuffer();
+      const persistence = createFolderPersistence(project.hauptFile, project.backups);
+      const { adapter, report } = await ExcelStorageAdapter.fromBuffer(
+        hauptBuf,
+        project.hauptName,
+        month,
+        year,
+        persistence,
+      );
+      setReport(report);
+      if (!report.ok) return;
+
+      // Anwesenheitsliste (optional)
+      if (project.anwesenheitFile) {
+        const anwBuf = await (await project.anwesenheitFile.getFile()).arrayBuffer();
+        const workbook = await AttendanceWorkbook.load(anwBuf, year);
+        adapter.attachAttendanceProvider((m) => workbook.readMonth(m));
+        setAttendanceSource({
+          workbook,
+          persistence: createFolderPersistence(project.anwesenheitFile, project.backups),
+          fileName: project.anwesenheitName!,
+        });
+      } else {
+        setAttendanceSource(null);
+      }
+
+      // Formular-Vorlage (optional)
+      if (project.vorlageFile) {
+        const tpl = await (await project.vorlageFile.getFile()).arrayBuffer();
+        setFormularContext({ templateBuffer: tpl, formulareDir: project.formulare });
+      } else {
+        setFormularContext(null);
+      }
+
+      setExcelStorage(adapter, { kind: 'EXCEL', fileName: project.hauptName, month, year });
+    } catch (e) {
+      if ((e as Error).name !== 'AbortError') setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openExcel = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      let buffer: ArrayBuffer;
+      let fileName: string;
+      let handle: FileSystemFileHandle | null = null;
+
+      if ('showOpenFilePicker' in window) {
+        const [h] = await (window as any).showOpenFilePicker({
+          types: [{ description: 'Excel', accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] } }],
+        });
+        handle = h;
+        const file = await h.getFile();
+        buffer = await file.arrayBuffer();
+        fileName = file.name;
+      } else {
+        const file = await pickFileFallback();
+        buffer = await file.arrayBuffer();
+        fileName = file.name;
+      }
+
+      const { adapter, report } = await ExcelStorageAdapter.fromBuffer(
+        buffer,
+        fileName,
+        month,
+        year,
+        createBrowserPersistence(handle),
+      );
+      setReport(report);
+      if (report.ok) {
+        setExcelStorage(adapter, { kind: 'EXCEL', fileName, month, year });
+      }
+    } catch (e) {
+      if ((e as Error).name !== 'AbortError') setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <Eyebrow>Einstellungen · Datenquelle</Eyebrow>
+
+      <Card>
+        <p className="font-semibold">
+          Aktive Quelle:{' '}
+          {dataSource.kind === 'MOCK' ? (
+            <span className="text-ink-dim">Demo-Daten</span>
+          ) : (
+            <span className="text-primary">
+              {dataSource.fileName} · Monat {dataSource.month}/{dataSource.year}
+            </span>
+          )}
+        </p>
+        <div className="mt-3 flex flex-wrap items-end gap-3">
+          <label className="text-sm">
+            Monat
+            <select
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              className="mt-1 block rounded-lg border border-line p-2"
+            >
+              {Array.from({ length: 12 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-sm">
+            Jahr
+            <select
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              className="mt-1 block rounded-lg border border-line p-2"
+            >
+              {[2025, 2026, 2027].map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          </label>
+          <PrimaryButton onClick={openFolder} disabled={loading}>
+            {loading ? 'Lädt…' : 'Projektordner öffnen (empfohlen)'}
+          </PrimaryButton>
+          <SecondaryButton onClick={openExcel}>
+            Nur Hauptdatei öffnen
+          </SecondaryButton>
+          {dataSource.kind === 'EXCEL' && (
+            <SecondaryButton onClick={resetToMock}>Zurück zu Demo-Daten</SecondaryButton>
+          )}
+        </div>
+        <p className="mt-2 text-xs text-ink-dim">
+          Ordner-Konvention (siehe ORDNERSTRUKTUR.md): daten/haupt/ = genau eine .xlsx
+          (Hauptdatei) · daten/anwesenheit/ = genau eine .xlsx (Anwesenheitsliste) ·
+          daten/backups/ = automatische Zeitstempel-Backups vor JEDEM Schreiben.
+          Der PFAD zählt, nicht der Dateiname. Bitte die Dateien währenddessen nicht
+          gleichzeitig in Excel geöffnet halten — Excel-Dateien können nicht
+          zusammengeführt werden.
+        </p>
+        {formularContext && (
+          <p className="mt-1 text-xs font-semibold text-success">
+            Formular-Vorlage gefunden (daten/vorlagen/) — Abrechnungsformulare können erzeugt
+            werden.
+          </p>
+        )}
+        {attendanceSource && (
+          <p className="mt-1 text-xs font-semibold text-success">
+            Anwesenheitsliste verbunden: {attendanceSource.fileName} — Tagesdaten aktiv,
+            Dozent-Ansicht schreibt direkt in die Liste.
+          </p>
+        )}
+      </Card>
+
+      {error && (
+        <Card className="border-danger">
+          <p className="text-sm text-danger">{error}</p>
+        </Card>
+      )}
+
+      {report && (
+        <Card className={report.ok ? 'border-success' : 'border-danger'}>
+          <Eyebrow>Struktur-Prüfung</Eyebrow>
+          <ul className="mt-2 space-y-1 text-sm">
+            <li>Übersicht-Blatt: {report.uebersichtSheet ?? '— nicht gefunden'}</li>
+            <li>Stammdaten-Blatt: {report.masterSheet ?? '— nicht gefunden'}</li>
+            <li>Zeilen gesamt: {report.rowCount}</li>
+            {report.schema && (
+              <li>
+                Erkannte Spalten: {report.schema.columns.size} · Unbekannte Spalten:{' '}
+                {report.schema.unknownHeaders.length > 0
+                  ? report.schema.unknownHeaders.join(', ')
+                  : 'keine'}
+              </li>
+            )}
+          </ul>
+          {report.errors.map((e) => (
+            <p key={e} className="mt-2 rounded-lg bg-blush-weak p-2 text-sm text-danger">
+              {e}
+            </p>
+          ))}
+          {report.ok && (
+            <p className="mt-2 text-sm font-semibold text-success">
+              Struktur validiert — Spalten werden über Kopfzeilen erkannt, Umsortieren der
+              Spalten bricht nichts.
+            </p>
+          )}
+          {report.issues.length > 0 && (
+            <details className="mt-3 text-sm">
+              <summary className="cursor-pointer font-semibold">
+                {report.issues.length} Daten-Hinweise (toleriert, nicht blockierend)
+              </summary>
+              <ul className="mt-2 space-y-1">
+                {report.issues.slice(0, 30).map((issue, i) => (
+                  <li key={i} className="text-ink-dim">
+                    <strong>{issue.tnId}</strong> · {issue.field}: „{issue.raw}" — {issue.message}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </Card>
+      )}
+    </div>
+  );
+}
+
+function pickFileFallback(): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xlsx';
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (file) resolve(file);
+      else reject(new DOMException('Abgebrochen', 'AbortError'));
+    };
+    input.click();
+  });
+}

@@ -1,11 +1,6 @@
 /**
- * Adapter boundary — the ONLY place the app touches persistence and identity.
- *
- * Prototype: MockAdapter (in-memory, seeded, access-controlled).
- * Production: IT implements these same interfaces against the IBS-owned
- * cloud (e.g. Nextcloud WebDAV/OCS + LDAP accounts). No external SaaS —
- * data never leaves the house (NFR-01). The UI cannot tell the difference;
- * that is the whole point.
+ * Adapter-Schnittstellen für Persistenz und Identität. Die Cloud-Anbindung
+ * implementiert dieselben Interfaces; die UI bleibt unverändert (NFR-01).
  */
 import type { MonthRecord, ProcessException, Role, SessionUser } from '../domain/types';
 
@@ -17,19 +12,15 @@ export class AccessDeniedError extends Error {
 }
 
 export interface AuthAdapter {
-  /** Current session user (mock: whatever the role switcher selected). */
+  /** Aktueller Benutzer der Sitzung. */
   currentUser(): SessionUser;
-  /** Prototype-only: the role switcher. A real adapter does not expose this. */
+  /** Nur Demo: Rollenwechsel. */
   switchUser?(userId: string): void;
   listDemoUsers?(): SessionUser[];
 }
 
 export interface StorageAdapter {
-  /**
-   * Data isolation is enforced HERE, server-side in production — never in
-   * the UI. A TN actor receives exactly their own records; requesting
-   * anything else throws AccessDeniedError. "Privacy by design, not by CSS."
-   */
+  /** Datenisolation wird im Adapter erzwungen: TN erhalten nur eigene Datensätze. */
   listMonthRecords(actor: SessionUser, month: string): Promise<MonthRecord[]>;
   getMonthRecord(
     actor: SessionUser,
@@ -45,5 +36,5 @@ export interface StorageAdapter {
   ): Promise<void>;
 }
 
-/** Which roles may read another participant's data at all. */
+/** Rollen mit Lesezugriff auf fremde Datensätze. */
 export const STAFF_ROLES: readonly Role[] = ['ADMIN', 'DOZENT', 'MANAGER', 'ACCOUNTING'];

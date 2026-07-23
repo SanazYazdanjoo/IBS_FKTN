@@ -1,8 +1,4 @@
-/**
- * Rules context — RuleConfig held in memory for the prototype (Admin
- * settings screen, 5a). Persist this via the StorageAdapter once the
- * backend exists; screens don't need to change.
- */
+/** Regel-Kontext: RuleConfig im Speicher, über Einstellungen änderbar. */
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { defaultRules, type RuleConfig } from '../domain/rules';
 

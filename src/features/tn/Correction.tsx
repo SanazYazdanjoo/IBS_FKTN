@@ -1,7 +1,4 @@
-/**
- * Correction loop — screen 3b. Triggered when Admin flags a document
- * ILLEGIBLE (2a). The claim is explicitly NOT lost while this is open.
- */
+/** Korrekturschleife für als unleserlich markierte Nachweise. */
 import { useEffect, useState } from 'react';
 import { useSession } from '../../app/session';
 import { Card, Eyebrow, PrimaryButton } from '../../app/ui';
@@ -24,9 +21,10 @@ export default function TnCorrection() {
 
   useEffect(() => {
     if (!user.participantId) return;
-    storage
-      .getOrCreateMonthRecord(user, user.participantId, user.name, MONTH)
-      .then(setRecord);
+    const load = storage.getOrCreateMonthRecord
+      ? storage.getOrCreateMonthRecord(user, user.participantId, user.name, MONTH)
+      : storage.getMonthRecord(user, user.participantId, MONTH);
+    load.then(setRecord).catch(() => setRecord(null));
   }, [user, storage]);
 
   if (!user.participantId) return <Card>Diese Ansicht ist für TN-Nutzer:innen.</Card>;

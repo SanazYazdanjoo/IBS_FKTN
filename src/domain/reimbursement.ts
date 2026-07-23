@@ -1,9 +1,6 @@
 /**
- * Reimbursement engine — Fahrkosten Instruction §I, §IV, §VI.
- *
- * Pure functions, no I/O. Every result carries a full trace so the SAME
- * numbers render on the TN screen (FR-04), the Admin detail (FR-06) and
- * Kristin's summary — NFR-03 "no black-box amounts" enforced by design.
+ * Erstattungs-Engine (Instruction §I, §IV, §VI). Pure Funktionen;
+ * jedes Ergebnis trägt einen vollständigen Formel-Trace (NFR-03).
  */
 import type { RuleConfig } from './rules';
 
@@ -38,6 +35,8 @@ export function checkEligibility(input: EligibilityInput, rules: RuleConfig): El
 }
 
 export interface ReimbursementInput {
+  /** When set, the PKW km-formula is used instead of the ticket pro-rata. */
+  pkw?: { distanceKm: number };
   ticketPriceEur: number;
   workdaysInMonth: number;
   reimbursableDays: number;
@@ -51,12 +50,13 @@ export interface ReimbursementResult {
   eligible: boolean;
   eligibilityReason: Eligibility['reason'];
   /** Chosen method after Vergleichsrechnung (if triggered). */
-  method: 'PRO_RATA' | 'VMT_SINGLE_FARES' | 'NONE';
+  method: 'PRO_RATA' | 'VMT_SINGLE_FARES' | 'PKW_KM' | 'NONE';
   amountEur: number;
   comparisonTriggered: boolean;
   trace: {
     proRata?: { formula: string; amountEur: number };
     vmt?: { formula: string; amountEur: number };
+    pkw?: { formula: string; amountEur: number };
     perDayRateEur?: number;
     chosenBecause?: string;
   };
@@ -84,6 +84,30 @@ export function calculateReimbursement(
       trace: {},
       phrases: [],
       blockers: ['Entfernung ≤ 3 km ohne genehmigte Ausnahme (§VI)'],
+    };
+  }
+
+  // PKW: km-Formel laut Abrechnungsformular.
+  if (input.pkw) {
+    const rate = rules.pkwRatePerKmEur;
+    const amount = roundEuro(input.reimbursableDays * input.pkw.distanceKm * 2 * rate);
+    phrases.push(`Erstattungsbetrag: ${formatEuro(amount)}`);
+    if (input.unexcusedDays === 0) phrases.push('Der/Die TN hat keine unentschuldigten Fehltage.');
+    return {
+      eligible: true,
+      eligibilityReason: eligibility.reason,
+      method: 'PKW_KM',
+      amountEur: amount,
+      comparisonTriggered: false,
+      trace: {
+        pkw: {
+          formula: `${input.reimbursableDays} Tage × ${input.pkw.distanceKm} km × 2 × ${formatEuro(rate)}/km`,
+          amountEur: amount,
+        },
+        chosenBecause: 'PKW: km-Formel laut Abrechnungsformular (Faktor 2 = Hin- und Rückfahrt)',
+      },
+      phrases,
+      blockers,
     };
   }
 
@@ -125,7 +149,7 @@ export function calculateReimbursement(
     }
   }
 
-  // Standard phrases (Instruction §IV) — always written, always identical.
+  // Standardsätze gemäß Instruction §IV.
   phrases.push(`Erstattungsbetrag: ${formatEuro(amountEur)}`);
   if (input.unexcusedDays === 0) {
     phrases.push('Der/Die TN hat keine unentschuldigten Fehltage.');

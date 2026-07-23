@@ -11,3 +11,16 @@ body {
   color: var(--text);
   font-family: 'DM Sans', sans-serif;
 }
+
+/* Print: only the Abrechnungsformular preview, A4-clean */
+@media print {
+  nav, header, .print\:hidden { display: none !important; }
+  body { background: white !important; }
+  .print-formular {
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+  @page { size: A4; margin: 1.5cm; }
+}

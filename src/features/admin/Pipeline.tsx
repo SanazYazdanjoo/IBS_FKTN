@@ -1,8 +1,4 @@
-/**
- * Pipeline variant (screen 1e) — columns = process steps, cards = TN.
- * Secondary view: optimized for the P4/P5 "cold substitution" use case
- * ("jede:r sieht kalt, wo alles steht — kein Zettel nötig").
- */
+/** Pipeline-Ansicht: Spalten = Prozessschritte, Karten = TN (Vertretungssicht). */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
@@ -48,7 +44,7 @@ export default function AdminPipeline() {
                     <Card className="!p-3 hover:border-primary">
                       <p className="text-sm font-semibold">{r.participantName}</p>
                       <p className="text-xs text-ink-dim">
-                        {r.exceptions.length > 0 ? '✎ Ausnahme offen' : '—'}
+                        {r.exceptions.length > 0 ? 'Ausnahme offen' : '—'}
                       </p>
                     </Card>
                   </Link>

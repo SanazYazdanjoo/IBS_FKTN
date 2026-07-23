@@ -63,20 +63,27 @@ describe('weekly and monthly aggregation (§3, §4)', () => {
   });
 });
 
-describe('reimbursable vs presence — the open K-question (RuleConfig flag)', () => {
-  const sickDay = day('K', '');
+describe('reimbursable codes — RESOLVED by the Anwesenheitsliste legend', () => {
+  const kulanzDay = day('K', '');
 
-  it('strict reading (default): K counts as PRESENT but NOT reimbursable', () => {
-    expect(isPresenceDay(sickDay)).toBe(true);
-    expect(isReimbursableDay(sickDay, defaultRules)).toBe(false);
+  it('default (legend): K (Kulanztag) IS reimbursable', () => {
+    expect(isPresenceDay(kulanzDay)).toBe(true);
+    expect(isReimbursableDay(kulanzDay, defaultRules)).toBe(true);
   });
 
-  it('flipping the flag makes K reimbursable — no other code change needed', () => {
-    const flipped = { ...defaultRules, sickDaysAreReimbursable: true };
-    expect(isReimbursableDay(sickDay, flipped)).toBe(true);
+  it('historical strict mode (flag=false) excludes K, for auditing old months', () => {
+    const strict = { ...defaultRules, sickDaysAreReimbursable: false };
+    expect(isReimbursableDay(kulanzDay, strict)).toBe(false);
   });
 
-  it('summary reflects the divergence (wireframe 2a: 19 anwesend, 2 AU)', () => {
+  it("'A' (abgemeldet) is a Fehltag but NOT unentschuldigt (legend rows 8/13)", () => {
+    const aDay = day('A', 'A');
+    expect(isPresenceDay(aDay)).toBe(false);
+    expect(isReimbursableDay(aDay, defaultRules)).toBe(false);
+    expect(isUnexcusedDay(aDay)).toBe(false);
+  });
+
+  it('summary under the legend default: K days count into reimbursable', () => {
     const days: DayMarks[] = [
       ...Array.from({ length: 19 }, () => day('X', '')),
       day('K', '', true),
@@ -84,8 +91,8 @@ describe('reimbursable vs presence — the open K-question (RuleConfig flag)', (
       day('U', ''),
     ];
     const s = summarizeAttendance(days, defaultRules);
-    expect(s.presenceDays).toBe(21); // 19 X + 2 K per Anwesenheitsliste
-    expect(s.reimbursableDays).toBe(19); // strict Fahrkosten reading
+    expect(s.presenceDays).toBe(21);
+    expect(s.reimbursableDays).toBe(21); // legend: E/K/X/(x) zählen
     expect(s.unexcusedDays).toBe(1);
     expect(s.auCoveredDays).toBe(2);
   });

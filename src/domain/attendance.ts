@@ -1,19 +1,14 @@
 /**
- * Attendance counting — implements Anwesenheitsberechnung_Rules.docx exactly.
- *
- * Two DISTINCT concepts live here on purpose:
- *  1. PRESENCE days  — per the Anwesenheitsliste rules (E, K, X, (x) count).
- *  2. REIMBURSABLE days — per the Fahrkosten instruction (x, E; K is the
- *     open question, controlled by RuleConfig.sickDaysAreReimbursable).
- * Conflating the two is exactly the ambiguity the wireframe review surfaced.
+ * Anwesenheitsberechnung. Zwei getrennte Konzepte:
+ * Anwesenheit (Liste) vs. erstattungsfähige Tage (Abrechnung).
  */
 import type { AttendanceCode, DayMarks } from './types';
 import type { RuleConfig } from './rules';
 
-/** Codes that make a day count as PRESENT in the Anwesenheitsliste. */
+/** Legende der Anwesenheitsliste: E/K/X/(x) zählen als anwesend. */
 const PRESENCE_CODES: readonly AttendanceCode[] = ['E', 'K', 'x', 'X', '(x)'];
 
-/** Codes that make a day REIMBURSABLE per the Fahrkosten instruction (§III). */
+/** Strikte Lesart der Instruction (nur x/E), wählbar für Alt-Monate. */
 const REIMBURSABLE_CODES_STRICT: readonly AttendanceCode[] = ['E', 'x', 'X', '(x)'];
 
 function dayHasAnyOf(day: DayMarks, codes: readonly AttendanceCode[]): boolean {
@@ -43,6 +38,8 @@ export function isReimbursableDay(day: DayMarks, rules: RuleConfig): boolean {
 export function isUnexcusedDay(day: DayMarks): boolean {
   if (isPresenceDay(day)) return false;
   if (day.morning === 'U' || day.afternoon === 'U') return true;
+  // 'A' (abgemeldet): Fehltag, aber nicht unentschuldigt.
+  if (day.morning === 'A' || day.afternoon === 'A') return false;
   const fullyEmpty = day.morning === '' && day.afternoon === '';
   return fullyEmpty && !day.auReceived;
 }
@@ -62,7 +59,7 @@ export interface AttendanceSummary {
   reimbursableDays: number;
   unexcusedDays: number;
   auCoveredDays: number;
-  /** Cells with no entry at all — the Dozent gap indicator (screen 1f). */
+  /** Zellen ohne Eintrag (Lücken-Anzeige für Dozenten). */
   openGaps: number;
 }
 

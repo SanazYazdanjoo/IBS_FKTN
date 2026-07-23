@@ -1,8 +1,6 @@
 /**
- * Submission rules — which proofs a TN must provide, per ticket type
- * (TN handout table + Instruction §II/§VI). The upload checklist (FR-02,
- * screen 3a) is rendered directly from requiredProofs(), so UI and
- * validation can never drift apart.
+ * Einreichungsregeln: erforderliche Nachweise je Ticketart (§II/§VI).
+ * Die Upload-Checkliste (FR-02) wird direkt aus requiredProofs() gerendert.
  */
 import { z } from 'zod';
 import type { ProofKind, SubmittedDocument, TicketType } from './types';
@@ -10,9 +8,9 @@ import type { ProofKind, SubmittedDocument, TicketType } from './types';
 export interface SubmissionContext {
   ticketType: TicketType;
   hasPraktikum: boolean;
-  /** Contract is submitted once at internship start (handout: "einmalig zu Beginn"). */
+  /** Praktikumsvertrag wird einmalig zu Beginn eingereicht. */
   praktikumContractAlreadyOnFile: boolean;
-  /** Abo card photo is one-time (handout: "einmalig"). */
+  /** Foto der Abo-Karte wird einmalig eingereicht. */
   aboCardAlreadyOnFile: boolean;
 }
 
@@ -23,7 +21,7 @@ export function requiredProofs(ctx: SubmissionContext): ProofKind[] {
     case 'ABO':
       if (!ctx.aboCardAlreadyOnFile) proofs.push('TICKET_PHOTO');
       proofs.push('PAYMENT_PROOF');
-      // Explicitly NO invoice for Abo cards (handout: "nicht erforderlich").
+      // Für Abo-Karten ist keine Rechnung erforderlich.
       break;
     case 'ONLINE':
       proofs.push('TICKET_PHOTO', 'PAYMENT_PROOF', 'INVOICE');

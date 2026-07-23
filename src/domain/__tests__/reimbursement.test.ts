@@ -99,9 +99,9 @@ describe('3-km rule (Instruction §I, §VI)', () => {
   });
 });
 
-describe('E/K flag propagates end-to-end', () => {
+describe('legend flag propagates end-to-end (historical vs. resolved)', () => {
   it('flipping sickDaysAreReimbursable changes the amount for the wireframe case', () => {
-    // Yusuf: 19 strict reimbursable days, 21 if K counts (2 AU days).
+    // Yusuf: 19 days under historical strict reading, 21 under the legend (2 K days count).
     const strict = calculateReimbursement(
       { ticketPriceEur: 49, workdaysInMonth: 22, reimbursableDays: 19, unexcusedDays: 1, eligibility: eligible },
       defaultRules,
