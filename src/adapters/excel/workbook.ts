@@ -52,6 +52,15 @@ export interface MasterData {
   iban: string;
   bank: string;
   bic: string;
+  email: string;
+  verkehrsmittel: string;
+  ticket: string;
+  ticketart: string;
+  aboNummer: string;
+  vmtZone: string;
+  bemerkungen: string;
+  lastUpdate: string;
+  berechnung: string;
 }
 
 /** '3.4 km zu Fuß' → 3.4 · '32,6 km' → 32.6 · '?' → null */
@@ -293,6 +302,15 @@ export class ExcelWorkbookSource {
         iban: str(row, 'iban'),
         bank: str(row, 'bank'),
         bic: str(row, 'bic'),
+        email: str(row, 'email'),
+        verkehrsmittel: str(row, 'verkehrsmittel'),
+        ticket: str(row, 'ticket'),
+        ticketart: str(row, 'ticketart'),
+        aboNummer: str(row, 'aboNummer'),
+        vmtZone: str(row, 'vmtZone'),
+        bemerkungen: str(row, 'bemerkungen'),
+        lastUpdate: str(row, 'lastUpdate'),
+        berechnung: str(row, 'berechnung'),
       });
     });
     return result;

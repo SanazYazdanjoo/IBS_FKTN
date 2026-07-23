@@ -13,7 +13,8 @@ import { Card,
   statusLabel, TnName } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
-import { MONTH, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { MONTH, MONTHS, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { getMaster } from '../../adapters/masters';
 import type { ExceptionCategory, MonthRecord, ProofKind } from '../../domain/types';
 
 const PROOF_LABELS: Record<ProofKind, string> = {
@@ -31,14 +32,22 @@ export default function TnDetail() {
   const { user, storage } = useSession();
   const { rules } = useRules();
   const [record, setRecord] = useState<MonthRecord | null>(null);
+  const [allMonths, setAllMonths] = useState<(MonthRecord | null)[]>([]);
   const [showExceptionForm, setShowExceptionForm] = useState(false);
 
   useEffect(() => {
     if (!participantId) return;
     storage.getMonthRecord(user, participantId, MONTH).then(setRecord);
+    Promise.all(
+      MONTHS.map((m) =>
+        storage.getMonthRecord(user, participantId, m.ym).catch(() => null),
+      ),
+    ).then(setAllMonths);
   }, [participantId, user, storage]);
 
   if (!record) return <p className="text-ink-dim">Lädt…</p>;
+
+  const master = getMaster(storage, record.participantId);
 
   const { attendance, result, amountMismatch } = computeMonthView(
     record,
@@ -93,6 +102,91 @@ export default function TnDetail() {
               ` · Unterschrift ✓ (${record.signature.mode === 'PAPER' ? 'Papier' : 'Digital'})`}
           </span>
         </div>
+      </Card>
+
+      {/* Stammdaten — vollständige Informationen aus „Alle_TN_Daten". */}
+      {master && (
+        <Card>
+          <Eyebrow>Stammdaten</Eyebrow>
+          <div className="mt-2 grid gap-x-8 gap-y-1 text-sm sm:grid-cols-2 lg:grid-cols-3">
+            <MasterField label="Adresse" value={[[master.strasse, master.hausnr].filter(Boolean).join(' '), [master.plz, master.ort].filter(Boolean).join(' ')].filter(Boolean).join(', ')} />
+            <MasterField label="Fahrtroute" value={master.fahrtroute} />
+            <MasterField label="Entfernung" value={master.entfernungKm != null ? `${String(master.entfernungKm).replace('.', ',')} km` : ''} />
+            <MasterField label="VMT-Zone" value={master.vmtZone} />
+            <MasterField label="Verkehrsmittel" value={[master.verkehrsmittel, master.kennzeichen && `(${master.kennzeichen})`].filter(Boolean).join(' ')} />
+            <MasterField label="Ticket" value={[master.ticket, master.ticketart].filter(Boolean).join(' · ')} />
+            <MasterField label="Abo-Nr." value={master.aboNummer} mono />
+            <MasterField label="Kontoinhaber" value={master.kontoinhaber} />
+            <MasterField label="IBAN" value={master.iban} mono />
+            <MasterField label="Bank" value={[master.bank, master.bic].filter(Boolean).join(' · ')} />
+            <MasterField label="E-Mail" value={master.email} />
+            <MasterField label="Bemerkungen" value={master.bemerkungen} />
+          </div>
+        </Card>
+      )}
+
+      {/* Monatsübersicht — alle Monate mit Nachweisen und Beträgen. */}
+      <Card className="overflow-x-auto">
+        <Eyebrow>Alle Monate 2026</Eyebrow>
+        <table className="mt-2 min-w-full text-sm">
+          <thead>
+            <tr className="text-left text-xs text-ink-dim">
+              <th className="pr-3 pb-1">Monat</th>
+              <th className="pr-3 pb-1">Status</th>
+              <th className="pr-3 pb-1 text-right">Anwesend</th>
+              <th className="pr-3 pb-1 text-right">Betrag</th>
+              <th className="pr-3 pb-1">Ticket</th>
+              <th className="pr-3 pb-1">Rechnung</th>
+              <th className="pr-3 pb-1">Kontoauszug</th>
+              <th className="pr-3 pb-1">Vertrag</th>
+              <th className="pb-1">Unterschrift</th>
+            </tr>
+          </thead>
+          <tbody>
+            {MONTHS.map((m, i) => {
+              const rec = allMonths[i];
+              if (!rec) {
+                return (
+                  <tr key={m.ym} className="border-t border-line/60 text-ink-dim">
+                    <td className="pr-3 py-1.5">{m.label}</td>
+                    <td colSpan={8} className="py-1.5 text-xs">nicht geführt</td>
+                  </tr>
+                );
+              }
+              const view = computeMonthView(rec, rules, vmtSingleFaresEur[rec.participantId]);
+              const doc = (kind: ProofKind) => {
+                const d = rec.documents.find((x) => x.kind === kind);
+                if (!d) return <span className="text-ink-dim">—</span>;
+                if (d.state === 'VERIFIED') return <span className="text-success">✓</span>;
+                if (d.state === 'ILLEGIBLE') return <span className="text-danger">✗</span>;
+                return <span>{d.state === 'UPLOADED' ? '…' : '—'}</span>;
+              };
+              const isCurrent = m.ym === MONTH;
+              return (
+                <tr key={m.ym} className={`border-t border-line/60 ${isCurrent ? 'bg-highlight-weak/50 font-semibold' : ''}`}>
+                  <td className="pr-3 py-1.5">{m.label}{isCurrent && ' ●'}</td>
+                  <td className="pr-3 py-1.5">{statusLabel(rec.status)}</td>
+                  <td className="pr-3 py-1.5 text-right">
+                    {view.attendance.presenceDays}/{rec.workdaysInMonth}
+                  </td>
+                  <td className="pr-3 py-1.5 text-right">
+                    {view.result.eligible ? formatEuro(view.result.amountEur) : '—'}
+                  </td>
+                  <td className="pr-3 py-1.5">{doc(rec.ticketType === 'PKW' ? 'LICENSE_PLATE' : 'TICKET_PHOTO')}</td>
+                  <td className="pr-3 py-1.5">{doc('INVOICE')}</td>
+                  <td className="pr-3 py-1.5">{doc(rec.ticketType === 'PKW' ? 'GENERAL_INFO' : 'PAYMENT_PROOF')}</td>
+                  <td className="pr-3 py-1.5">{rec.hasPraktikum ? doc('PRAKTIKUM_CONTRACT') : <span className="text-ink-dim">—</span>}</td>
+                  <td className="py-1.5">
+                    {rec.signature.signedAt ? `✓ ${rec.signature.signedAt}` : 'offen'}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <p className="mt-2 text-xs text-ink-dim">
+          Beträge aus der Berechnungs-Engine (Tagesdaten der Anwesenheitsliste); ● = aktueller Monat.
+        </p>
       </Card>
 
       <Card>
@@ -274,5 +368,15 @@ function ExceptionForm({
         Ausnahme vermerken
       </PrimaryButton>
     </div>
+  );
+}
+
+
+function MasterField({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <p>
+      <span className="text-xs text-ink-dim">{label}: </span>
+      <span className={mono ? 'font-mono text-xs' : ''}>{value || '—'}</span>
+    </p>
   );
 }

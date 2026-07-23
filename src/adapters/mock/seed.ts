@@ -15,7 +15,7 @@ import type {
   SubmittedDocument,
   TicketType,
 } from '../../domain/types';
-import { MONTH_LABELS, RAW_SEED } from './seedData';
+import { MONTH_LABELS, RAW_MASTERS, RAW_SEED } from './seedData';
 
 /** Aktueller Demo-Monat (letzter vollständiger Monat der Anwesenheitsliste). */
 export const MONTH = '2026-06';
@@ -73,3 +73,15 @@ export const vmtSingleFaresEur: Record<string, number> = {
 export const tnNames: Record<string, { nach: string; vor: string }> = Object.fromEntries(
   RAW_SEED.map((r) => [r.id, { nach: r.nach, vor: r.vor }]),
 );
+
+/** Stammdaten (Tab „Alle_TN_Daten") für Demo-Modus & Admin-Ansichten. */
+export const seedMasters: Record<string, import('../excel/workbook').MasterData> =
+  Object.fromEntries(
+    RAW_MASTERS.map((m) => [
+      m.tnId,
+      {
+        ...m,
+        entfernungKm: m.entfernungKm ?? null,
+      } as import('../excel/workbook').MasterData,
+    ]),
+  );

@@ -80,6 +80,8 @@ function makeData(record: MonthRecord): FormularData {
       strasse: 'Jakob-Kaiser-Ring', hausnr: '4', plz: '99087', ort: 'Erfurt',
       fahrtroute: 'Erfurt Stadtverkehr', entfernungKm: 4.7, kennzeichen: '',
       kontoinhaber: 'Safaa Al Helal', iban: 'DE00 0000', bank: 'Sparkasse', bic: 'HELADEF1WEM',
+      email: '', verkehrsmittel: 'ÖPNV', ticket: 'Deutschlandticket', ticketart: 'Abo-karte',
+      aboNummer: '', vmtZone: '', bemerkungen: '', lastUpdate: '', berechnung: '',
     },
     month: 1,
     year: 2026,

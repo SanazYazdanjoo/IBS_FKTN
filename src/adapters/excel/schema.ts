@@ -38,6 +38,11 @@ export const MASTER_COLUMNS: ColumnSpec[] = [
   { key: 'bank', aliases: ['bank'], required: false },
   { key: 'bic', aliases: ['bic'], required: false },
   { key: 'cloud', aliases: ['cloud'], required: false },
+  { key: 'email', aliases: ['email', 'e-mail'], required: false },
+  { key: 'ticket', aliases: ['ticket'], required: false },
+  { key: 'aboNummer', aliases: ['abo nummer', 'abonummer'], required: false },
+  { key: 'bemerkungen', aliases: ['bemerkungen'], required: false },
+  { key: 'lastUpdate', aliases: ['last update'], required: false },
 ];
 
 export const UEBERSICHT_COLUMNS: ColumnSpec[] = [

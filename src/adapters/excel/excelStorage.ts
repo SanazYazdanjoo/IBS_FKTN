@@ -151,6 +151,10 @@ export class ExcelStorageAdapter implements StorageAdapter {
     return this.masterData.get(participantId.toUpperCase()) ?? null;
   }
 
+  listMasterData(): MasterData[] {
+    return [...this.masterData.values()];
+  }
+
   async addException(
     actor: SessionUser,
     participantId: string,
