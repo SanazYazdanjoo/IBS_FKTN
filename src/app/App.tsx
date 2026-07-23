@@ -106,7 +106,8 @@ export default function App() {
   return (
     <SessionProvider>
       <RulesProvider>
-        <HashRouter>
+        {/* Add the future prop right here */}
+        <HashRouter future={{ v7_startTransition: true }}>
           <Shell />
         </HashRouter>
       </RulesProvider>
