@@ -8,7 +8,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSession } from '../../app/session';
 import { Card, Eyebrow, TnName, CourseChip } from '../../app/ui';
-import { MONTH, MONTHS, tnNames } from '../../adapters/mock/seed';
+import { MONTHS, tnNames } from '../../adapters/mock/seed';
 import { countWeekPresence, isPresenceDay } from '../../domain/attendance';
 import type { AttendanceCode, DayMarks, MonthRecord } from '../../domain/types';
 
@@ -64,9 +64,8 @@ function codeClass(code: AttendanceCode): string {
 }
 
 export default function DozentAttendance() {
-  const { user, storage, storageVersion, attendanceSource, dataSource } = useSession();
+  const { user, storage, storageVersion, attendanceSource, dataSource, month: ym, setMonth: setYm } = useSession();
   const excelMode = attendanceSource !== null && dataSource.kind === 'EXCEL';
-  const [ym, setYm] = useState<string>(excelMode ? `2026-${String(dataSource.kind === 'EXCEL' ? dataSource.month : 6).padStart(2, '0')}` : MONTH);
   const [records, setRecords] = useState<MonthRecord[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');

@@ -13,7 +13,7 @@ import { Card,
   statusLabel, TnName } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
-import { MONTH, MONTHS, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { MONTHS, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import { getMaster } from '../../adapters/masters';
 import type { ExceptionCategory, MonthRecord, ProofKind } from '../../domain/types';
 
@@ -29,7 +29,7 @@ const PROOF_LABELS: Record<ProofKind, string> = {
 
 export default function TnDetail() {
   const { participantId } = useParams<{ participantId: string }>();
-  const { user, storage } = useSession();
+  const { user, storage, month: MONTH } = useSession();
   const { rules } = useRules();
   const [record, setRecord] = useState<MonthRecord | null>(null);
   const [allMonths, setAllMonths] = useState<(MonthRecord | null)[]>([]);
@@ -43,7 +43,7 @@ export default function TnDetail() {
         storage.getMonthRecord(user, participantId, m.ym).catch(() => null),
       ),
     ).then(setAllMonths);
-  }, [participantId, user, storage]);
+  }, [participantId, user, storage, MONTH]);
 
   if (!record) return <p className="text-ink-dim">Lädt…</p>;
 

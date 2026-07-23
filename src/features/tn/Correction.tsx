@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { useSession } from '../../app/session';
 import { Card, Eyebrow, PrimaryButton } from '../../app/ui';
-import { MONTH } from '../../adapters/mock/seed';
 import type { MonthRecord, ProofKind } from '../../domain/types';
 
 const PROOF_LABELS: Record<ProofKind, string> = {
@@ -16,7 +15,7 @@ const PROOF_LABELS: Record<ProofKind, string> = {
 };
 
 export default function TnCorrection() {
-  const { user, storage } = useSession();
+  const { user, storage, month: MONTH } = useSession();
   const [record, setRecord] = useState<MonthRecord | null>(null);
 
   useEffect(() => {
@@ -25,7 +24,7 @@ export default function TnCorrection() {
       ? storage.getOrCreateMonthRecord(user, user.participantId, user.name, MONTH)
       : storage.getMonthRecord(user, user.participantId, MONTH);
     load.then(setRecord).catch(() => setRecord(null));
-  }, [user, storage]);
+  }, [user, storage, MONTH]);
 
   if (!user.participantId) return <Card>Diese Ansicht ist für TN-Nutzer:innen.</Card>;
   if (!record) return <p className="text-ink-dim">Lädt…</p>;

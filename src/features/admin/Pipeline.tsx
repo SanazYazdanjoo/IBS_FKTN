@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { Card, Eyebrow, TnName } from '../../app/ui';
-import { MONTH, monthLabel } from '../../adapters/mock/seed';
+import { monthLabel } from '../../adapters/mock/seed';
 import type { MonthRecord, ProcessStatus } from '../../domain/types';
 
 const COLUMNS: { statuses: ProcessStatus[]; label: string }[] = [
@@ -15,12 +15,12 @@ const COLUMNS: { statuses: ProcessStatus[]; label: string }[] = [
 ];
 
 export default function AdminPipeline() {
-  const { user, storage } = useSession();
+  const { user, storage, month: MONTH } = useSession();
   const [records, setRecords] = useState<MonthRecord[]>([]);
 
   useEffect(() => {
     storage.listMonthRecords(user, MONTH).then(setRecords);
-  }, [user, storage]);
+  }, [user, storage, MONTH]);
 
   return (
     <div className="space-y-4">

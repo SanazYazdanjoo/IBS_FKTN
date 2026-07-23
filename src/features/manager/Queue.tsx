@@ -6,11 +6,11 @@ import { Card, ExceptionFlag, Eyebrow, KnownFlag, PrimaryButton, SecondaryButton
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
-import { MONTH, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import type { MonthRecord } from '../../domain/types';
 
 export default function ManagerQueue() {
-  const { user, storage, storageVersion } = useSession();
+  const { user, storage, storageVersion, month: MONTH } = useSession();
   const { rules } = useRules();
   const [records, setRecords] = useState<MonthRecord[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
@@ -18,7 +18,7 @@ export default function ManagerQueue() {
   const reload = () => storage.listMonthRecords(user, MONTH).then(setRecords);
   useEffect(() => {
     reload();
-  }, [user, storage, storageVersion]);
+  }, [user, storage, storageVersion, MONTH]);
 
   const queue = useMemo(
     () =>

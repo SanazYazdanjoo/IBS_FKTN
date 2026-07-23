@@ -3,6 +3,7 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from 're
 import { createMockAuth, createMockStorage, type MockStorageAdapter } from '../adapters/mock/mockAdapters';
 import type { AuthAdapter, StorageAdapter } from '../adapters/types';
 import type { MonthRecord, SessionUser } from '../domain/types';
+import { MONTH as DEFAULT_MONTH } from '../adapters/mock/seed';
 import type { AttendanceWorkbook } from '../adapters/excel/attendanceWorkbook';
 import type { ExcelPersistence } from '../adapters/excel/excelStorage';
 
@@ -41,6 +42,9 @@ interface SessionContextValue {
   resetToMock: () => void;
   /** Erhöht sich bei Quellenwechsel; Ansichten laden dann neu. */
   storageVersion: number;
+  /** Global gewählter Monat ('YYYY-MM') — Kopfzeilen-Auswahl, gilt für alle Ansichten. */
+  month: string;
+  setMonth: (ym: string) => void;
 }
 
 const SessionContext = createContext<SessionContextValue | null>(null);
@@ -54,6 +58,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [storageVersion, setStorageVersion] = useState(0);
   const [attendanceSource, setAttendanceSourceState] = useState<AttendanceSource | null>(null);
   const [formularContext, setFormularContext] = useState<FormularContext | null>(null);
+  const [month, setMonth] = useState<string>(DEFAULT_MONTH);
 
   const switchUser = (userId: string) => {
     auth.switchUser?.(userId);
@@ -63,6 +68,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const setExcelStorage: SessionContextValue['setExcelStorage'] = (next, source) => {
     setStorage(next);
     setDataSource(source);
+    setMonth(`${source.year}-${String(source.month).padStart(2, '0')}`);
     setStorageVersion((v) => v + 1);
   };
 
@@ -73,6 +79,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const resetToMock = () => {
     setStorage(mock);
+    setMonth(DEFAULT_MONTH);
     setDataSource({ kind: 'MOCK' });
     setAttendanceSourceState(null);
     setFormularContext(null);
@@ -93,6 +100,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setFormularContext,
     resetToMock,
     storageVersion,
+    month,
+    setMonth,
   };
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

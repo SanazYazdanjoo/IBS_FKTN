@@ -8,7 +8,7 @@ import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
 import { courseTypeFromId } from '../../adapters/excel/values';
-import { MONTH, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { vmtSingleFaresEur } from '../../adapters/mock/seed';
 import { GERMAN_MONTHS } from '../../adapters/excel/attendanceWorkbook';
 import type { MonthRecord, ProcessStatus } from '../../domain/types';
 
@@ -24,20 +24,14 @@ const STATUS_FILTERS: ProcessStatus[] = [
 ];
 
 export default function AdminDashboard() {
-  const { user, storage, storageVersion, dataSource } = useSession();
+  const { user, storage, storageVersion, dataSource, month: monthStr, setMonth: setGlobalMonth } = useSession();
   const { rules } = useRules();
   const [records, setRecords] = useState<MonthRecord[]>([]);
-  const defaultMonth = dataSource.kind === 'EXCEL' ? dataSource.month : 7;
   const year = dataSource.kind === 'EXCEL' ? dataSource.year : 2026;
-  const [month, setMonth] = useState(defaultMonth);
+  const month = Number(monthStr.split('-')[1]);
   const [courseFilter, setCourseFilter] = useState<'ALLE' | 'PK' | 'BL'>('ALLE');
   const [statusFilter, setStatusFilter] = useState<ProcessStatus | 'ALLE'>('ALLE');
 
-  useEffect(() => setMonth(defaultMonth), [defaultMonth]);
-
-  const monthStr = dataSource.kind === 'EXCEL'
-    ? `${year}-${String(month).padStart(2, '0')}`
-    : MONTH;
 
   useEffect(() => {
     storage.listMonthRecords(user, monthStr).then(setRecords).catch(() => setRecords([]));
@@ -71,7 +65,7 @@ export default function AdminDashboard() {
         await storage.saveMonthRecord(user, { ...record, status: 'APPROVED' });
       }
     }
-    storage.listMonthRecords(user, MONTH).then(setRecords);
+    storage.listMonthRecords(user, monthStr).then(setRecords);
   };
 
   return (
@@ -95,7 +89,7 @@ export default function AdminDashboard() {
             Monat
             <select
               value={month}
-              onChange={(e) => setMonth(Number(e.target.value))}
+              onChange={(e) => setGlobalMonth(`${year}-${String(e.target.value).padStart(2, '0')}`)}
               className="rounded-lg border border-line p-1"
             >
               {GERMAN_MONTHS.map((m, i) => (

@@ -2,12 +2,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from './session';
-import { MONTH } from '../adapters/mock/seed';
 import { STAFF_ROLES } from '../adapters/types';
 import type { MonthRecord } from '../domain/types';
 
 export default function HeaderSearch() {
-  const { user, storage, storageVersion, dataSource } = useSession();
+  const { user, storage, storageVersion, month: MONTH } = useSession();
   const [query, setQuery] = useState('');
   const [records, setRecords] = useState<MonthRecord[]>([]);
   const [open, setOpen] = useState(false);
@@ -15,10 +14,7 @@ export default function HeaderSearch() {
   const boxRef = useRef<HTMLDivElement>(null);
 
   const isStaff = STAFF_ROLES.includes(user.role);
-  const monthStr =
-    dataSource.kind === 'EXCEL'
-      ? `${dataSource.year}-${String(dataSource.month).padStart(2, '0')}`
-      : MONTH;
+  const monthStr = MONTH;
 
   useEffect(() => {
     if (!isStaff) return;

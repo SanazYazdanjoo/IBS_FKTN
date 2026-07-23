@@ -9,7 +9,7 @@ import { useRules } from '../../app/rules-context';
 import { Card, Eyebrow, PrimaryButton, SecondaryButton } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
-import { MONTH, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { vmtSingleFaresEur } from '../../adapters/mock/seed';
 import {
   fillAbrechnungsformular,
   formularChecks,
@@ -23,7 +23,7 @@ import type { MonthRecord } from '../../domain/types';
 
 export default function FormularScreen() {
   const { participantId } = useParams<{ participantId: string }>();
-  const { user, storage, dataSource, formularContext } = useSession();
+  const { user, storage, dataSource, formularContext, month: MONTH } = useSession();
   const { rules } = useRules();
   const [record, setRecord] = useState<MonthRecord | null>(null);
   const [savedPath, setSavedPath] = useState('');
@@ -32,7 +32,7 @@ export default function FormularScreen() {
   useEffect(() => {
     if (!participantId) return;
     storage.getMonthRecord(user, participantId, MONTH).then(setRecord).catch((e) => setError(e.message));
-  }, [participantId, user, storage]);
+  }, [participantId, user, storage, MONTH]);
 
   const month = dataSource.kind === 'EXCEL' ? dataSource.month : 7;
   const year = dataSource.kind === 'EXCEL' ? dataSource.year : 2026;

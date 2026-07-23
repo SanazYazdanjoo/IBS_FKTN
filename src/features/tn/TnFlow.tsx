@@ -6,7 +6,7 @@ import { Card, Eyebrow, PrimaryButton, SecondaryButton, StatusPipeline } from '.
 import { computeMonthView } from '../../domain/compute';
 import { checkCompleteness, requiredProofs } from '../../domain/submission';
 import { formatEuro } from '../../domain/reimbursement';
-import { MONTH, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import type { MonthRecord, ProofKind, TicketType } from '../../domain/types';
 
 const PROOF_LABELS: Record<ProofKind, string> = {
@@ -35,7 +35,7 @@ function daysUntil15th(): number {
 }
 
 export default function TnFlow() {
-  const { user, storage } = useSession();
+  const { user, storage, month: MONTH } = useSession();
   const { rules } = useRules();
   const [record, setRecord] = useState<MonthRecord | null>(null);
   const [step, setStep] = useState<Step>('home');
@@ -46,7 +46,7 @@ export default function TnFlow() {
       ? storage.getOrCreateMonthRecord(user, user.participantId, user.name, MONTH)
       : storage.getMonthRecord(user, user.participantId, MONTH);
     load.then(setRecord).catch(() => setRecord(null));
-  }, [user, storage]);
+  }, [user, storage, MONTH]);
 
   if (!user.participantId) {
     return <Card>Diese Ansicht ist für TN-Nutzer:innen. Bitte oben eine TN-Rolle wählen.</Card>;
