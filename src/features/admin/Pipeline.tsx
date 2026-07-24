@@ -1,4 +1,5 @@
 /** Pipeline-Ansicht: Spalten = Prozessschritte, Karten = TN (Vertretungssicht). */
+import MonthContextBox from '../../app/MonthContextBox';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
@@ -24,6 +25,7 @@ export default function AdminPipeline() {
 
   return (
     <div className="space-y-4">
+      <MonthContextBox />
       <div className="flex items-center justify-between">
         <Eyebrow>{monthLabel(MONTH)} 2026 · Karten wandern automatisch — Admin greift nur bei Rot ein</Eyebrow>
         <Link to="/admin" className="text-sm font-semibold text-primary underline">

@@ -1,4 +1,5 @@
 /** Admin-Dashboard (FR-05): Tabelle TN × Monat, Single Source of Truth. */
+import MonthContextBox from '../../app/MonthContextBox';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
@@ -24,7 +25,7 @@ const STATUS_FILTERS: ProcessStatus[] = [
 ];
 
 export default function AdminDashboard() {
-  const { user, storage, storageVersion, dataSource, month: monthStr, setMonth: setGlobalMonth } = useSession();
+  const { user, storage, storageVersion, dataSource, month: monthStr } = useSession();
   const { rules } = useRules();
   const [records, setRecords] = useState<MonthRecord[]>([]);
   const year = dataSource.kind === 'EXCEL' ? dataSource.year : 2026;
@@ -70,6 +71,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-4">
+      <MonthContextBox />
       <Card>
         <div className="flex items-center justify-between">
           <div>
@@ -85,20 +87,6 @@ export default function AdminDashboard() {
           </Link>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-          <label className="flex items-center gap-1">
-            Monat
-            <select
-              value={month}
-              onChange={(e) => setGlobalMonth(`${year}-${String(e.target.value).padStart(2, '0')}`)}
-              className="rounded-lg border border-line p-1"
-            >
-              {GERMAN_MONTHS.map((m, i) => (
-                <option key={m} value={i + 1}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          </label>
           <label className="flex items-center gap-1">
             Kurs
             <select
