@@ -45,6 +45,13 @@ interface SessionContextValue {
   /** Global gewählter Monat ('YYYY-MM') — Kopfzeilen-Auswahl, gilt für alle Ansichten. */
   month: string;
   setMonth: (ym: string) => void;
+  /**
+   * Gesamtübersicht statt Einzelmonat — steuert Dashboard & Pipeline.
+   * Andere Ansichten (Anwesenheitsliste, TN-Detail, Formular) brauchen
+   * immer einen konkreten Monat und ignorieren dieses Flag.
+   */
+  showAllMonths: boolean;
+  setShowAllMonths: (v: boolean) => void;
 }
 
 const SessionContext = createContext<SessionContextValue | null>(null);
@@ -59,6 +66,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [attendanceSource, setAttendanceSourceState] = useState<AttendanceSource | null>(null);
   const [formularContext, setFormularContext] = useState<FormularContext | null>(null);
   const [month, setMonth] = useState<string>(DEFAULT_MONTH);
+  /** Start in der Gesamtübersicht — Dashboard/Pipeline zeigen erst die Summe über alle Monate. */
+  const [showAllMonths, setShowAllMonths] = useState(true);
 
   const switchUser = (userId: string) => {
     auth.switchUser?.(userId);
@@ -80,6 +89,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const resetToMock = () => {
     setStorage(mock);
     setMonth(DEFAULT_MONTH);
+    setShowAllMonths(true);
     setDataSource({ kind: 'MOCK' });
     setAttendanceSourceState(null);
     setFormularContext(null);
@@ -102,6 +112,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     storageVersion,
     month,
     setMonth,
+    showAllMonths,
+    setShowAllMonths,
   };
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

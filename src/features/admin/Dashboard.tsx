@@ -1,10 +1,24 @@
-/** Admin-Dashboard (FR-05): Tabelle TN × Monat, Single Source of Truth. */
+/**
+ * Admin-Dashboard (FR-05). Startet mit der Gesamtübersicht (alle Monate);
+ * sobald ein konkreter Monat gewählt wird (Kontextbox oder Klick auf eine
+ * Monatszeile in der Übersicht), zeigt es nur noch dessen Daten.
+ */
 import MonthContextBox from '../../app/MonthContextBox';
+import DashboardOverview from './DashboardOverview';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
-import { Card, Eyebrow, ExceptionFlag, KnownFlag, PrimaryButton, statusLabel, TnName, statusColorClass } from '../../app/ui';
+import {
+  Card,
+  Eyebrow,
+  ExceptionFlag,
+  KnownFlag,
+  PrimaryButton,
+  statusLabel,
+  TnName,
+  statusColorClass,
+} from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
@@ -25,6 +39,26 @@ const STATUS_FILTERS: ProcessStatus[] = [
 ];
 
 export default function AdminDashboard() {
+  const { showAllMonths, setShowAllMonths, setMonth } = useSession();
+
+  return (
+    <div className="space-y-4">
+      <MonthContextBox />
+      {showAllMonths ? (
+        <DashboardOverview
+          onSelectMonth={(ym) => {
+            setMonth(ym);
+            setShowAllMonths(false);
+          }}
+        />
+      ) : (
+        <DashboardMonthView />
+      )}
+    </div>
+  );
+}
+
+function DashboardMonthView() {
   const { user, storage, storageVersion, dataSource, month: monthStr } = useSession();
   const { rules } = useRules();
   const [records, setRecords] = useState<MonthRecord[]>([]);
@@ -32,7 +66,6 @@ export default function AdminDashboard() {
   const month = Number(monthStr.split('-')[1]);
   const [courseFilter, setCourseFilter] = useState<'ALLE' | 'PK' | 'BL'>('ALLE');
   const [statusFilter, setStatusFilter] = useState<ProcessStatus | 'ALLE'>('ALLE');
-
 
   useEffect(() => {
     storage.listMonthRecords(user, monthStr).then(setRecords).catch(() => setRecords([]));
@@ -70,12 +103,13 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-4">
-      <MonthContextBox />
+    <>
       <Card>
         <div className="flex items-center justify-between">
           <div>
-            <Eyebrow>{GERMAN_MONTHS[month - 1]} {year} schließen</Eyebrow>
+            <Eyebrow>
+              {GERMAN_MONTHS[month - 1]} {year} schließen
+            </Eyebrow>
             <p className="mt-1 text-sm text-ink-dim">
               {rows.length} TN ({pkCount} PK / {blCount} BL) · {complete} vollständig ·{' '}
               {waiting} warten · {problems} Probleme · {signaturesPending} Unterschriften
@@ -134,15 +168,14 @@ export default function AdminDashboard() {
           </thead>
           <tbody>
             {rows.map(({ record, attendance, result, amountMismatch }) => {
-              const docsOk = record.documents.filter((d) => d.state === 'VERIFIED' || d.state === 'UPLOADED').length;
+              const docsOk = record.documents.filter(
+                (d) => d.state === 'VERIFIED' || d.state === 'UPLOADED',
+              ).length;
               const docsTotal = Math.max(record.documents.length, docsOk);
               return (
                 <tr key={record.participantId} className="border-b border-line last:border-0">
                   <td className="py-2 pr-3">
-                    <Link
-                      to={`/admin/tn/${record.participantId}`}
-                      className="hover:underline"
-                    >
+                    <Link to={`/admin/tn/${record.participantId}`} className="hover:underline">
                       <TnName id={record.participantId} name={record.participantName} />
                     </Link>
                     {record.hasPraktikum && (
@@ -179,7 +212,9 @@ export default function AdminDashboard() {
                       {!result.eligible && <KnownFlag>&lt; 3-km-Ausnahme</KnownFlag>}
                     </div>
                   </td>
-                  <td className={`py-2 pr-3 ${statusColorClass(record.status) || "text-ink-dim"}`}>{statusLabel(record.status)}</td>
+                  <td className={`py-2 pr-3 ${statusColorClass(record.status) || 'text-ink-dim'}`}>
+                    {statusLabel(record.status)}
+                  </td>
                 </tr>
               );
             })}
@@ -195,8 +230,6 @@ export default function AdminDashboard() {
         Ausnahmen nie im Stapel — immer einzeln · Zeile anklicken → TN-Detail mit Formel-Trace
         &amp; Belegen (FR-06)
       </p>
-    </div>
+    </>
   );
 }
-
-
