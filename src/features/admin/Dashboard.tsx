@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
-import { Card, Eyebrow, ExceptionFlag, KnownFlag, PrimaryButton, statusLabel, TnName } from '../../app/ui';
+import { Card, Eyebrow, ExceptionFlag, KnownFlag, PrimaryButton, statusLabel, TnName, statusColorClass } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
@@ -162,7 +162,11 @@ export default function AdminDashboard() {
                     )}
                   </td>
                   <td className="py-2 pr-3">
-                    {docsTotal > 0 ? `${docsOk}/${docsTotal} ✓` : '— fehlt'}
+                    {docsTotal > 0 ? (
+                      `${docsOk}/${docsTotal} ✓`
+                    ) : (
+                      <span className="text-red-600 font-semibold">fehlt</span>
+                    )}
                   </td>
                   <td className="py-2 pr-3">
                     {attendance.reimbursableDays}/{record.workdaysInMonth} ✓
@@ -187,7 +191,7 @@ export default function AdminDashboard() {
                       {!result.eligible && <KnownFlag>&lt; 3-km-Ausnahme</KnownFlag>}
                     </div>
                   </td>
-                  <td className="py-2 pr-3 text-ink-dim">{statusLabel(record.status)}</td>
+                  <td className={`py-2 pr-3 ${statusColorClass(record.status) || "text-ink-dim"}`}>{statusLabel(record.status)}</td>
                 </tr>
               );
             })}

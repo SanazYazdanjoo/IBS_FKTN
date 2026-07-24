@@ -82,6 +82,41 @@ export function statusLabel(status: ProcessStatus): string {
   return STATUS_LABELS[status];
 }
 
+/**
+ * Farbschema für Status-Labels (fest, überall gleich):
+ *  - "Ausgezahlt"             → grün
+ *  - "An Buchhaltung"         → blau
+ *  - "Korrektur erforderlich" → orange
+ *  - "fehlt" (Dokumente)      → rot (siehe docStateColorClass)
+ * Andere Zustände bleiben in der Standard-Textfarbe.
+ */
+export function statusColorClass(status: ProcessStatus): string {
+  switch (status) {
+    case 'PAID':
+      return 'text-green-600 font-semibold';
+    case 'SENT_TO_ACCOUNTING':
+      return 'text-blue-600 font-semibold';
+    case 'AWAITING_CORRECTION':
+      return 'text-orange-600 font-semibold';
+    default:
+      return '';
+  }
+}
+
+/** Farbschema für Dokument-Zustände; „fehlt" (MISSING) wird rot dargestellt. */
+export function docStateColorClass(state: 'MISSING' | 'UPLOADED' | 'VERIFIED' | 'ILLEGIBLE'): string {
+  switch (state) {
+    case 'MISSING':
+      return 'text-red-600 font-semibold';
+    case 'ILLEGIBLE':
+      return 'text-red-600 font-semibold';
+    case 'VERIFIED':
+      return 'text-green-600 font-semibold';
+    default:
+      return '';
+  }
+}
+
 /** Status-Tracker des TN-Prozesses. */
 export function StatusPipeline({ status }: { status: ProcessStatus }) {
   const activeIndex =
@@ -157,7 +192,11 @@ export function courseTypeOf(id: string): 'PK' | 'BL' | null {
   return null;
 }
 
-/** Gefüllter Kurs-Chip [PK]/[BL] mit weißer Schrift. */
+/**
+ * Kurs-Chip in Kursfarbe (BL/PK) mit der vollständigen TN-ID als Beschriftung
+ * (z. B. „PK01", „BL07"). Stilistik unverändert; wo bisher der Kurstyp stand,
+ * steht jetzt die ID, damit sie direkt neben dem Namen mitläuft.
+ */
 export function CourseChip({ id }: { id: string }) {
   const type = courseTypeOf(id);
   if (!type) return null;
@@ -168,7 +207,7 @@ export function CourseChip({ id }: { id: string }) {
       }`}
       title={type === 'BL' ? 'Blended Course' : 'Präsenzkurs'}
     >
-      {type}
+      {id.toUpperCase()}
     </span>
   );
 }

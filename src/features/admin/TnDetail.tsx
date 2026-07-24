@@ -10,7 +10,7 @@ import { Card,
   KnownFlag,
   PrimaryButton,
   SecondaryButton,
-  statusLabel, TnName } from '../../app/ui';
+  statusLabel, TnName, statusColorClass } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { MONTHS, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
@@ -97,7 +97,7 @@ export default function TnDetail() {
             </p>
           </div>
           <span className="text-sm text-ink-dim">
-            Status: {statusLabel(record.status)}
+            Status: <span className={statusColorClass(record.status)}>{statusLabel(record.status)}</span>
             {record.signature.signedAt &&
               ` · Unterschrift ✓ (${record.signature.mode === 'PAPER' ? 'Papier' : 'Digital'})`}
           </span>
@@ -156,16 +156,17 @@ export default function TnDetail() {
               const view = computeMonthView(rec, rules, vmtSingleFaresEur[rec.participantId]);
               const doc = (kind: ProofKind) => {
                 const d = rec.documents.find((x) => x.kind === kind);
-                if (!d) return <span className="text-ink-dim">—</span>;
-                if (d.state === 'VERIFIED') return <span className="text-success">✓</span>;
-                if (d.state === 'ILLEGIBLE') return <span className="text-danger">✗</span>;
+                if (!d) return <span className="text-red-600 font-semibold" title="fehlt">fehlt</span>;
+                if (d.state === 'VERIFIED') return <span className="text-green-600 font-semibold">✓</span>;
+                if (d.state === 'ILLEGIBLE') return <span className="text-red-600 font-semibold" title="unleserlich">✗</span>;
+                if (d.state === 'MISSING') return <span className="text-red-600 font-semibold" title="fehlt">fehlt</span>;
                 return <span>{d.state === 'UPLOADED' ? '…' : '—'}</span>;
               };
               const isCurrent = m.ym === MONTH;
               return (
                 <tr key={m.ym} className={`border-t border-line/60 ${isCurrent ? 'bg-highlight-weak/50 font-semibold' : ''}`}>
                   <td className="pr-3 py-1.5">{m.label}{isCurrent && ' ●'}</td>
-                  <td className="pr-3 py-1.5">{statusLabel(rec.status)}</td>
+                  <td className={`pr-3 py-1.5 ${statusColorClass(rec.status)}`}>{statusLabel(rec.status)}</td>
                   <td className="pr-3 py-1.5 text-right">
                     {view.attendance.presenceDays}/{rec.workdaysInMonth}
                   </td>
