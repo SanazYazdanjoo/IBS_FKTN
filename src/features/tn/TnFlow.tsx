@@ -134,7 +134,11 @@ export default function TnFlow() {
                   So wurde gerechnet
                 </summary>
                 <p className="mt-1 text-ink-dim">
-                  {result.trace.proRata?.formula} = {formatEuro(result.trace.proRata!.amountEur)}
+                  {result.trace.proRata
+                    ? `${result.trace.proRata.formula} = ${formatEuro(result.trace.proRata.amountEur)}`
+                    : result.trace.pkw
+                    ? `${result.trace.pkw.formula} = ${formatEuro(result.trace.pkw.amountEur)}`
+                    : `Endbetrag: ${formatEuro(result.amountEur)}`}
                   {result.trace.vmt && (
                     <> · Vergleich VMT: {formatEuro(result.trace.vmt.amountEur)}</>
                   )}

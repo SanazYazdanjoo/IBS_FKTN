@@ -439,16 +439,51 @@ export default function TnDetail() {
           {/* Abrechnung */}
           <Card>
             <Eyebrow>Abrechnung · automatisch</Eyebrow>
-            {view.result.trace.vmt ? (
+            {view.result.method === 'NONE' ? (
+              <p className="mt-2 rounded-lg bg-blush-weak p-2 text-sm">
+                Keine Abrechnung möglich —{' '}
+                {view.result.blockers[0] ?? 'Voraussetzungen nicht erfüllt.'}
+              </p>
+            ) : view.result.method === 'PKW_KM' ? (
+              /* PKW: km-Formel · Anwesenheitstage × Entfernung × 2 × €/km */
+              <div className="mt-2">
+                <FormulaBox
+                  label="PKW · km-Formel"
+                  terms={[
+                    {
+                      name: 'Anwesenheitstage',
+                      value: String(view.attendance.reimbursableDays),
+                    },
+                    {
+                      name: 'Entfernung',
+                      value: `${String(record.distanceKm).replace('.', ',')} km`,
+                      op: '×',
+                    },
+                    { name: 'Hin- & Rückfahrt', value: '2', op: '×' },
+                    {
+                      name: '€/km',
+                      value: formatEuro(rules.pkwRatePerKmEur),
+                      op: '×',
+                    },
+                  ]}
+                  result={formatEuro(view.result.trace.pkw?.amountEur ?? view.result.amountEur)}
+                />
+              </div>
+            ) : view.result.trace.vmt && view.result.trace.proRata ? (
+              /* ÖPNV mit Vergleichsrechnung: A (Abo pro rata) vs. B (VMT-Einzelfahrten) */
               <div className="mt-2 space-y-4">
                 <FormulaBox
                   label="A · Anteiliges Abo"
                   terms={[
                     { name: 'Ticketpreis', value: formatEuro(record.ticketPriceEur) },
                     { name: 'Arbeitstage', value: String(record.workdaysInMonth), op: '÷' },
-                    { name: 'Anwesenheitstage', value: String(view.attendance.reimbursableDays), op: '×' },
+                    {
+                      name: 'Anwesenheitstage',
+                      value: String(view.attendance.reimbursableDays),
+                      op: '×',
+                    },
                   ]}
-                  result={formatEuro(view.result.trace.proRata!.amountEur)}
+                  result={formatEuro(view.result.trace.proRata.amountEur)}
                 />
                 <FormulaBox
                   label={`B · VMT-Einzelfahrten${
@@ -457,26 +492,43 @@ export default function TnDetail() {
                   raw={view.result.trace.vmt.formula}
                   result={formatEuro(view.result.trace.vmt.amountEur)}
                 />
-                <p className="text-sm text-ink-dim">{view.result.trace.chosenBecause}</p>
+                {view.result.trace.chosenBecause && (
+                  <p className="text-sm text-ink-dim">{view.result.trace.chosenBecause}</p>
+                )}
               </div>
-            ) : (
+            ) : view.result.trace.proRata ? (
+              /* Standardfall ÖPNV: Anteiliges Abo */
               <div className="mt-2">
                 <FormulaBox
                   terms={[
                     { name: 'Ticketpreis', value: formatEuro(record.ticketPriceEur) },
                     { name: 'Arbeitstage', value: String(record.workdaysInMonth), op: '÷' },
-                    { name: 'Anwesenheitstage', value: String(view.attendance.reimbursableDays), op: '×' },
+                    {
+                      name: 'Anwesenheitstage',
+                      value: String(view.attendance.reimbursableDays),
+                      op: '×',
+                    },
                   ]}
-                  result={formatEuro(view.result.trace.proRata!.amountEur)}
+                  result={formatEuro(view.result.trace.proRata.amountEur)}
                 />
               </div>
+            ) : (
+              <p className="mt-2 text-sm text-ink-dim">
+                Keine Formel-Details verfügbar — Endbetrag:{' '}
+                <strong>{formatEuro(view.result.amountEur)}</strong>
+              </p>
             )}
+
             <div className="mt-3 flex flex-wrap gap-1">
-              {!view.result.comparisonTriggered && <KnownFlag>Vergleich: nicht nötig</KnownFlag>}
+              {!view.result.comparisonTriggered && view.result.method === 'PRO_RATA' && (
+                <KnownFlag>Vergleich: nicht nötig</KnownFlag>
+              )}
             </div>
-            <p className="mt-3 rounded-lg bg-muted p-2 text-sm font-semibold">
-              {view.result.phrases[0]}
-            </p>
+            {view.result.phrases[0] && (
+              <p className="mt-3 rounded-lg bg-muted p-2 text-sm font-semibold">
+                {view.result.phrases[0]}
+              </p>
+            )}
             {view.amountMismatch && (
               <p className="mt-2 rounded-lg bg-blush-weak p-2 text-sm text-red-600">
                 ≠ In der Excel steht {formatEuro(view.amountMismatch.excel)}, die Engine berechnet{' '}

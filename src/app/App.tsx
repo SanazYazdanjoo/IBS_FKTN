@@ -1,4 +1,5 @@
-import { HashRouter, Link, Navigate, NavLink, Route, Routes } from 'react-router-dom';
+import { HashRouter, Link, Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom';
+import { ErrorBoundary } from './ErrorBoundary';
 import { SessionProvider, useSession } from './session';
 import { RulesProvider } from './rules-context';
 import HeaderSearch from './HeaderSearch';
@@ -148,26 +149,30 @@ function MobileNav() {
 
 function Shell() {
   const { user } = useSession();
+  const location = useLocation();
   return (
     <div className="min-h-screen bg-bg">
       <Header />
       <div className="flex">
         <Sidebar />
         <main className="min-w-0 flex-1 p-4 md:p-6">
-          <Routes>
-            <Route path="/" element={<Navigate to={roleHome(user.role)} replace />} />
-            <Route path="/tn" element={<TnFlow />} />
-            <Route path="/tn/correction" element={<TnCorrection />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/pipeline" element={<AdminPipeline />} />
-            <Route path="/admin/daten" element={<TnData />} />
-            <Route path="/admin/tn/:participantId" element={<TnDetail />} />
-            <Route path="/admin/tn/:participantId/formular" element={<FormularScreen />} />
-            <Route path="/dozent" element={<DozentAttendance />} />
-            <Route path="/manager" element={<ManagerQueue />} />
-            <Route path="/settings" element={<SignatureSettings />} />
-            <Route path="/settings/data" element={<DataSourceSettings />} />
-          </Routes>
+          {/* Keyed by route: ein Fehler in einer Ansicht setzt sich beim Navigieren zurück. */}
+          <ErrorBoundary key={location.pathname}>
+            <Routes>
+              <Route path="/" element={<Navigate to={roleHome(user.role)} replace />} />
+              <Route path="/tn" element={<TnFlow />} />
+              <Route path="/tn/correction" element={<TnCorrection />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/pipeline" element={<AdminPipeline />} />
+              <Route path="/admin/daten" element={<TnData />} />
+              <Route path="/admin/tn/:participantId" element={<TnDetail />} />
+              <Route path="/admin/tn/:participantId/formular" element={<FormularScreen />} />
+              <Route path="/dozent" element={<DozentAttendance />} />
+              <Route path="/manager" element={<ManagerQueue />} />
+              <Route path="/settings" element={<SignatureSettings />} />
+              <Route path="/settings/data" element={<DataSourceSettings />} />
+            </Routes>
+          </ErrorBoundary>
         </main>
       </div>
     </div>

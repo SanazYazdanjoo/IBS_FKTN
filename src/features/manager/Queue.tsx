@@ -113,8 +113,12 @@ export default function ManagerQueue() {
                 · {current.attendance.auCoveredDays} AU ✓ · {current.attendance.unexcusedDays} unentsch.
               </li>
               <li className="text-ink-dim">
-                Formel: {current.result.trace.proRata?.formula} ={' '}
-                {formatEuro(current.result.trace.proRata!.amountEur)}
+                Formel:{' '}
+                {current.result.trace.proRata
+                  ? `${current.result.trace.proRata.formula} = ${formatEuro(current.result.trace.proRata.amountEur)}`
+                  : current.result.trace.pkw
+                  ? `${current.result.trace.pkw.formula} = ${formatEuro(current.result.trace.pkw.amountEur)}`
+                  : `Endbetrag ${formatEuro(current.result.amountEur)}`}
                 {current.result.trace.vmt &&
                   ` · Vergleich: ${formatEuro(current.result.trace.vmt.amountEur)}`}
               </li>
