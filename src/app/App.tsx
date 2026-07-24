@@ -1,6 +1,5 @@
 import { HashRouter, Link, Navigate, NavLink, Route, Routes } from 'react-router-dom';
 import { SessionProvider, useSession } from './session';
-import { MONTHS } from '../adapters/mock/seed';
 import { RulesProvider } from './rules-context';
 import HeaderSearch from './HeaderSearch';
 import TnFlow from '../features/tn/TnFlow';
@@ -83,37 +82,27 @@ function Sidebar() {
   );
 }
 
-/** Globale Monats-Auswahl — wirkt sofort auf alle Ansichten. */
-function MonthSelect() {
-  const { month, setMonth } = useSession();
-  return (
-    <label className="flex items-center gap-1 text-sm">
-      <span className="sr-only">Monat wählen</span>
-      <select
-        value={month}
-        onChange={(e) => setMonth(e.target.value)}
-        className="rounded-lg border border-line bg-surface px-2 py-1.5 text-sm font-semibold"
-      >
-        {MONTHS.map((m) => (
-          <option key={m.ym} value={m.ym}>
-            {m.label} 2026
-          </option>
-        ))}
-      </select>
-    </label>
-  );
-}
-
 function Header() {
   const { user, demoUsers, switchUser } = useSession();
   return (
     <header className="border-b border-line bg-surface">
       <div className="flex flex-wrap items-center gap-3 px-4 py-3">
-        <Link to={roleHome(user.role)} className="mr-2 font-display text-lg font-bold">
-          IBS <span className="text-primary">Fahrtkostenerstattung</span>
+        <Link
+          to={roleHome(user.role)}
+          className="mr-2 flex items-center gap-2 font-display text-lg font-bold"
+        >
+          <img
+            src="/logo.png"
+            alt="IBS Logo"
+            width={32}
+            height={32}
+            className="h-8 w-8 shrink-0"
+          />
+          <span>
+            IBS <span className="text-primary">Fahrtkostenerstattung</span>
+          </span>
         </Link>
         <HeaderSearch />
-        <MonthSelect />
         <div className="ml-auto flex flex-wrap gap-1">
           {demoUsers.map((u) => (
             <button

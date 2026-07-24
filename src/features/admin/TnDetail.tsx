@@ -1,16 +1,33 @@
-/** TN-Detail: Belege, Anwesenheit, Formel-Trace, Ausnahmen. */
+/**
+ * TN-Detail (Admin) — Reihenfolge:
+ *   1) TN-Name groß + fett (in Kursfarbe, mit ID-Badge)
+ *   2) Stammdaten (aus dem Tab „Alle_TN_Daten")
+ *   3) Alle Monate 2026 — jede Zeile anklickbar
+ *   4) Details zum gewählten Monat: Belege, Anwesenheit, 3-km-Regel,
+ *      Abrechnung + Button „Formular ansehen"
+ *   5) Ausnahmen (bezogen auf den gewählten Monat)
+ *
+ * Der aktuelle Monat aus der globalen Auswahl (Header/Kontextbox) ist die
+ * Voreinstellung; Klick auf eine Monatszeile wechselt lokal, ohne andere
+ * Ansichten zu beeinflussen. „Formular ansehen" setzt den globalen Monat
+ * mit, damit das gerenderte Formular zur Auswahl passt.
+ */
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
-import { Card,
+import {
+  Card,
   CheckItem,
   ExceptionFlag,
   Eyebrow,
   KnownFlag,
   PrimaryButton,
   SecondaryButton,
-  statusLabel, TnName, statusColorClass } from '../../app/ui';
+  TnName,
+  statusColorClass,
+  statusLabel,
+} from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { MONTHS, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
@@ -29,38 +46,56 @@ const PROOF_LABELS: Record<ProofKind, string> = {
 
 export default function TnDetail() {
   const { participantId } = useParams<{ participantId: string }>();
-  const { user, storage, month: MONTH } = useSession();
+  const { user, storage, month: MONTH, setMonth: setGlobalMonth } = useSession();
   const { rules } = useRules();
-  const [record, setRecord] = useState<MonthRecord | null>(null);
   const [allMonths, setAllMonths] = useState<(MonthRecord | null)[]>([]);
+  const [selectedYm, setSelectedYm] = useState<string>(MONTH);
+  const [loading, setLoading] = useState(true);
   const [showExceptionForm, setShowExceptionForm] = useState(false);
 
   useEffect(() => {
-    if (!participantId) return;
-    storage.getMonthRecord(user, participantId, MONTH).then(setRecord);
+    if (!participantId) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     Promise.all(
-      MONTHS.map((m) =>
-        storage.getMonthRecord(user, participantId, m.ym).catch(() => null),
-      ),
-    ).then(setAllMonths);
-  }, [participantId, user, storage, MONTH]);
+      MONTHS.map((m) => storage.getMonthRecord(user, participantId, m.ym).catch(() => null)),
+    ).then((records) => {
+      setAllMonths(records);
+      setLoading(false);
+    });
+  }, [participantId, user, storage]);
 
-  if (!record) return <p className="text-ink-dim">Lädt…</p>;
+  // Beim Wechsel des globalen Monats gleiche die lokale Auswahl an.
+  useEffect(() => setSelectedYm(MONTH), [MONTH]);
 
-  const master = getMaster(storage, record.participantId);
+  if (loading) return <p className="text-ink-dim">Lädt…</p>;
+  if (!participantId) return <p className="text-ink-dim">Kein TN.</p>;
 
-  const { attendance, result, amountMismatch } = computeMonthView(
-    record,
-    rules,
-    vmtSingleFaresEur[record.participantId],
-  );
+  const master = getMaster(storage, participantId);
+  const idx = MONTHS.findIndex((m) => m.ym === selectedYm);
+  const record = idx >= 0 ? allMonths[idx] : null;
+
+  // Anzeigename: Stammdaten haben Vorrang, sonst aus einem Monatsrecord.
+  const anyRecord = allMonths.find((r): r is MonthRecord => r !== null);
+  const displayName =
+    (master && [master.vorname, master.nachname].filter(Boolean).join(' ')) ||
+    anyRecord?.participantName ||
+    participantId;
+  const hasPraktikumAnywhere = allMonths.some((r) => r?.hasPraktikum);
+
+  const updateRecord = (next: MonthRecord) => {
+    setAllMonths((prev) => prev.map((r, i) => (i === idx ? next : r)));
+  };
 
   const persist = async (next: MonthRecord) => {
     await storage.saveMonthRecord(user, next);
-    setRecord(next);
+    updateRecord(next);
   };
 
   const flagIllegible = async (kind: ProofKind) => {
+    if (!record) return;
     const docs = record.documents.map((d) =>
       d.kind === kind
         ? {
@@ -74,46 +109,64 @@ export default function TnDetail() {
   };
 
   const verify = async (kind: ProofKind) => {
-    const docs = record.documents.map((d) => (d.kind === kind ? { ...d, state: 'VERIFIED' as const } : d));
+    if (!record) return;
+    const docs = record.documents.map((d) =>
+      d.kind === kind ? { ...d, state: 'VERIFIED' as const } : d,
+    );
     await persist({ ...record, documents: docs });
   };
 
+  const view = record
+    ? computeMonthView(record, rules, vmtSingleFaresEur[record.participantId])
+    : null;
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Link to="/admin" className="text-sm font-semibold text-primary underline">
         ← Dashboard
       </Link>
 
-      <Card>
-        <div className="flex items-baseline justify-between">
-          <div>
-            <Eyebrow>
-              <TnName id={record.participantId} name={record.participantName} /> · {monthLabel(MONTH)} 2026
-              {record.hasPraktikum && ' · Praktikum ✓'}
-            </Eyebrow>
-            <p className="font-display text-xl font-bold">
-              {record.ticketType === 'ABO' ? 'Deutschlandticket' : record.ticketType}{' '}
-              {formatEuro(record.ticketPriceEur)}
-            </p>
-          </div>
-          <span className="text-sm text-ink-dim">
-            Status: <span className={statusColorClass(record.status)}>{statusLabel(record.status)}</span>
-            {record.signature.signedAt &&
-              ` · Unterschrift ✓ (${record.signature.mode === 'PAPER' ? 'Papier' : 'Digital'})`}
-          </span>
-        </div>
-      </Card>
+      {/* 1) TN-Name — groß, fett, mit ID-Badge in Kursfarbe */}
+      <div>
+        <Eyebrow>TN-Detail</Eyebrow>
+        <h1 className="font-display text-4xl font-bold leading-tight">
+          <TnName id={participantId} name={displayName} />
+        </h1>
+        {hasPraktikumAnywhere && (
+          <p className="mt-1 text-sm text-ink-dim">Praktikum ✓</p>
+        )}
+      </div>
 
-      {/* Stammdaten — vollständige Informationen aus „Alle_TN_Daten". */}
+      {/* 2) Stammdaten */}
       {master && (
         <Card>
           <Eyebrow>Stammdaten</Eyebrow>
           <div className="mt-2 grid gap-x-8 gap-y-1 text-sm sm:grid-cols-2 lg:grid-cols-3">
-            <MasterField label="Adresse" value={[[master.strasse, master.hausnr].filter(Boolean).join(' '), [master.plz, master.ort].filter(Boolean).join(' ')].filter(Boolean).join(', ')} />
+            <MasterField
+              label="Adresse"
+              value={[
+                [master.strasse, master.hausnr].filter(Boolean).join(' '),
+                [master.plz, master.ort].filter(Boolean).join(' '),
+              ]
+                .filter(Boolean)
+                .join(', ')}
+            />
             <MasterField label="Fahrtroute" value={master.fahrtroute} />
-            <MasterField label="Entfernung" value={master.entfernungKm != null ? `${String(master.entfernungKm).replace('.', ',')} km` : ''} />
+            <MasterField
+              label="Entfernung"
+              value={
+                master.entfernungKm != null
+                  ? `${String(master.entfernungKm).replace('.', ',')} km`
+                  : ''
+              }
+            />
             <MasterField label="VMT-Zone" value={master.vmtZone} />
-            <MasterField label="Verkehrsmittel" value={[master.verkehrsmittel, master.kennzeichen && `(${master.kennzeichen})`].filter(Boolean).join(' ')} />
+            <MasterField
+              label="Verkehrsmittel"
+              value={[master.verkehrsmittel, master.kennzeichen && `(${master.kennzeichen})`]
+                .filter(Boolean)
+                .join(' ')}
+            />
             <MasterField label="Ticket" value={[master.ticket, master.ticketart].filter(Boolean).join(' · ')} />
             <MasterField label="Abo-Nr." value={master.aboNummer} mono />
             <MasterField label="Kontoinhaber" value={master.kontoinhaber} />
@@ -125,9 +178,9 @@ export default function TnDetail() {
         </Card>
       )}
 
-      {/* Monatsübersicht — alle Monate mit Nachweisen und Beträgen. */}
+      {/* 3) Alle Monate — anklickbar */}
       <Card className="overflow-x-auto">
-        <Eyebrow>Alle Monate 2026</Eyebrow>
+        <Eyebrow>Alle Monate 2026 · Zeile anklicken für Details</Eyebrow>
         <table className="mt-2 min-w-full text-sm">
           <thead>
             <tr className="text-left text-xs text-ink-dim">
@@ -145,38 +198,86 @@ export default function TnDetail() {
           <tbody>
             {MONTHS.map((m, i) => {
               const rec = allMonths[i];
+              const isSelected = m.ym === selectedYm;
+              const isCurrent = m.ym === MONTH;
               if (!rec) {
                 return (
                   <tr key={m.ym} className="border-t border-line/60 text-ink-dim">
                     <td className="pr-3 py-1.5">{m.label}</td>
-                    <td colSpan={8} className="py-1.5 text-xs">nicht geführt</td>
+                    <td colSpan={8} className="py-1.5 text-xs">
+                      nicht geführt
+                    </td>
                   </tr>
                 );
               }
-              const view = computeMonthView(rec, rules, vmtSingleFaresEur[rec.participantId]);
+              const v = computeMonthView(rec, rules, vmtSingleFaresEur[rec.participantId]);
               const doc = (kind: ProofKind) => {
                 const d = rec.documents.find((x) => x.kind === kind);
-                if (!d) return <span className="text-red-600 font-semibold" title="fehlt">fehlt</span>;
+                if (!d)
+                  return (
+                    <span className="text-red-600 font-semibold" title="fehlt">
+                      fehlt
+                    </span>
+                  );
                 if (d.state === 'VERIFIED') return <span className="text-green-600 font-semibold">✓</span>;
-                if (d.state === 'ILLEGIBLE') return <span className="text-red-600 font-semibold" title="unleserlich">✗</span>;
-                if (d.state === 'MISSING') return <span className="text-red-600 font-semibold" title="fehlt">fehlt</span>;
+                if (d.state === 'ILLEGIBLE')
+                  return (
+                    <span className="text-red-600 font-semibold" title="unleserlich">
+                      ✗
+                    </span>
+                  );
+                if (d.state === 'MISSING')
+                  return (
+                    <span className="text-red-600 font-semibold" title="fehlt">
+                      fehlt
+                    </span>
+                  );
                 return <span>{d.state === 'UPLOADED' ? '…' : '—'}</span>;
               };
-              const isCurrent = m.ym === MONTH;
+              const rowCls = [
+                'cursor-pointer border-t border-line/60 hover:bg-muted/60 transition',
+                isSelected && 'bg-primary/10 font-semibold ring-1 ring-inset ring-primary/40',
+                !isSelected && isCurrent && 'bg-highlight-weak/40',
+              ]
+                .filter(Boolean)
+                .join(' ');
               return (
-                <tr key={m.ym} className={`border-t border-line/60 ${isCurrent ? 'bg-highlight-weak/50 font-semibold' : ''}`}>
-                  <td className="pr-3 py-1.5">{m.label}{isCurrent && ' ●'}</td>
-                  <td className={`pr-3 py-1.5 ${statusColorClass(rec.status)}`}>{statusLabel(rec.status)}</td>
-                  <td className="pr-3 py-1.5 text-right">
-                    {view.attendance.presenceDays}/{rec.workdaysInMonth}
+                <tr
+                  key={m.ym}
+                  onClick={() => setSelectedYm(m.ym)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedYm(m.ym);
+                    }
+                  }}
+                  className={rowCls}
+                >
+                  <td className="pr-3 py-1.5">
+                    {m.label}
+                    {isCurrent && ' ●'}
+                  </td>
+                  <td className={`pr-3 py-1.5 ${statusColorClass(rec.status)}`}>
+                    {statusLabel(rec.status)}
                   </td>
                   <td className="pr-3 py-1.5 text-right">
-                    {view.result.eligible ? formatEuro(view.result.amountEur) : '—'}
+                    {v.attendance.presenceDays}/{rec.workdaysInMonth}
                   </td>
-                  <td className="pr-3 py-1.5">{doc(rec.ticketType === 'PKW' ? 'LICENSE_PLATE' : 'TICKET_PHOTO')}</td>
+                  <td className="pr-3 py-1.5 text-right">
+                    {v.result.eligible ? formatEuro(v.result.amountEur) : '—'}
+                  </td>
+                  <td className="pr-3 py-1.5">
+                    {doc(rec.ticketType === 'PKW' ? 'LICENSE_PLATE' : 'TICKET_PHOTO')}
+                  </td>
                   <td className="pr-3 py-1.5">{doc('INVOICE')}</td>
-                  <td className="pr-3 py-1.5">{doc(rec.ticketType === 'PKW' ? 'GENERAL_INFO' : 'PAYMENT_PROOF')}</td>
-                  <td className="pr-3 py-1.5">{rec.hasPraktikum ? doc('PRAKTIKUM_CONTRACT') : <span className="text-ink-dim">—</span>}</td>
+                  <td className="pr-3 py-1.5">
+                    {doc(rec.ticketType === 'PKW' ? 'GENERAL_INFO' : 'PAYMENT_PROOF')}
+                  </td>
+                  <td className="pr-3 py-1.5">
+                    {rec.hasPraktikum ? doc('PRAKTIKUM_CONTRACT') : <span className="text-ink-dim">—</span>}
+                  </td>
                   <td className="py-1.5">
                     {rec.signature.signedAt ? `✓ ${rec.signature.signedAt}` : 'offen'}
                   </td>
@@ -186,148 +287,229 @@ export default function TnDetail() {
           </tbody>
         </table>
         <p className="mt-2 text-xs text-ink-dim">
-          Beträge aus der Berechnungs-Engine (Tagesdaten der Anwesenheitsliste); ● = aktueller Monat.
+          ● = aktueller Monat (globale Auswahl) · Klick auf Zeile öffnet Monatsdetails unten.
         </p>
       </Card>
 
-      <Card>
-        <Eyebrow>
-          Belege {record.documents.filter((d) => d.state !== 'MISSING').length}/
-          {record.documents.length}
-        </Eyebrow>
-        <ul className="mt-2 space-y-2">
-          {record.documents.map((doc) => (
-            <li key={doc.kind} className="flex items-center justify-between rounded-xl border border-line p-2">
-              <span>
-                <CheckItem ok={doc.state === 'VERIFIED' || doc.state === 'UPLOADED'}>
-                  {PROOF_LABELS[doc.kind]}
-                  {doc.state === 'ILLEGIBLE' && (
-                    <span className="ml-1 text-danger">— unleserlich, wartet auf Korrektur</span>
+      {/* 4) Monatsdetails: nur wenn Datensatz existiert */}
+      {record && view ? (
+        <section
+          aria-label={`Details für ${monthLabel(selectedYm)} 2026`}
+          className="space-y-4 rounded-3xl border-2 border-primary/40 bg-primary/5 p-4"
+        >
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="font-display text-2xl font-bold">{monthLabel(selectedYm)} 2026</h2>
+            <div className="text-sm">
+              {record.ticketType === 'ABO' ? 'Deutschlandticket' : record.ticketType}{' '}
+              {formatEuro(record.ticketPriceEur)}{' · Status: '}
+              <span className={statusColorClass(record.status)}>{statusLabel(record.status)}</span>
+              {record.signature.signedAt &&
+                ` · Unterschrift ✓ (${
+                  record.signature.mode === 'PAPER' ? 'Papier' : 'Digital'
+                })`}
+            </div>
+          </div>
+
+          {/* Belege */}
+          <Card>
+            <Eyebrow>
+              Belege {record.documents.filter((d) => d.state !== 'MISSING').length}/
+              {record.documents.length}
+            </Eyebrow>
+            <ul className="mt-2 space-y-2">
+              {record.documents.map((doc) => (
+                <li
+                  key={doc.kind}
+                  className="flex items-center justify-between rounded-xl border border-line p-2"
+                >
+                  <span>
+                    <CheckItem ok={doc.state === 'VERIFIED' || doc.state === 'UPLOADED'}>
+                      {PROOF_LABELS[doc.kind]}
+                      {doc.state === 'ILLEGIBLE' && (
+                        <span className="ml-1 text-red-600 font-semibold">
+                          — unleserlich, wartet auf Korrektur
+                        </span>
+                      )}
+                      {doc.state === 'MISSING' && (
+                        <span className="ml-1 text-red-600 font-semibold">— fehlt</span>
+                      )}
+                    </CheckItem>
+                  </span>
+                  {doc.state === 'UPLOADED' && (
+                    <div className="flex gap-1">
+                      <SecondaryButton onClick={() => verify(doc.kind)}>lesbar ✓</SecondaryButton>
+                      <SecondaryButton onClick={() => flagIllegible(doc.kind)}>
+                        unleserlich
+                      </SecondaryButton>
+                    </div>
                   )}
-                </CheckItem>
+                </li>
+              ))}
+            </ul>
+          </Card>
+
+          {/* Anwesenheit */}
+          <Card>
+            <Eyebrow>Anwesenheit · aus Dozentenliste</Eyebrow>
+            <div className="mt-2 flex flex-wrap gap-4 text-sm">
+              <span>
+                <strong>{view.attendance.presenceDays}</strong> anwesend (x, E, K)
               </span>
-              {doc.state === 'UPLOADED' && (
-                <div className="flex gap-1">
-                  <SecondaryButton onClick={() => verify(doc.kind)}>lesbar ✓</SecondaryButton>
-                  <SecondaryButton onClick={() => flagIllegible(doc.kind)}>
-                    unleserlich
-                  </SecondaryButton>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      </Card>
-
-      <Card>
-        <Eyebrow>Anwesenheit · aus Dozentenliste</Eyebrow>
-        <div className="mt-2 flex gap-4 text-sm">
-          <span>
-            <strong>{attendance.presenceDays}</strong> anwesend (x, E, K)
-          </span>
-          <span>
-            <strong>{attendance.auCoveredDays}</strong> entschuldigt (AU ✓)
-          </span>
-          <span>
-            <strong>{attendance.unexcusedDays}</strong> unentschuldigt
-          </span>
-        </div>
-        <p className="mt-2 text-xs text-ink-dim">
-          Regeln angewendet: Vormittag oder Nachmittag zählt als 1 Tag · (x) zählt · Wochen →
-          Monat aggregiert
-        </p>
-        <p className="mt-2 rounded-lg bg-muted p-2 text-xs">
-          ✓ Regel (Legende der Anwesenheitsliste): E/K/X/(x) zählen als anwesend für die
-          Abrechnung · A/U gelten als Fehltag und werden rausgerechnet. K = Kulanztag.
-          <span className="font-semibold">
-            {' '}Aktiver Modus: {rules.sickDaysAreReimbursable ? 'Legende (Standard)' : 'historisch strikt (x/E)'}
-          </span>
-        </p>
-      </Card>
-
-      <Card>
-        <Eyebrow>Formel-Trace · automatisch</Eyebrow>
-        {result.trace.vmt ? (
-          <div className="mt-2 space-y-2 text-sm">
-            <p>
-              <strong>A · Anteiliges Abo</strong> — {result.trace.proRata?.formula} ={' '}
-              {formatEuro(result.trace.proRata!.amountEur)}
+              <span>
+                <strong>{view.attendance.auCoveredDays}</strong> entschuldigt (AU ✓)
+              </span>
+              <span>
+                <strong>{view.attendance.unexcusedDays}</strong> unentschuldigt
+              </span>
+              <span className="text-ink-dim">
+                bei {record.workdaysInMonth} Arbeitstagen
+              </span>
+            </div>
+            <p className="mt-2 text-xs text-ink-dim">
+              Regeln: Vormittag oder Nachmittag zählt als 1 Tag · (x) zählt · Wochen → Monat
+              aggregiert
             </p>
-            <p>
-              <strong>B · VMT-Einzelfahrten</strong> {result.method === 'VMT_SINGLE_FARES' && '✓ günstiger'} —{' '}
-              {result.trace.vmt.formula} = {formatEuro(result.trace.vmt.amountEur)}
+            <p className="mt-2 rounded-lg bg-muted p-2 text-xs">
+              ✓ Legende: E / K / X / (x) zählen als anwesend · A / U als Fehltag ·
+              <span className="font-semibold">
+                {' '}Aktiver Modus:{' '}
+                {rules.sickDaysAreReimbursable ? 'Legende (Standard)' : 'historisch strikt (x/E)'}
+              </span>
             </p>
-            <p className="text-ink-dim">{result.trace.chosenBecause}</p>
-          </div>
-        ) : (
-          <p className="mt-2 text-sm">
-            {result.trace.proRata?.formula} = {formatEuro(result.trace.proRata!.amountEur)}
-          </p>
-        )}
-        <div className="mt-2 flex flex-wrap gap-1">
-          {!result.comparisonTriggered && <KnownFlag>Vergleich: nicht nötig</KnownFlag>}
-          <KnownFlag>3-km-Regel: {result.eligible ? '✓' : '✗'}</KnownFlag>
-        </div>
-        <p className="mt-3 rounded-lg bg-muted p-2 text-sm font-semibold">
-          {result.phrases[0]}
-        </p>
-        {amountMismatch && (
-          <p className="mt-2 rounded-lg bg-blush-weak p-2 text-sm text-danger">
-            ≠ In der Excel steht {formatEuro(amountMismatch.excel)}, die Engine berechnet{' '}
-            {formatEuro(amountMismatch.engine)} — bitte klären, bevor bestätigt wird.
-          </p>
-        )}
-        <div className="mt-3 flex flex-wrap gap-2">
-          <PrimaryButton onClick={() => persist({ ...record, status: 'READY_FOR_APPROVAL' })}>
-            Bestätigen → an Kristin
-          </PrimaryButton>
-          <Link
-            to={`/admin/tn/${record.participantId}/formular`}
-            className="rounded-full border border-line bg-surface px-5 py-2 font-semibold text-ink transition hover:border-primary hover:text-primary"
-          >
-            Formular ansehen →
-          </Link>
-        </div>
-      </Card>
+          </Card>
 
-      <Card>
-        <div className="flex items-center justify-between">
-          <Eyebrow>Ausnahme vermerken · sichtbar für Team, nie versteckt</Eyebrow>
-          <SecondaryButton onClick={() => setShowExceptionForm((v) => !v)}>
-            {showExceptionForm ? 'Abbrechen' : 'Ausnahme vermerken'}
-          </SecondaryButton>
-        </div>
-        {record.exceptions.map((ex) => (
-          <div key={ex.id} className="mt-2 flex items-center gap-2">
-            <ExceptionFlag category={ex.category} />
-            <span className="text-sm">
-              „{ex.reason}" · vermerkt von {ex.createdBy} ·{' '}
-              {ex.approvedByManager ? 'genehmigt' : 'Genehmigung ausstehend'}
-            </span>
-          </div>
-        ))}
-        {showExceptionForm && (
-          <ExceptionForm
-            onSubmit={async (category, reason) => {
-              await storage.addException(user, record.participantId, MONTH, {
-                id: `ex-${Date.now()}`,
-                category,
-                reason,
-                createdBy: user.id,
-                createdAt: new Date().toISOString(),
-                visibility: 'TEAM',
-                approvedByManager: false,
-              });
-              const refreshed = await storage.getMonthRecord(user, record.participantId, MONTH);
-              setRecord(refreshed);
-              setShowExceptionForm(false);
-            }}
-          />
-        )}
-        <p className="mt-2 text-xs text-ink-dim">
-          erscheint als Flag im Dashboard, blockiert die Stapel-Freigabe
-        </p>
-      </Card>
+          {/* 3-km-Regel */}
+          <Card>
+            <Eyebrow>3-km-Regel</Eyebrow>
+            <div className="mt-2 grid gap-2 text-sm sm:grid-cols-3">
+              <MasterField
+                label="Entfernung"
+                value={
+                  master?.entfernungKm != null
+                    ? `${String(master.entfernungKm).replace('.', ',')} km`
+                    : record.distanceKm > 0
+                    ? `${String(record.distanceKm).replace('.', ',')} km`
+                    : 'nicht dokumentiert'
+                }
+              />
+              <MasterField label="Fahrtroute" value={master?.fahrtroute ?? ''} />
+              <div>
+                <span className="text-xs text-ink-dim">Ergebnis: </span>
+                {view.result.eligible ? (
+                  <span className="font-semibold text-green-600">
+                    erstattungsfähig (≥ 3 km)
+                  </span>
+                ) : (
+                  <span className="font-semibold text-red-600">
+                    &lt; 3 km — nicht erstattungsfähig (Ausnahme mit Begründung möglich)
+                  </span>
+                )}
+              </div>
+            </div>
+          </Card>
+
+          {/* Abrechnung */}
+          <Card>
+            <Eyebrow>Abrechnung · automatisch</Eyebrow>
+            {view.result.trace.vmt ? (
+              <div className="mt-2 space-y-2 text-sm">
+                <p>
+                  <strong>A · Anteiliges Abo</strong> — {view.result.trace.proRata?.formula} ={' '}
+                  {formatEuro(view.result.trace.proRata!.amountEur)}
+                </p>
+                <p>
+                  <strong>B · VMT-Einzelfahrten</strong>{' '}
+                  {view.result.method === 'VMT_SINGLE_FARES' && '✓ günstiger'} —{' '}
+                  {view.result.trace.vmt.formula} = {formatEuro(view.result.trace.vmt.amountEur)}
+                </p>
+                <p className="text-ink-dim">{view.result.trace.chosenBecause}</p>
+              </div>
+            ) : (
+              <p className="mt-2 text-sm">
+                {view.result.trace.proRata?.formula} ={' '}
+                {formatEuro(view.result.trace.proRata!.amountEur)}
+              </p>
+            )}
+            <div className="mt-2 flex flex-wrap gap-1">
+              {!view.result.comparisonTriggered && <KnownFlag>Vergleich: nicht nötig</KnownFlag>}
+              <KnownFlag>3-km-Regel: {view.result.eligible ? '✓' : '✗'}</KnownFlag>
+            </div>
+            <p className="mt-3 rounded-lg bg-muted p-2 text-sm font-semibold">
+              {view.result.phrases[0]}
+            </p>
+            {view.amountMismatch && (
+              <p className="mt-2 rounded-lg bg-blush-weak p-2 text-sm text-red-600">
+                ≠ In der Excel steht {formatEuro(view.amountMismatch.excel)}, die Engine berechnet{' '}
+                {formatEuro(view.amountMismatch.engine)} — bitte klären, bevor bestätigt wird.
+              </p>
+            )}
+            <div className="mt-3 flex flex-wrap gap-2">
+              <PrimaryButton
+                onClick={() => persist({ ...record, status: 'READY_FOR_APPROVAL' })}
+              >
+                Bestätigen → an Kristin
+              </PrimaryButton>
+              <Link
+                to={`/admin/tn/${record.participantId}/formular`}
+                onClick={() => setGlobalMonth(selectedYm)}
+                className="rounded-full border border-line bg-surface px-5 py-2 font-semibold text-ink transition hover:border-primary hover:text-primary"
+              >
+                Formular ansehen →
+              </Link>
+            </div>
+          </Card>
+
+          {/* Ausnahmen — bezogen auf den gewählten Monat */}
+          <Card>
+            <div className="flex items-center justify-between">
+              <Eyebrow>Ausnahme vermerken · sichtbar für Team, nie versteckt</Eyebrow>
+              <SecondaryButton onClick={() => setShowExceptionForm((v) => !v)}>
+                {showExceptionForm ? 'Abbrechen' : 'Ausnahme vermerken'}
+              </SecondaryButton>
+            </div>
+            {record.exceptions.map((ex) => (
+              <div key={ex.id} className="mt-2 flex items-center gap-2">
+                <ExceptionFlag category={ex.category} />
+                <span className="text-sm">
+                  „{ex.reason}" · vermerkt von {ex.createdBy} ·{' '}
+                  {ex.approvedByManager ? 'genehmigt' : 'Genehmigung ausstehend'}
+                </span>
+              </div>
+            ))}
+            {showExceptionForm && (
+              <ExceptionForm
+                onSubmit={async (category, reason) => {
+                  await storage.addException(user, record.participantId, selectedYm, {
+                    id: `ex-${Date.now()}`,
+                    category,
+                    reason,
+                    createdBy: user.id,
+                    createdAt: new Date().toISOString(),
+                    visibility: 'TEAM',
+                    approvedByManager: false,
+                  });
+                  const refreshed = await storage.getMonthRecord(
+                    user,
+                    record.participantId,
+                    selectedYm,
+                  );
+                  if (refreshed) updateRecord(refreshed);
+                  setShowExceptionForm(false);
+                }}
+              />
+            )}
+            <p className="mt-2 text-xs text-ink-dim">
+              erscheint als Flag im Dashboard, blockiert die Stapel-Freigabe
+            </p>
+          </Card>
+        </section>
+      ) : (
+        <Card>
+          <p className="text-sm text-ink-dim">
+            Für {monthLabel(selectedYm)} 2026 liegen keine Daten vor.
+          </p>
+        </Card>
+      )}
     </div>
   );
 }
@@ -372,8 +554,15 @@ function ExceptionForm({
   );
 }
 
-
-function MasterField({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
+function MasterField({
+  label,
+  value,
+  mono = false,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
   return (
     <p>
       <span className="text-xs text-ink-dim">{label}: </span>
