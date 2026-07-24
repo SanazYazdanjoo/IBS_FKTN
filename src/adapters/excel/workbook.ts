@@ -61,6 +61,7 @@ export interface MasterData {
   bemerkungen: string;
   lastUpdate: string;
   berechnung: string;
+  cloud: string;
 }
 
 /** '3.4 km zu Fuß' → 3.4 · '32,6 km' → 32.6 · '?' → null */
@@ -311,6 +312,7 @@ export class ExcelWorkbookSource {
         bemerkungen: str(row, 'bemerkungen'),
         lastUpdate: str(row, 'lastUpdate'),
         berechnung: str(row, 'berechnung'),
+        cloud: str(row, 'cloud'),
       });
     });
     return result;

@@ -83,7 +83,6 @@ export default function TnDetail() {
     (master && [master.vorname, master.nachname].filter(Boolean).join(' ')) ||
     anyRecord?.participantName ||
     participantId;
-  const hasPraktikumAnywhere = allMonths.some((r) => r?.hasPraktikum);
 
   const updateRecord = (next: MonthRecord) => {
     setAllMonths((prev) => prev.map((r, i) => (i === idx ? next : r)));
@@ -126,14 +125,26 @@ export default function TnDetail() {
         ← Dashboard
       </Link>
 
-      {/* 1) TN-Name — groß, fett, mit ID-Badge in Kursfarbe */}
-      <div>
-        <Eyebrow>TN-Detail</Eyebrow>
-        <h1 className="font-display text-4xl font-bold leading-tight">
-          <TnName id={participantId} name={displayName} />
-        </h1>
-        {hasPraktikumAnywhere && (
-          <p className="mt-1 text-sm text-ink-dim">Praktikum ✓</p>
+      {/* 1) TN-Name — groß, fett, mit ID-Badge in Kursfarbe; daneben Cloud-Link, falls hinterlegt */}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <Eyebrow>TN-Detail</Eyebrow>
+          <h1 className="font-display text-4xl font-bold leading-tight">
+            <TnName id={participantId} name={displayName} />
+          </h1>
+        </div>
+        {master?.cloud && (
+          <a
+            href={master.cloud}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold text-ink transition hover:border-primary hover:text-primary"
+            title="Cloud-Ordner dieses TN in neuem Tab öffnen"
+          >
+            <span aria-hidden>☁</span>
+            Cloud-Ordner öffnen
+            <span aria-hidden>↗</span>
+          </a>
         )}
       </div>
 
@@ -191,8 +202,13 @@ export default function TnDetail() {
               <th className="pr-3 pb-1">Ticket</th>
               <th className="pr-3 pb-1">Rechnung</th>
               <th className="pr-3 pb-1">Kontoauszug</th>
-              <th className="pr-3 pb-1">Vertrag</th>
-              <th className="pb-1">Unterschrift</th>
+              <th className="pr-3 pb-1">
+                <span className="block max-w-[10ch] truncate" title="Praktikumsvertrag">
+                  Praktikumsvertrag
+                </span>
+              </th>
+              <th className="pr-3 pb-1">Unterschrift</th>
+              <th className="pb-1 text-right">Aktion</th>
             </tr>
           </thead>
           <tbody>
@@ -204,7 +220,7 @@ export default function TnDetail() {
                 return (
                   <tr key={m.ym} className="border-t border-line/60 text-ink-dim">
                     <td className="pr-3 py-1.5">{m.label}</td>
-                    <td colSpan={8} className="py-1.5 text-xs">
+                    <td colSpan={9} className="py-1.5 text-xs">
                       nicht geführt
                     </td>
                   </tr>
@@ -235,7 +251,7 @@ export default function TnDetail() {
                 return <span>{d.state === 'UPLOADED' ? '…' : '—'}</span>;
               };
               const rowCls = [
-                'cursor-pointer border-t border-line/60 hover:bg-muted/60 transition',
+                'cursor-pointer border-t border-line/60 hover:bg-primary/15 hover:ring-1 hover:ring-primary/30 transition',
                 isSelected && 'bg-primary/10 font-semibold ring-1 ring-inset ring-primary/40',
                 !isSelected && isCurrent && 'bg-highlight-weak/40',
               ]
@@ -278,8 +294,23 @@ export default function TnDetail() {
                   <td className="pr-3 py-1.5">
                     {rec.hasPraktikum ? doc('PRAKTIKUM_CONTRACT') : <span className="text-ink-dim">—</span>}
                   </td>
-                  <td className="py-1.5">
+                  <td className="pr-3 py-1.5">
                     {rec.signature.signedAt ? `✓ ${rec.signature.signedAt}` : 'offen'}
+                  </td>
+                  <td className="py-1.5 text-right">
+                    <Link
+                      to={`/admin/tn/${participantId}/formular`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedYm(m.ym);
+                        setGlobalMonth(m.ym);
+                      }}
+                      className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-3 py-1 text-xs font-semibold hover:border-primary hover:text-primary"
+                      title={`Formular für ${m.label} ansehen`}
+                    >
+                      Formular
+                      <span aria-hidden>→</span>
+                    </Link>
                   </td>
                 </tr>
               );
@@ -310,72 +341,69 @@ export default function TnDetail() {
             </div>
           </div>
 
-          {/* Belege */}
+          {/* Belege — kompakt nebeneinander, jeder Beleg ein Chip */}
           <Card>
             <Eyebrow>
               Belege {record.documents.filter((d) => d.state !== 'MISSING').length}/
               {record.documents.length}
             </Eyebrow>
-            <ul className="mt-2 space-y-2">
+            <ul className="mt-2 flex flex-wrap gap-2">
               {record.documents.map((doc) => (
                 <li
                   key={doc.kind}
-                  className="flex items-center justify-between rounded-xl border border-line p-2"
+                  className="flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-sm"
                 >
-                  <span>
-                    <CheckItem ok={doc.state === 'VERIFIED' || doc.state === 'UPLOADED'}>
-                      {PROOF_LABELS[doc.kind]}
-                      {doc.state === 'ILLEGIBLE' && (
-                        <span className="ml-1 text-red-600 font-semibold">
-                          — unleserlich, wartet auf Korrektur
-                        </span>
-                      )}
-                      {doc.state === 'MISSING' && (
-                        <span className="ml-1 text-red-600 font-semibold">— fehlt</span>
-                      )}
-                    </CheckItem>
-                  </span>
+                  <CheckItem ok={doc.state === 'VERIFIED' || doc.state === 'UPLOADED'}>
+                    <span className="font-semibold">{PROOF_LABELS[doc.kind]}</span>
+                  </CheckItem>
+                  {doc.state === 'ILLEGIBLE' && (
+                    <span className="text-xs text-red-600 font-semibold">unleserlich</span>
+                  )}
+                  {doc.state === 'MISSING' && (
+                    <span className="text-xs text-red-600 font-semibold">fehlt</span>
+                  )}
                   {doc.state === 'UPLOADED' && (
-                    <div className="flex gap-1">
-                      <SecondaryButton onClick={() => verify(doc.kind)}>lesbar ✓</SecondaryButton>
-                      <SecondaryButton onClick={() => flagIllegible(doc.kind)}>
+                    <span className="flex gap-1">
+                      <button
+                        onClick={() => verify(doc.kind)}
+                        className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold hover:bg-primary hover:text-white"
+                        title={`${PROOF_LABELS[doc.kind]}: als lesbar bestätigen`}
+                      >
+                        lesbar ✓
+                      </button>
+                      <button
+                        onClick={() => flagIllegible(doc.kind)}
+                        className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold hover:bg-red-600 hover:text-white"
+                        title={`${PROOF_LABELS[doc.kind]}: als unleserlich markieren`}
+                      >
                         unleserlich
-                      </SecondaryButton>
-                    </div>
+                      </button>
+                    </span>
                   )}
                 </li>
               ))}
             </ul>
           </Card>
 
-          {/* Anwesenheit */}
+          {/* Anwesenheit — kompakt: eine Zahl + Button zur Liste des Monats */}
           <Card>
-            <Eyebrow>Anwesenheit · aus Dozentenliste</Eyebrow>
-            <div className="mt-2 flex flex-wrap gap-4 text-sm">
-              <span>
-                <strong>{view.attendance.presenceDays}</strong> anwesend (x, E, K)
-              </span>
-              <span>
-                <strong>{view.attendance.auCoveredDays}</strong> entschuldigt (AU ✓)
-              </span>
-              <span>
-                <strong>{view.attendance.unexcusedDays}</strong> unentschuldigt
-              </span>
-              <span className="text-ink-dim">
-                bei {record.workdaysInMonth} Arbeitstagen
-              </span>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <Eyebrow>Anwesenheit</Eyebrow>
+                <p className="mt-1 text-sm">
+                  <strong>{view.attendance.presenceDays}</strong> von{' '}
+                  <strong>{record.workdaysInMonth}</strong> Arbeitstagen anwesend
+                </p>
+              </div>
+              <Link
+                to="/dozent"
+                onClick={() => setGlobalMonth(selectedYm)}
+                className="inline-flex items-center gap-1 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white transition hover:bg-primary-600"
+              >
+                Zur Anwesenheitsliste ({monthLabel(selectedYm)})
+                <span aria-hidden>→</span>
+              </Link>
             </div>
-            <p className="mt-2 text-xs text-ink-dim">
-              Regeln: Vormittag oder Nachmittag zählt als 1 Tag · (x) zählt · Wochen → Monat
-              aggregiert
-            </p>
-            <p className="mt-2 rounded-lg bg-muted p-2 text-xs">
-              ✓ Legende: E / K / X / (x) zählen als anwesend · A / U als Fehltag ·
-              <span className="font-semibold">
-                {' '}Aktiver Modus:{' '}
-                {rules.sickDaysAreReimbursable ? 'Legende (Standard)' : 'historisch strikt (x/E)'}
-              </span>
-            </p>
           </Card>
 
           {/* 3-km-Regel */}
@@ -412,27 +440,39 @@ export default function TnDetail() {
           <Card>
             <Eyebrow>Abrechnung · automatisch</Eyebrow>
             {view.result.trace.vmt ? (
-              <div className="mt-2 space-y-2 text-sm">
-                <p>
-                  <strong>A · Anteiliges Abo</strong> — {view.result.trace.proRata?.formula} ={' '}
-                  {formatEuro(view.result.trace.proRata!.amountEur)}
-                </p>
-                <p>
-                  <strong>B · VMT-Einzelfahrten</strong>{' '}
-                  {view.result.method === 'VMT_SINGLE_FARES' && '✓ günstiger'} —{' '}
-                  {view.result.trace.vmt.formula} = {formatEuro(view.result.trace.vmt.amountEur)}
-                </p>
-                <p className="text-ink-dim">{view.result.trace.chosenBecause}</p>
+              <div className="mt-2 space-y-4">
+                <FormulaBox
+                  label="A · Anteiliges Abo"
+                  terms={[
+                    { name: 'Ticketpreis', value: formatEuro(record.ticketPriceEur) },
+                    { name: 'Arbeitstage', value: String(record.workdaysInMonth), op: '÷' },
+                    { name: 'Anwesenheitstage', value: String(view.attendance.reimbursableDays), op: '×' },
+                  ]}
+                  result={formatEuro(view.result.trace.proRata!.amountEur)}
+                />
+                <FormulaBox
+                  label={`B · VMT-Einzelfahrten${
+                    view.result.method === 'VMT_SINGLE_FARES' ? ' ✓ günstiger' : ''
+                  }`}
+                  raw={view.result.trace.vmt.formula}
+                  result={formatEuro(view.result.trace.vmt.amountEur)}
+                />
+                <p className="text-sm text-ink-dim">{view.result.trace.chosenBecause}</p>
               </div>
             ) : (
-              <p className="mt-2 text-sm">
-                {view.result.trace.proRata?.formula} ={' '}
-                {formatEuro(view.result.trace.proRata!.amountEur)}
-              </p>
+              <div className="mt-2">
+                <FormulaBox
+                  terms={[
+                    { name: 'Ticketpreis', value: formatEuro(record.ticketPriceEur) },
+                    { name: 'Arbeitstage', value: String(record.workdaysInMonth), op: '÷' },
+                    { name: 'Anwesenheitstage', value: String(view.attendance.reimbursableDays), op: '×' },
+                  ]}
+                  result={formatEuro(view.result.trace.proRata!.amountEur)}
+                />
+              </div>
             )}
-            <div className="mt-2 flex flex-wrap gap-1">
+            <div className="mt-3 flex flex-wrap gap-1">
               {!view.result.comparisonTriggered && <KnownFlag>Vergleich: nicht nötig</KnownFlag>}
-              <KnownFlag>3-km-Regel: {view.result.eligible ? '✓' : '✗'}</KnownFlag>
             </div>
             <p className="mt-3 rounded-lg bg-muted p-2 text-sm font-semibold">
               {view.result.phrases[0]}
@@ -568,5 +608,57 @@ function MasterField({
       <span className="text-xs text-ink-dim">{label}: </span>
       <span className={mono ? 'font-mono text-xs' : ''}>{value || '—'}</span>
     </p>
+  );
+}
+
+/**
+ * Beschriftete Formel-Darstellung: über jedem Wert steht sein Name
+ * (z. B. „Ticketpreis", „Arbeitstage", „Anwesenheitstage"), darunter
+ * der Wert; Operatoren stehen groß zwischen den Termen. So ist auf
+ * einen Blick klar, welche Zahl was bedeutet.
+ * Fällt auf `raw` zurück, wenn keine strukturierten Terme vorliegen
+ * (z. B. bei VMT-Einzelfahrten, deren Formel textuell aus dem Trace kommt).
+ */
+function FormulaBox({
+  label,
+  terms,
+  raw,
+  result,
+}: {
+  label?: string;
+  terms?: { name: string; value: string; op?: string }[];
+  raw?: string;
+  result: string;
+}) {
+  return (
+    <div className="rounded-xl border border-line bg-surface p-3">
+      {label && <p className="mb-2 text-xs font-semibold text-ink-dim">{label}</p>}
+      {terms ? (
+        <div className="flex flex-wrap items-end gap-x-2 gap-y-2 text-sm">
+          {terms.map((t, i) => (
+            <div key={t.name} className="flex items-end gap-2">
+              {i > 0 && t.op && (
+                <span className="pb-0.5 font-display text-xl text-ink-dim">{t.op}</span>
+              )}
+              <div className="text-center">
+                <div className="text-[10px] uppercase tracking-wider text-ink-dim">
+                  {t.name}
+                </div>
+                <div className="font-display text-lg font-bold">{t.value}</div>
+              </div>
+            </div>
+          ))}
+          <span className="pb-0.5 font-display text-xl text-ink-dim">=</span>
+          <div className="text-center">
+            <div className="text-[10px] uppercase tracking-wider text-ink-dim">Erstattung</div>
+            <div className="font-display text-lg font-bold text-primary">{result}</div>
+          </div>
+        </div>
+      ) : (
+        <p className="text-sm">
+          <span className="font-mono">{raw}</span> = <strong>{result}</strong>
+        </p>
+      )}
+    </div>
   );
 }

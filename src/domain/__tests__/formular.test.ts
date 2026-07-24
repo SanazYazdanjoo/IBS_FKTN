@@ -81,7 +81,7 @@ function makeData(record: MonthRecord): FormularData {
       fahrtroute: 'Erfurt Stadtverkehr', entfernungKm: 4.7, kennzeichen: '',
       kontoinhaber: 'Safaa Al Helal', iban: 'DE00 0000', bank: 'Sparkasse', bic: 'HELADEF1WEM',
       email: '', verkehrsmittel: 'ÖPNV', ticket: 'Deutschlandticket', ticketart: 'Abo-karte',
-      aboNummer: '', vmtZone: '', bemerkungen: '', lastUpdate: '', berechnung: '',
+      aboNummer: '', vmtZone: '', bemerkungen: '', lastUpdate: '', berechnung: '', cloud: '',
     },
     month: 1,
     year: 2026,
