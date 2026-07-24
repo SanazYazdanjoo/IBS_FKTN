@@ -23,7 +23,8 @@ import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
 import { courseTypeFromId } from '../../adapters/excel/values';
-import { vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { logChange } from '../../app/auditLog';
 import { GERMAN_MONTHS } from '../../adapters/excel/attendanceWorkbook';
 import type { MonthRecord, ProcessStatus } from '../../domain/types';
 
@@ -94,12 +95,20 @@ function DashboardMonthView() {
   const signaturesPending = rows.filter((r) => r.record.status === 'AWAITING_SIGNATURE').length;
 
   const sendToApproval = async () => {
+    const approvedIds: string[] = [];
     for (const { record, bulkOk } of rows) {
       if (bulkOk) {
         await storage.saveMonthRecord(user, { ...record, status: 'APPROVED' });
+        approvedIds.push(record.participantId);
       }
     }
     storage.listMonthRecords(user, monthStr).then(setRecords);
+    if (approvedIds.length > 0) {
+      logChange(
+        user.name,
+        `Sammelfreigabe: ${approvedIds.length} TN auf einmal freigegeben (${monthLabel(monthStr)}) — ${approvedIds.join(', ')}`,
+      );
+    }
   };
 
   return (

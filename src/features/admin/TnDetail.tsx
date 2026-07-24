@@ -32,6 +32,7 @@ import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { MONTHS, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import { getMaster } from '../../adapters/masters';
+import { logChange } from '../../app/auditLog';
 import type { ExceptionCategory, MonthRecord, ProofKind } from '../../domain/types';
 
 const PROOF_LABELS: Record<ProofKind, string> = {
@@ -105,6 +106,10 @@ export default function TnDetail() {
         : d,
     );
     await persist({ ...record, documents: docs, status: 'AWAITING_CORRECTION' });
+    logChange(
+      user.name,
+      `Beleg als unleserlich markiert: ${record.participantId} · ${monthLabel(selectedYm)} · ${PROOF_LABELS[kind]}`,
+    );
   };
 
   const verify = async (kind: ProofKind) => {
@@ -113,6 +118,10 @@ export default function TnDetail() {
       d.kind === kind ? { ...d, state: 'VERIFIED' as const } : d,
     );
     await persist({ ...record, documents: docs });
+    logChange(
+      user.name,
+      `Beleg bestätigt: ${record.participantId} · ${monthLabel(selectedYm)} · ${PROOF_LABELS[kind]}`,
+    );
   };
 
   const view = record
@@ -537,7 +546,15 @@ export default function TnDetail() {
             )}
             <div className="mt-3 flex flex-wrap gap-2">
               <PrimaryButton
-                onClick={() => persist({ ...record, status: 'READY_FOR_APPROVAL' })}
+                onClick={() => {
+                  persist({ ...record, status: 'READY_FOR_APPROVAL' });
+                  logChange(
+                    user.name,
+                    `Status geändert: ${record.participantId} · ${monthLabel(selectedYm)} · ${statusLabel(
+                      record.status,
+                    )} → ${statusLabel('READY_FOR_APPROVAL')}`,
+                  );
+                }}
               >
                 Bestätigen → an Kristin
               </PrimaryButton>
@@ -587,6 +604,10 @@ export default function TnDetail() {
                   );
                   if (refreshed) updateRecord(refreshed);
                   setShowExceptionForm(false);
+                  logChange(
+                    user.name,
+                    `Ausnahme vermerkt: ${record.participantId} · ${monthLabel(selectedYm)} · ${category} — „${reason}"`,
+                  );
                 }}
               />
             )}

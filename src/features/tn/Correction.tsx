@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from '../../app/session';
 import { Card, Eyebrow, PrimaryButton } from '../../app/ui';
+import { logChange } from '../../app/auditLog';
 import type { MonthRecord, ProofKind } from '../../domain/types';
 
 const PROOF_LABELS: Record<ProofKind, string> = {
@@ -79,6 +80,10 @@ export default function TnCorrection() {
               };
               await storage.saveMonthRecord(user, next);
               setRecord(next);
+              logChange(
+                user.name,
+                `Nachweis nachgereicht: ${record.participantId} · ${PROOF_LABELS[doc.kind]}`,
+              );
             }}
           >
             Neues Foto aufnehmen / Nachreichen ✓

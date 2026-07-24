@@ -11,6 +11,7 @@ import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { vmtSingleFaresEur } from '../../adapters/mock/seed';
 import { mm, PAGE_W_PT, PAGE_H_PT } from './formularLayout';
+import { logChange } from '../../app/auditLog';
 import {
   fillAbrechnungsformular,
   formularChecks,
@@ -61,6 +62,10 @@ export default function FormularScreen() {
         formularContext.formulareDir, year, month, formularFileName(record, month, year), filled,
       );
       setSavedPath(path);
+      logChange(
+        user.name,
+        `Formular gespeichert: ${record.participantId} · ${GERMAN_MONTHS[month - 1]} ${year} → ${path}`,
+      );
     } catch (e) {
       setError((e as Error).message);
     }

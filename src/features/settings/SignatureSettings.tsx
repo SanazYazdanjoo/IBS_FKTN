@@ -1,8 +1,11 @@
 /** Einstellungen: Unterschrifts-Modus (Papier/digital) und Abrechnungsregel. */
+import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
 import { Card, Eyebrow } from '../../app/ui';
+import { logChange } from '../../app/auditLog';
 
 export default function SignatureSettings() {
+  const { user } = useSession();
   const { rules, setRules } = useRules();
 
   return (
@@ -10,7 +13,15 @@ export default function SignatureSettings() {
       <Eyebrow>Einstellungen · Unterschrift</Eyebrow>
 
       <Card className={rules.signatureMode === 'PAPER' ? 'border-primary' : ''}>
-        <button className="w-full text-left" onClick={() => setRules({ ...rules, signatureMode: 'PAPER' })}>
+        <button
+          className="w-full text-left"
+          onClick={() => {
+            setRules({ ...rules, signatureMode: 'PAPER' });
+            if (rules.signatureMode !== 'PAPER') {
+              logChange(user.name, 'Regel geändert: Unterschrifts-Modus → Papier');
+            }
+          }}
+        >
           <p className="font-display font-bold">
             Modus A · Unterschrift auf Papier{' '}
             <span className="text-xs font-normal text-ink-dim">Standard · heute</span>
@@ -24,7 +35,15 @@ export default function SignatureSettings() {
       </Card>
 
       <Card className={rules.signatureMode === 'DIGITAL' ? 'border-primary' : ''}>
-        <button className="w-full text-left" onClick={() => setRules({ ...rules, signatureMode: 'DIGITAL' })}>
+        <button
+          className="w-full text-left"
+          onClick={() => {
+            setRules({ ...rules, signatureMode: 'DIGITAL' });
+            if (rules.signatureMode !== 'DIGITAL') {
+              logChange(user.name, 'Regel geändert: Unterschrifts-Modus → Digital');
+            }
+          }}
+        >
           <p className="font-display font-bold">
             Modus B · Digitale Bestätigung{' '}
             <span className="text-xs font-normal text-ink-dim">Zukunft</span>
@@ -50,7 +69,15 @@ export default function SignatureSettings() {
           <input
             type="checkbox"
             checked={rules.sickDaysAreReimbursable}
-            onChange={(e) => setRules({ ...rules, sickDaysAreReimbursable: e.target.checked })}
+            onChange={(e) => {
+              setRules({ ...rules, sickDaysAreReimbursable: e.target.checked });
+              logChange(
+                user.name,
+                `Regel geändert: Anwesenheits-Auslegung → ${
+                  e.target.checked ? 'Legende-Modus (E/K/X/(x) zählen)' : 'historisch strikt (nur x/E)'
+                }`,
+              );
+            }}
           />
           Legende-Modus: E/K/X/(x) zählen als anwesend (Standard). Abwählen = historisch
           strikte Lesart (nur x/E), z. B. für die Prüfung alter Monate.
