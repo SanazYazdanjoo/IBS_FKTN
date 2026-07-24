@@ -12,15 +12,20 @@ body {
   font-family: 'DM Sans', sans-serif;
 }
 
-/* Print: only the Abrechnungsformular preview, A4-clean */
+/* Print: only the Abrechnungsformular preview, A4-clean.
+   Die .print-formular-Koordinaten sind absolut ab der echten PDF-Seite
+   (Ursprung oben links) gemessen — daher @page-Margin = 0, sonst
+   verschiebt sich das Layout gegenüber der Vorlage. */
 @media print {
   nav, header, .print\:hidden { display: none !important; }
   body { background: white !important; }
-  .print-formular {
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding: 0 !important;
+  .a4-page-shell {
+    overflow: visible !important;
+    background: white !important;
   }
-  @page { size: A4; margin: 1.5cm; }
+  .print-formular {
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+  @page { size: A4; margin: 0; }
 }

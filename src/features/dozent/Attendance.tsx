@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSession } from '../../app/session';
 import { Card, Eyebrow, TnName, CourseChip } from '../../app/ui';
 import { MONTHS, tnNames } from '../../adapters/mock/seed';
+import { ExcelStorageAdapter } from '../../adapters/excel/excelStorage';
 import { countWeekPresence, isPresenceDay } from '../../domain/attendance';
 import type { AttendanceCode, DayMarks, MonthRecord } from '../../domain/types';
 
@@ -115,6 +116,7 @@ export default function DozentAttendance() {
           attendanceSource.fileName.replace(/\.xlsx$/i, '') + `_backup_${stamp}.xlsx`,
         );
         await attendanceSource.persistence.save(buffer, attendanceSource.fileName);
+        if (storage instanceof ExcelStorageAdapter) storage.invalidateAttendance(monthNo);
       } else {
         const attendance = record.attendance.map((d) =>
           d.date === dateIso ? { ...d, [session]: code } : d,
@@ -146,6 +148,41 @@ export default function DozentAttendance() {
     const normalized = current === 'x' ? 'X' : current;
     const next = CYCLE[(CYCLE.indexOf(normalized) + 1) % CYCLE.length];
     void setMark(record, dateIso, session, next);
+  };
+
+  /** Anmerkung einer Woche speichern — Excel-Modus schreibt in die echte Liste (mit Backup). */
+  const saveNote = async (record: MonthRecord, weekStartIso: string, text: string) => {
+    setError('');
+    try {
+      if (excelMode && attendanceSource) {
+        setSaving(true);
+        attendanceSource.workbook.setNote(monthNo, record.participantId, weekStartIso, text);
+        const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const buffer = await attendanceSource.workbook.toBuffer();
+        await attendanceSource.persistence.saveBackup(
+          buffer,
+          attendanceSource.fileName.replace(/\.xlsx$/i, '') + `_backup_${stamp}.xlsx`,
+        );
+        await attendanceSource.persistence.save(buffer, attendanceSource.fileName);
+        if (storage instanceof ExcelStorageAdapter) storage.invalidateAttendance(monthNo);
+      } else {
+        const attendanceNotes = { ...record.attendanceNotes, [weekStartIso]: text };
+        if (!text) delete attendanceNotes[weekStartIso];
+        await storage.saveMonthRecord(user, { ...record, attendanceNotes });
+      }
+      setRecords((prev) =>
+        prev.map((r) => {
+          if (r.participantId !== record.participantId) return r;
+          const attendanceNotes = { ...r.attendanceNotes, [weekStartIso]: text };
+          if (!text) delete attendanceNotes[weekStartIso];
+          return { ...r, attendanceNotes };
+        }),
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const monthTotal = (r: MonthRecord) => r.attendance.filter(isPresenceDay).length;
@@ -220,7 +257,6 @@ export default function DozentAttendance() {
                 return (
                   <tr key={r.participantId} className="border-t border-ink/10">
                     <td className="pr-3 py-0.5 whitespace-nowrap">
-                      {r.participantId}
                       <CourseChip id={r.participantId} />
                     </td>
                     <td className="pr-3 py-0.5">
@@ -284,7 +320,6 @@ export default function DozentAttendance() {
                 return (
                   <tr key={r.participantId}>
                     <td className="border border-ink/15 px-2 py-1 whitespace-nowrap">
-                      {r.participantId}
                       <CourseChip id={r.participantId} />
                     </td>
                     <td className="border border-ink/15 px-2 py-1">
@@ -307,8 +342,19 @@ export default function DozentAttendance() {
                         </td>
                       )),
                     )}
-                    <td className="border border-ink/15 px-2 py-1 text-xs text-ink-dim max-w-[16rem]">
-                      {note}
+                    <td className="border border-ink/15 p-0 text-xs max-w-[16rem]">
+                      <textarea
+                        defaultValue={note}
+                        disabled={saving}
+                        onBlur={(e) => {
+                          const text = e.target.value.trim();
+                          if (text !== note) void saveNote(r, dates[0], text);
+                        }}
+                        rows={2}
+                        placeholder="Anmerkung …"
+                        title={`Anmerkung für ${vor} ${nach}, Woche ab ${weekStart} — Feld verlassen zum Speichern`}
+                        className="w-full resize-none border-0 bg-transparent px-2 py-1 text-xs text-ink-dim placeholder:text-ink-dim/50 focus:bg-highlight-weak focus:text-ink focus:outline-none"
+                      />
                     </td>
                     <td className="border border-ink/15 px-2 py-1 text-center font-bold">
                       {countWeekPresence(weekDays)}

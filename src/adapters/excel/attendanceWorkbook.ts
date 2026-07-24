@@ -24,6 +24,8 @@ interface Block {
   headerRow: number;
   days: DayColumn[];
   tnRows: Map<string, number>; // TN_ID → row number
+  /** Spalte „Anmerkungen", direkt nach dem letzten Tagespaar. */
+  noteCol: number;
 }
 
 function cellStr(ws: ExcelJS.Worksheet, row: number, col: number): string {
@@ -55,7 +57,8 @@ export class AttendanceWorkbook {
     for (let r = 1; r <= ws.rowCount; r += 1) {
       if (cellStr(ws, r, 2) !== 'TN') continue;
       const days: DayColumn[] = [];
-      for (let c = 5; c <= ws.columnCount; c += 2) {
+      let c = 5;
+      for (; c <= ws.columnCount; c += 2) {
         const m = DAY_HEADER.exec(cellStr(ws, r, c));
         if (!m) break;
         const [, d, mo] = m;
@@ -65,6 +68,7 @@ export class AttendanceWorkbook {
           date: `${this.year}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`,
         });
       }
+      const noteCol = c;
       const tnRows = new Map<string, number>();
       for (let tr = r + 2; tr <= ws.rowCount; tr += 1) {
         const id = cellStr(ws, tr, 2);
@@ -72,7 +76,7 @@ export class AttendanceWorkbook {
         if (TN_ID_PATTERN.test(id)) tnRows.set(id.toUpperCase(), tr);
         else if (id === '' && tnRows.size > 0) break;
       }
-      if (days.length > 0 && tnRows.size > 0) blocks.push({ headerRow: r, days, tnRows });
+      if (days.length > 0 && tnRows.size > 0) blocks.push({ headerRow: r, days, tnRows, noteCol });
     }
     return blocks;
   }
@@ -115,6 +119,45 @@ export class AttendanceWorkbook {
       }
     }
     throw new Error(`Zelle nicht gefunden: ${tnId} / ${dateIso}. Wurde die Woche in der Liste angelegt?`);
+  }
+
+  /**
+   * Anmerkungen je Woche, Schlüssel TN_ID → { ersterTagDerWoche(ISO): Text }.
+   * Der Schlüssel ist bewusst der erste Tag des Wochenblocks (nicht zwingend
+   * ein Montag bei unvollständigen Wochen), damit er 1:1 zu setNote passt.
+   */
+  readNotes(month: number): Map<string, Record<string, string>> {
+    const result = new Map<string, Record<string, string>>();
+    const ws = this.sheetForMonth(month);
+    if (!ws) return result;
+    for (const block of this.parseBlocks(ws, month)) {
+      if (block.days.length === 0) continue;
+      const weekKey = block.days[0].date;
+      for (const [tnId, row] of block.tnRows) {
+        const text = cellStr(ws, row, block.noteCol);
+        if (!text) continue;
+        const notes = result.get(tnId) ?? {};
+        notes[weekKey] = text;
+        result.set(tnId, notes);
+      }
+    }
+    return result;
+  }
+
+  /** Anmerkung einer Woche schreiben (leerer Text löscht die Zelle). */
+  setNote(month: number, tnId: string, weekStartIso: string, text: string): void {
+    const ws = this.sheetForMonth(month);
+    if (!ws) throw new Error(`Kein Blatt für Monat ${month} (${GERMAN_MONTHS[month - 1]}) gefunden.`);
+    for (const block of this.parseBlocks(ws, month)) {
+      if (block.days[0]?.date !== weekStartIso) continue;
+      const row = block.tnRows.get(tnId.toUpperCase());
+      if (row) {
+        ws.getRow(row).getCell(block.noteCol).value = text === '' ? null : text;
+        ws.getRow(row).commit();
+        return;
+      }
+    }
+    throw new Error(`Anmerkungs-Zelle nicht gefunden: ${tnId} / Woche ${weekStartIso}.`);
   }
 
   async toBuffer(): Promise<ArrayBuffer> {

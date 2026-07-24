@@ -58,6 +58,7 @@ export default function DataSourceSettings() {
         const anwBuf = await (await project.anwesenheitFile.getFile()).arrayBuffer();
         const workbook = await AttendanceWorkbook.load(anwBuf, year);
         adapter.attachAttendanceProvider((m) => workbook.readMonth(m));
+        adapter.attachAttendanceNotesProvider((m) => workbook.readNotes(m));
         setAttendanceSource({
           workbook,
           persistence: createFolderPersistence(project.anwesenheitFile, project.backups),

@@ -20,6 +20,8 @@ export class ExcelStorageAdapter implements StorageAdapter {
   private exceptions = new Map<string, ProcessException[]>();
   private attendanceProvider: ((month: number) => Map<string, DayMarks[]>) | null = null;
   private attendanceCache = new Map<number, Map<string, DayMarks[]>>();
+  private attendanceNotesProvider: ((month: number) => Map<string, Record<string, string>>) | null = null;
+  private attendanceNotesCache = new Map<number, Map<string, Record<string, string>>>();
   private masterData = new Map<string, MasterData>();
 
   private constructor(
@@ -73,6 +75,16 @@ export class ExcelStorageAdapter implements StorageAdapter {
     return marks;
   }
 
+  private notesFor(month: number): Map<string, Record<string, string>> {
+    if (!this.attendanceNotesProvider) return new Map();
+    let notes = this.attendanceNotesCache.get(month);
+    if (!notes) {
+      notes = this.attendanceNotesProvider(month);
+      this.attendanceNotesCache.set(month, notes);
+    }
+    return notes;
+  }
+
   private monthNumber(monthStr: string): number {
     const m = Number(monthStr.split('-')[1]);
     return Number.isFinite(m) && m >= 1 && m <= 12 ? m : this.month;
@@ -82,6 +94,27 @@ export class ExcelStorageAdapter implements StorageAdapter {
   attachAttendanceProvider(provider: (month: number) => Map<string, DayMarks[]>): void {
     this.attendanceProvider = provider;
     this.attendanceCache.clear();
+  }
+
+  /** Anmerkungen aus der Anwesenheitsliste anbinden. */
+  attachAttendanceNotesProvider(provider: (month: number) => Map<string, Record<string, string>>): void {
+    this.attendanceNotesProvider = provider;
+    this.attendanceNotesCache.clear();
+  }
+
+  /**
+   * Cache für Tagesmarkierungen/Anmerkungen leeren — nach direkten
+   * Schreibzugriffen auf die Anwesenheitsliste (setMark/setNote) aufrufen,
+   * damit Dashboard, TN-Detail & Co. sofort den aktuellen Stand zeigen.
+   */
+  invalidateAttendance(month?: number): void {
+    if (month === undefined) {
+      this.attendanceCache.clear();
+      this.attendanceNotesCache.clear();
+    } else {
+      this.attendanceCache.delete(month);
+      this.attendanceNotesCache.delete(month);
+    }
   }
 
   private findRow(participantId: string, month: number): ExcelRow {
@@ -102,12 +135,14 @@ export class ExcelStorageAdapter implements StorageAdapter {
     const month = this.monthNumber(monthStr);
     const relevant = this.monthRows(month).filter((r) => !r.notRelevant);
     const marks = this.marksFor(month);
+    const notes = this.notesFor(month);
     const visible = STAFF_ROLES.includes(actor.role)
       ? relevant
       : relevant.filter((r) => r.record.participantId === actor.participantId);
     return visible.map((r) => ({
       ...structuredClone(r.record),
       attendance: structuredClone(marks.get(r.record.participantId) ?? []),
+      attendanceNotes: structuredClone(notes.get(r.record.participantId) ?? {}),
       exceptions: structuredClone(this.exceptions.get(r.record.participantId) ?? []),
     }));
   }
@@ -123,6 +158,7 @@ export class ExcelStorageAdapter implements StorageAdapter {
     return {
       ...structuredClone(row.record),
       attendance: structuredClone(this.marksFor(month).get(participantId) ?? []),
+      attendanceNotes: structuredClone(this.notesFor(month).get(participantId) ?? {}),
       exceptions: structuredClone(this.exceptions.get(participantId) ?? []),
     };
   }
