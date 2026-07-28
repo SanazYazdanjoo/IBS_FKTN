@@ -12,10 +12,11 @@ import { MONTHS, tnNames } from '../../adapters/mock/seed';
 import { ExcelStorageAdapter } from '../../adapters/excel/excelStorage';
 import { logChange } from '../../app/auditLog';
 import { countWeekPresence, isPresenceDay } from '../../domain/attendance';
+import { CodeCell, CodeLegend } from './CodeCell';
+import MonthMatrix from './MonthMatrix';
+import { monthCalendar, isWeekend } from '../../domain/holidays';
 import type { AttendanceCode, DayMarks, MonthRecord } from '../../domain/types';
 
-/** Reihenfolge beim Durchklicken einer Zelle. */
-const CYCLE: AttendanceCode[] = ['X', '(x)', 'E', 'K', 'A', 'U', ''];
 const WEEKDAY_LETTER = ['S', 'M', 'D', 'M', 'D', 'F', 'S'];
 
 const LEGEND: [string, string][] = [
@@ -46,29 +47,12 @@ function splitName(record: MonthRecord): { nach: string; vor: string } {
   return { vor: parts[0] ?? '', nach: parts.slice(1).join(' ') };
 }
 
-function codeClass(code: AttendanceCode): string {
-  switch (code) {
-    case 'U':
-      return 'bg-danger/15 text-danger font-bold';
-    case 'A':
-      return 'bg-ink/10 text-ink-dim font-semibold';
-    case 'E':
-    case 'K':
-      return 'bg-highlight-weak text-ink font-semibold';
-    case '(x)':
-      return 'text-ink';
-    case 'X':
-    case 'x':
-      return 'text-ink font-semibold';
-    default:
-      return 'text-ink-dim opacity-50';
-  }
-}
 
 export default function DozentAttendance() {
   const { user, storage, storageVersion, attendanceSource, dataSource, month: ym, setMonth: setYm } = useSession();
   const excelMode = attendanceSource !== null && dataSource.kind === 'EXCEL';
   const [records, setRecords] = useState<MonthRecord[]>([]);
+  const [view, setView] = useState<'wochen' | 'matrix'>('wochen');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -149,13 +133,6 @@ export default function DozentAttendance() {
     }
   };
 
-  const cycle = (record: MonthRecord, dateIso: string, session: 'morning' | 'afternoon') => {
-    const day = record.attendance.find((d) => d.date === dateIso);
-    const current = (day?.[session] ?? '') as AttendanceCode;
-    const normalized = current === 'x' ? 'X' : current;
-    const next = CYCLE[(CYCLE.indexOf(normalized) + 1) % CYCLE.length];
-    void setMark(record, dateIso, session, next);
-  };
 
   /** Anmerkung einer Woche speichern — Excel-Modus schreibt in die echte Liste (mit Backup). */
   const saveNote = async (record: MonthRecord, weekStartIso: string, text: string) => {
@@ -200,6 +177,14 @@ export default function DozentAttendance() {
 
   const monthTotal = (r: MonthRecord) => r.attendance.filter(isPresenceDay).length;
   const label = MONTHS.find((m) => m.ym === ym)?.label ?? ym;
+  const yearNo = Number(ym.slice(0, 4));
+  const cal = monthCalendar(yearNo, monthNo);
+  const holidayByDate = new Map(cal.holidays.map((h) => [h.date, h.name]));
+
+  /** Nachbarmonate für die Schritt-Navigation (◂ ▸) aus dem Wireframe. */
+  const ymIndex = MONTHS.findIndex((m) => m.ym === ym);
+  const prevYm = ymIndex > 0 ? MONTHS[ymIndex - 1] : null;
+  const nextYm = ymIndex >= 0 && ymIndex < MONTHS.length - 1 ? MONTHS[ymIndex + 1] : null;
 
   return (
     <div className="space-y-6">
@@ -211,23 +196,48 @@ export default function DozentAttendance() {
         {saving && <span className="text-sm text-ink-dim">Speichere in die Liste …</span>}
       </div>
 
-      {/* Monats-Tabs — entsprechen den Blättern der Excel-Datei. */}
-      <div className="flex gap-1 flex-wrap" role="tablist" aria-label="Monat wählen">
-        {MONTHS.map((m) => (
+      {/* Monatswechsel als Schritt-Navigation (Wireframe 2a) statt zwölf Tabs. */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
           <button
-            key={m.ym}
-            role="tab"
-            aria-selected={m.ym === ym}
-            onClick={() => setYm(m.ym)}
-            className={`rounded-t-md border border-b-0 px-3 py-1.5 text-sm ${
-              m.ym === ym
-                ? 'bg-surface font-bold border-ink/30'
-                : 'bg-ink/5 text-ink-dim border-transparent hover:bg-ink/10'
-            }`}
+            type="button"
+            disabled={!prevYm}
+            onClick={() => prevYm && setYm(prevYm.ym)}
+            className="rounded border border-[var(--border)] px-2 py-1 text-sm disabled:opacity-40"
           >
-            {m.label}
+            ◂ {prevYm?.label ?? '—'}
           </button>
-        ))}
+          <span className="text-sm font-semibold">{label}</span>
+          <button
+            type="button"
+            disabled={!nextYm}
+            onClick={() => nextYm && setYm(nextYm.ym)}
+            className="rounded border border-[var(--border)] px-2 py-1 text-sm disabled:opacity-40"
+          >
+            {nextYm?.label ?? '—'} ▸
+          </button>
+          <span className="ml-2 text-xs text-[var(--text-dim)]">
+            V = Vormittag · N = Nachmittag · ein Zeichen genügt = 1 Tag
+          </span>
+        </div>
+
+        <div role="tablist" aria-label="Ansicht" className="flex gap-1">
+          {([['wochen', 'Wochenbänder'], ['matrix', 'Ganzer Monat']] as const).map(([k, t]) => (
+            <button
+              key={k}
+              role="tab"
+              aria-selected={view === k}
+              onClick={() => setView(k)}
+              className={`rounded-full px-3 py-1 text-sm ${
+                view === k
+                  ? 'bg-[var(--primary)] text-white'
+                  : 'text-[var(--text-dim)] hover:bg-[var(--muted)]'
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>}
@@ -287,12 +297,24 @@ export default function DozentAttendance() {
         </Card>
       </div>
 
+      {view === 'matrix' && (
+        <MonthMatrix
+          records={listed}
+          year={yearNo}
+          month={monthNo}
+          saving={saving}
+          nameOf={splitName}
+          onSetMark={(r, d, sess, code) => void setMark(r, d, sess, code)}
+          onSaveNote={(r, w, t) => void saveNote(r, w, t)}
+        />
+      )}
+
       {/* Wochenblöcke — exakt wie die Liste: Tageskopf, darunter V/N, dann TN-Zeilen. */}
-      {weeks.map(([weekStart, dates]) => (
+      {view === 'wochen' && weeks.map(([weekStart, dates]) => (
         <Card key={weekStart} className="overflow-x-auto">
           <table className="min-w-full border-collapse text-sm">
             <thead>
-              <tr className="text-left text-xs">
+              <tr className="sticky top-0 z-10 text-left text-xs">
                 <th className="border border-ink/15 bg-ink/5 px-2 py-1">TN</th>
                 <th className="border border-ink/15 bg-ink/5 px-2 py-1">Nachname</th>
                 <th className="border border-ink/15 bg-ink/5 px-2 py-1">Vorname</th>
@@ -342,18 +364,24 @@ export default function DozentAttendance() {
                       <TnName id={r.participantId} name={vor} chip={false} />
                     </td>
                     {weekDays.flatMap((day) =>
-                      (['morning', 'afternoon'] as const).map((session) => (
-                        <td key={day.date + session} className="border border-ink/15 p-0">
-                          <button
-                            onClick={() => cycle(r, day.date, session)}
-                            disabled={saving}
-                            title={`${vor} ${nach} · ${dayHeader(day.date)} · ${session === 'morning' ? 'Vormittag' : 'Nachmittag'} — klicken zum Ändern`}
-                            className={`h-8 w-9 text-center text-xs ${codeClass(day[session])} hover:outline hover:outline-1 hover:outline-ink/40`}
-                          >
-                            {day[session] || '·'}
-                          </button>
-                        </td>
-                      )),
+                      (['morning', 'afternoon'] as const).map((session) => {
+                        const holiday = holidayByDate.get(day.date);
+                        const locked = isWeekend(day.date) || holiday !== undefined;
+                        return (
+                          <td key={day.date + session} className="border border-ink/15 p-0">
+                            <CodeCell
+                              code={day[session]}
+                              locked={locked}
+                              lockedReason={holiday ?? (isWeekend(day.date) ? 'Wochenende' : undefined)}
+                              disabled={saving}
+                              label={`${vor} ${nach} · ${dayHeader(day.date)} · ${
+                                session === 'morning' ? 'Vormittag' : 'Nachmittag'
+                              }`}
+                              onChange={(code) => void setMark(r, day.date, session, code)}
+                            />
+                          </td>
+                        );
+                      }),
                     )}
                     <td className="border border-ink/15 p-0 text-xs max-w-[16rem]">
                       <textarea
@@ -377,6 +405,7 @@ export default function DozentAttendance() {
               })}
             </tbody>
           </table>
+          <CodeLegend />
         </Card>
       ))}
 
