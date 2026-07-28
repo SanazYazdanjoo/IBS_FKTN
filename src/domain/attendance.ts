@@ -31,17 +31,23 @@ export function isReimbursableDay(day: DayMarks, rules: RuleConfig): boolean {
 }
 
 /**
- * Unexcused: 'U' explicitly, or a fully empty day with no justification.
- * (Instruction §III: "Empty = unexcused unless justified"; an AU on file
- * justifies the gap.)
+ * Unentschuldigt: ausschließlich 'U'.
+ *
+ * Eine leere Zelle ist KEIN unentschuldigter Fehltag, sondern „noch nicht
+ * erfasst" (Wireframe-Spezifikation, Abschnitt 2: leer = „Offen — muss
+ * ausgefüllt werden"). Das weicht bewusst von der wörtlichen Lesart der
+ * Instruction §III ab: dort gilt eine leere Zelle als unentschuldigt.
+ *
+ * Begründung: die Liste wird von Dozent:innen oft verspätet gepflegt
+ * (Problem 8). Würde eine noch nicht ausgefüllte Zelle als unentschuldigt
+ * zählen, verlöre der/die TN Erstattung und den Satz „keine unentschuldigten
+ * Fehltage" allein deshalb, weil das Personal noch nicht eingetragen hat.
+ * Offene Tage werden stattdessen über `openGaps` und die Monatsampel
+ * sichtbar gemacht und müssen vor der Abrechnung geschlossen werden.
  */
 export function isUnexcusedDay(day: DayMarks): boolean {
   if (isPresenceDay(day)) return false;
-  if (day.morning === 'U' || day.afternoon === 'U') return true;
-  // 'A' (abgemeldet): Fehltag, aber nicht unentschuldigt.
-  if (day.morning === 'A' || day.afternoon === 'A') return false;
-  const fullyEmpty = day.morning === '' && day.afternoon === '';
-  return fullyEmpty && !day.auReceived;
+  return day.morning === 'U' || day.afternoon === 'U';
 }
 
 /** Weekly aggregation: Mon–Fri evaluated daily, summed. Max 5 for a standard week. */

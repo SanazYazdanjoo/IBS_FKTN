@@ -41,8 +41,10 @@ describe('unexcused rule (Instruction §III)', () => {
     expect(isUnexcusedDay(day('U', ''))).toBe(true);
   });
 
-  it('fully empty day without AU is unexcused', () => {
-    expect(isUnexcusedDay(day('', ''))).toBe(true);
+  it('fully empty day is NOT unexcused — it is „noch nicht erfasst"', () => {
+    // Wireframe-Spec Abschnitt 2: leer = offen. Verspaetete Listenpflege
+    // darf dem/der TN keine unentschuldigten Fehltage erzeugen.
+    expect(isUnexcusedDay(day('', ''))).toBe(false);
   });
 
   it('empty day WITH received AU is justified, not unexcused', () => {

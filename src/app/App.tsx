@@ -7,6 +7,7 @@ import TnFlow from '../features/tn/TnFlow';
 import TnCorrection from '../features/tn/Correction';
 import AdminDashboard from '../features/admin/Dashboard';
 import AdminPipeline from '../features/admin/Pipeline';
+import YearOverview from '../features/admin/YearOverview';
 import TnData from '../features/admin/TnData';
 import AuditLogScreen from '../features/admin/AuditLog';
 import TnDetail from '../features/admin/TnDetail';
@@ -41,6 +42,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/tn/correction', label: 'Korrektur', roles: ['TN'] },
   { to: '/admin', label: 'Dashboard', roles: ['ADMIN'], end: true },
   { to: '/admin/pipeline', label: 'Pipeline', roles: ['ADMIN'] },
+  { to: '/admin/jahr', label: 'Jahresübersicht', roles: ['ADMIN', 'DOZENT'] },
   { to: '/admin/daten', label: 'TN-Daten', roles: ['ADMIN'] },
   { to: '/admin/protokoll', label: 'Protokoll', roles: ['ADMIN'] },
   { to: '/dozent', label: 'Anwesenheit', roles: ['DOZENT', 'ADMIN'] },
@@ -187,6 +189,7 @@ function Shell() {
               <Route path="/tn/correction" element={<TnCorrection />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/pipeline" element={<AdminPipeline />} />
+              <Route path="/admin/jahr" element={<YearOverview />} />
               <Route path="/admin/daten" element={<TnData />} />
               <Route path="/admin/protokoll" element={<AuditLogScreen />} />
               <Route path="/admin/tn/:participantId" element={<TnDetail />} />
