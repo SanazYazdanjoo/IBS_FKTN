@@ -9,3 +9,9 @@ dist
 *.xlsx
 *.csv
 docs-private/
+
+.env
+.env.local
+*.xlsx
+*.docx
+*.pdf
