@@ -2,11 +2,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
-import { Card, ExceptionFlag, Eyebrow, KnownFlag, PrimaryButton, SecondaryButton, TnName } from '../../app/ui';
+import { Card, ExceptionFlag, Eyebrow, KnownFlag, PrimaryButton, SecondaryButton, TnName, statusLabel } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
 import { monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { logChange } from '../../app/auditLog';
 import type { MonthRecord } from '../../domain/types';
 
 export default function ManagerQueue() {
@@ -36,12 +37,20 @@ export default function ManagerQueue() {
   const approve = async (record: MonthRecord) => {
     await storage.saveMonthRecord(user, { ...record, status: 'SENT_TO_ACCOUNTING' });
     reload();
+    logChange(
+      user.name,
+      `Freigegeben: ${record.participantId} · ${monthLabel(MONTH)} · ${statusLabel(record.status)} → An Buchhaltung`,
+    );
   };
 
   const approveException = async (record: MonthRecord) => {
     const exceptions = record.exceptions.map((e) => ({ ...e, approvedByManager: true }));
     await storage.saveMonthRecord(user, { ...record, exceptions, status: 'SENT_TO_ACCOUNTING' });
     reload();
+    logChange(
+      user.name,
+      `Ausnahme genehmigt + freigegeben: ${record.participantId} · ${monthLabel(MONTH)}`,
+    );
   };
 
   const bulkApprovableCount = queue.filter((q) => q.bulkOk).length;

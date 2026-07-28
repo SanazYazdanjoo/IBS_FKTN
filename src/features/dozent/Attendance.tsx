@@ -10,6 +10,7 @@ import { useSession } from '../../app/session';
 import { Card, Eyebrow, TnName, CourseChip } from '../../app/ui';
 import { MONTHS, tnNames } from '../../adapters/mock/seed';
 import { ExcelStorageAdapter } from '../../adapters/excel/excelStorage';
+import { logChange } from '../../app/auditLog';
 import { countWeekPresence, isPresenceDay } from '../../domain/attendance';
 import type { AttendanceCode, DayMarks, MonthRecord } from '../../domain/types';
 
@@ -123,6 +124,12 @@ export default function DozentAttendance() {
         );
         await storage.saveMonthRecord(user, { ...record, attendance });
       }
+      logChange(
+        user.name,
+        `Anwesenheit geändert: ${record.participantId} · ${dateIso} (${
+          session === 'morning' ? 'Vormittag' : 'Nachmittag'
+        }) → „${code || 'leer'}"`,
+      );
       setRecords((prev) =>
         prev.map((r) =>
           r.participantId === record.participantId
@@ -170,6 +177,12 @@ export default function DozentAttendance() {
         if (!text) delete attendanceNotes[weekStartIso];
         await storage.saveMonthRecord(user, { ...record, attendanceNotes });
       }
+      logChange(
+        user.name,
+        `Anmerkung ${text ? 'geändert' : 'entfernt'}: ${record.participantId} · Woche ab ${weekStartIso}${
+          text ? ` — „${text}"` : ''
+        }`,
+      );
       setRecords((prev) =>
         prev.map((r) => {
           if (r.participantId !== record.participantId) return r;
