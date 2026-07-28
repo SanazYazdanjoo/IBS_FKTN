@@ -74,3 +74,22 @@ describe('Monatsampel', () => {
     expect(monthStatus(0, 20, feb).completeness).toBe('vollstaendig');
   });
 });
+
+describe('Feiertage am Wochenende', () => {
+  it('senken die Arbeitstage nicht, werden aber weiterhin gelistet', () => {
+    // 3.10.2026 (Tag der Deutschen Einheit) und 31.10.2026 (Reformationstag)
+    // fallen beide auf einen Samstag.
+    const okt = monthCalendar(2026, 10);
+    expect(okt.holidays.map((h) => h.name)).toEqual([
+      'Tag der Deutschen Einheit', 'Reformationstag',
+    ]);
+    expect(okt.workdays).toBe(22); // volle Wochentagszahl, kein Abzug
+  });
+
+  it('zieht nur Feiertage ab, die auf einen Wochentag fallen', () => {
+    // Weltkindertag 20.9.2026 ist ein Sonntag.
+    expect(monthCalendar(2026, 9).workdays).toBe(22);
+    // 20.9.2027 ist ein Montag und wird abgezogen.
+    expect(monthCalendar(2027, 9).workdays).toBe(21);
+  });
+});
