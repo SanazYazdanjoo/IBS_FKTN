@@ -9,6 +9,7 @@ import {
 import { AttendanceWorkbook } from '../../adapters/excel/attendanceWorkbook';
 import { createFolderPersistence, openProjectFolder } from '../../adapters/excel/folderSource';
 import type { ExcelValidationReport } from '../../adapters/excel/workbook';
+import { GoogleSheetsAttendanceSource } from '../../adapters/attendance/googleSheetsSource';
 
 export default function DataSourceSettings() {
   const {
@@ -249,6 +250,8 @@ export default function DataSourceSettings() {
           )}
         </Card>
       )}
+
+      <SheetsPanel />
     </div>
   );
 }
@@ -265,4 +268,154 @@ function pickFileFallback(): Promise<File> {
     };
     input.click();
   });
+}
+
+/**
+ * Google Sheets als Anwesenheitsquelle.
+ *
+ * Bewusst KEINE dritte Option neben „Demo" und „Excel": die Sheets-Datei
+ * enthält nur Tagesmarkierungen. Stammdaten, Tickets, Dokumente und Status
+ * kommen weiterhin aus der aktiven Quelle. Sheets wird deshalb übergelagert
+ * und kann jederzeit wieder gelöst werden, ohne die übrige Konfiguration
+ * anzufassen.
+ *
+ * Nur lesend — mit einem API-Key ist kein Schreiben möglich. Eingaben in der
+ * Anwesenheitsliste gehen daher weiterhin an die darunterliegende Quelle.
+ */
+function SheetsPanel() {
+  const { storage, month: ym, refreshStorage } = useSession();
+  const year = Number(ym.slice(0, 4));
+
+  const [spreadsheetId, setSpreadsheetId] = useState('');
+  const [apiKey, setApiKey] = useState('');
+  const [dailyTab, setDailyTab] = useState(String(year));
+  const [overallTab, setOverallTab] = useState('Overall');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [info, setInfo] = useState<string | null>(null);
+
+  const canOverlay = typeof storage.setAttendanceOverlay === 'function';
+
+  async function connect() {
+    setErr('');
+    setInfo(null);
+    setBusy(true);
+    try {
+      const source = new GoogleSheetsAttendanceSource({
+        spreadsheetId: spreadsheetId.trim(),
+        apiKey: apiKey.trim(),
+        dailyTab: dailyTab.trim(),
+        overallTab: overallTab.trim() || undefined,
+        year,
+      });
+
+      // Alle zwölf Monate vorab laden: die Blätter werden ohnehin komplett
+      // geholt, und der Overlay-Zugriff muss synchron antworten können.
+      const byMonth = new Map<string, Awaited<ReturnType<typeof source.readMonth>>>();
+      for (let m = 1; m <= 12; m += 1) {
+        byMonth.set(`${year}-${String(m).padStart(2, '0')}`, await source.readMonth(m));
+      }
+
+      const overlay = (monthYm: string) => {
+        const r = byMonth.get(monthYm);
+        return { marks: r?.marks ?? new Map(), notes: r?.notes ?? new Map() };
+      };
+      storage.setAttendanceOverlay?.(overlay);
+
+      const mismatches = [...byMonth.values()].flatMap((r) =>
+        r.crossCheck.filter((c) => !c.agrees),
+      );
+      const warnings = [...byMonth.values()].flatMap((r) => r.warnings);
+
+      setInfo(
+        `Verbunden. ${mismatches.length === 0
+          ? 'Alle Monate stimmen mit dem Overall-Blatt überein.'
+          : `${mismatches.length} Abweichung(en) zum Overall-Blatt: ` +
+            mismatches.slice(0, 5).map((m) => `${m.tnId} ${m.computed}≠${m.reported}`).join(', ')}` +
+          (warnings.length > 0
+            ? ` · ${warnings.length} Zeile(n) mit ungültiger TN-ID: ` +
+              warnings.slice(0, 3).map((w) => `Zeile ${w.row} (${w.lastName})`).join(', ')
+            : ''),
+      );
+      refreshStorage();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function disconnect() {
+    storage.setAttendanceOverlay?.(null);
+    setInfo(null);
+    refreshStorage();
+  }
+
+  return (
+    <Card>
+      <Eyebrow>Anwesenheitsliste aus Google Sheets (nur lesen)</Eyebrow>
+      <p className="mt-1 text-xs text-ink-dim">
+        Überlagert nur die Tagesmarkierungen für {year}. Stammdaten, Tickets und Status
+        bleiben aus der aktiven Quelle. Die Datei muss per Link freigegeben sein; der
+        API-Key sollte auf diese Anwendung eingeschränkt werden.
+      </p>
+
+      {!canOverlay && (
+        <p className="mt-2 text-xs text-danger">
+          Die aktive Datenquelle unterstützt keine externe Anwesenheitsquelle.
+        </p>
+      )}
+
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <label className="text-sm">
+          Tabellen-ID
+          <input
+            value={spreadsheetId}
+            onChange={(e) => setSpreadsheetId(e.target.value)}
+            placeholder="1jk1qpwhy…"
+            className="mt-1 block w-full rounded-lg border border-line p-2 text-sm"
+          />
+        </label>
+        <label className="text-sm">
+          API-Key
+          <input
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            type="password"
+            autoComplete="off"
+            className="mt-1 block w-full rounded-lg border border-line p-2 text-sm"
+          />
+        </label>
+        <label className="text-sm">
+          Blatt mit Tagesdaten
+          <input
+            value={dailyTab}
+            onChange={(e) => setDailyTab(e.target.value)}
+            className="mt-1 block w-full rounded-lg border border-line p-2 text-sm"
+          />
+        </label>
+        <label className="text-sm">
+          Blatt mit Monatssummen (optional)
+          <input
+            value={overallTab}
+            onChange={(e) => setOverallTab(e.target.value)}
+            className="mt-1 block w-full rounded-lg border border-line p-2 text-sm"
+          />
+        </label>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <PrimaryButton
+          onClick={connect}
+          disabled={busy || !canOverlay || !spreadsheetId.trim() || !apiKey.trim()}
+        >
+          {busy ? 'Lädt…' : 'Verbinden und prüfen'}
+        </PrimaryButton>
+        {info && <SecondaryButton onClick={disconnect}>Verbindung lösen</SecondaryButton>}
+      </div>
+
+      {err && <p className="mt-2 text-sm text-danger">{err}</p>}
+      {info && <p className="mt-2 text-sm text-success">{info}</p>}
+    </Card>
+  );
 }

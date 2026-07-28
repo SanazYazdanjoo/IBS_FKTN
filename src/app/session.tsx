@@ -10,6 +10,8 @@ import type { ExcelPersistence } from '../adapters/excel/excelStorage';
 /** Storage-Oberfläche; get-or-create existiert nur im Demo-Adapter. */
 export type AppStorage = StorageAdapter & {
   getOrCreateMonthRecord?: MockStorageAdapter['getOrCreateMonthRecord'];
+  /** Nur Adapter, die eine externe Anwesenheitsquelle überlagern können. */
+  setAttendanceOverlay?: MockStorageAdapter['setAttendanceOverlay'];
 };
 
 export type DataSource =
@@ -42,6 +44,8 @@ interface SessionContextValue {
   resetToMock: () => void;
   /** Erhöht sich bei Quellenwechsel; Ansichten laden dann neu. */
   storageVersion: number;
+  /** Ansichten neu laden lassen, ohne die Quelle zu wechseln. */
+  refreshStorage: () => void;
   /** Global gewählter Monat ('YYYY-MM') — Kopfzeilen-Auswahl, gilt für alle Ansichten. */
   month: string;
   setMonth: (ym: string) => void;
@@ -110,6 +114,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setFormularContext,
     resetToMock,
     storageVersion,
+    refreshStorage: () => setStorageVersion((v) => v + 1),
     month,
     setMonth,
     showAllMonths,
