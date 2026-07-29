@@ -139,7 +139,7 @@ export default function TnDetail() {
         <div>
           <Eyebrow>TN-Detail</Eyebrow>
           <h1 className="font-display text-4xl font-bold leading-tight">
-            <TnName id={participantId} name={displayName} />
+            <TnName id={participantId} name={displayName} link={false} />
           </h1>
         </div>
         {master?.cloud && (

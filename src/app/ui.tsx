@@ -1,3 +1,5 @@
+import { useParticipantName } from './participant-names';
+import { Link } from 'react-router-dom';
 /** Gemeinsame UI-Bausteine (rein präsentational). */
 import type { ReactNode } from 'react';
 import type { ExceptionCategory, ProcessStatus } from '../domain/types';
@@ -197,18 +199,43 @@ export function courseTypeOf(id: string): 'PK' | 'BL' | null {
  * (z. B. „PK01", „BL07"). Stilistik unverändert; wo bisher der Kurstyp stand,
  * steht jetzt die ID, damit sie direkt neben dem Namen mitläuft.
  */
-export function CourseChip({ id }: { id: string }) {
+export function CourseChip({
+  id,
+  link = true,
+}: {
+  id: string;
+  /** Auf false setzen, wenn der Chip bereits in einem Link oder Button steht. */
+  link?: boolean;
+}) {
   const type = courseTypeOf(id);
+  const fullName = useParticipantName(id);
   if (!type) return null;
-  return (
+
+  const courseLabel = type === 'BL' ? 'Blended Course' : 'Präsenzkurs';
+  // Der Name ist beim Ueberfahren die nuetzlichere Information; der Kurs
+  // steht ohnehin farbig im Chip.
+  const title = fullName ? `${fullName} · ${courseLabel}` : courseLabel;
+
+  const chip = (
     <span
       className={`ml-1 rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white ${
         type === 'BL' ? 'bg-course-bl' : 'bg-course-pk'
       }`}
-      title={type === 'BL' ? 'Blended Course' : 'Präsenzkurs'}
+      title={title}
     >
       {id.toUpperCase()}
     </span>
+  );
+
+  if (!link) return chip;
+  return (
+    <Link
+      to={`/admin/tn/${id.toUpperCase()}`}
+      title={title}
+      className="rounded hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"
+    >
+      {chip}
+    </Link>
   );
 }
 
@@ -220,11 +247,14 @@ export function TnName({
   id,
   name,
   chip = true,
+  link = true,
   className = '',
 }: {
   id: string;
   name: string;
   chip?: boolean;
+  /** Auf false setzen, wenn bereits auf der TN-Seite (Link auf sich selbst). */
+  link?: boolean;
   className?: string;
 }) {
   const type = courseTypeOf(id);
@@ -233,7 +263,7 @@ export function TnName({
   return (
     <span className={`font-semibold ${color} ${className}`.trim()}>
       {name}
-      {chip && <CourseChip id={id} />}
+      {chip && <CourseChip id={id} link={link} />}
     </span>
   );
 }

@@ -3,6 +3,7 @@ import { HashRouter, Link, Navigate, NavLink, Route, Routes, useLocation } from 
 import { ErrorBoundary } from './ErrorBoundary';
 import { SessionProvider, useSession } from './session';
 import { RulesProvider } from './rules-context';
+import { ParticipantNamesProvider } from './participant-names';
 import HeaderSearch from './HeaderSearch';
 import TnFlow from '../features/tn/TnFlow';
 import TnCorrection from '../features/tn/Correction';
@@ -45,7 +46,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/tn/correction', label: 'Korrektur', roles: ['TN'] },
   { to: '/admin', label: 'Dashboard', roles: ['ADMIN'], end: true },
   { to: '/admin/pipeline', label: 'Pipeline', roles: ['ADMIN'] },
-  { to: '/admin/daten', label: 'TN-Daten', roles: ['ADMIN'] },
+  { to: '/admin/daten', label: 'TN-Daten', roles: ['ADMIN', 'DOZENT'] },
   { to: '/admin/protokoll', label: 'Protokoll', roles: ['ADMIN'] },
   { to: '/dozent', label: 'Anwesenheit', roles: ['DOZENT', 'ADMIN'] },
   { to: '/manager', label: 'Freigaben', roles: ['MANAGER', 'ADMIN'] },
@@ -223,9 +224,11 @@ export default function App() {
   return (
     <SessionProvider>
       <RulesProvider>
+        <ParticipantNamesProvider>
         <HashRouter>
           <Shell />
         </HashRouter>
+        </ParticipantNamesProvider>
       </RulesProvider>
     </SessionProvider>
   );

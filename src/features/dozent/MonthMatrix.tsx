@@ -152,7 +152,7 @@ export default function MonthMatrix({
                     className="flex items-center gap-2 text-left hover:underline"
                     title="Anmerkungen dieser Person anzeigen"
                   >
-                    <CourseChip id={r.participantId} />
+                    <CourseChip id={r.participantId} link={false} />
                     <TnName id={r.participantId} name={`${vor} ${nach}`} chip={false} />
                   </button>
                 </th>
