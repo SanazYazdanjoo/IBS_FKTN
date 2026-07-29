@@ -6,7 +6,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
-import { Card, Eyebrow, TnName, courseTypeOf } from '../../app/ui';
+import { Card, CourseChip, Eyebrow, TnName, courseTypeOf } from '../../app/ui';
 import { listMasters } from '../../adapters/masters';
 import type { MasterData } from '../../adapters/excel/workbook';
 
@@ -92,7 +92,7 @@ export default function TnData() {
           <thead>
             <tr className="text-left text-xs text-ink-dim">
               {[
-                'TN',
+                'TN-ID',
                 'Name',
                 'Adresse',
                 'Fahrtroute',
@@ -118,10 +118,13 @@ export default function TnData() {
           <tbody>
             {filtered.map((m) => (
               <tr key={m.tnId} className="border-b border-line/60 align-top hover:bg-muted/40">
-                <td className="whitespace-nowrap px-3 py-2 font-semibold">{m.tnId}</td>
+                <td className="whitespace-nowrap px-3 py-2 font-semibold">
+                  <CourseChip id={m.tnId} />
+                </td>
+                {/* Nur der Name — die ID steht bereits in der Spalte davor. */}
                 <td className="whitespace-nowrap px-3 py-2">
                   <Link to={`/admin/tn/${m.tnId}`} className="hover:underline">
-                    <TnName id={m.tnId} name={fullName(m)} />
+                    <TnName id={m.tnId} name={fullName(m)} chip={false} />
                   </Link>
                 </td>
                 <td className="min-w-[12rem] px-3 py-2">{address(m) || '—'}</td>

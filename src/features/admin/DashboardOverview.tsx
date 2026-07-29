@@ -14,8 +14,7 @@ import { useRules } from '../../app/rules-context';
 import { Card, Eyebrow, statusColorClass, statusLabel } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
-import { courseTypeFromId } from '../../adapters/excel/values';
-import { listMasters } from '../../adapters/masters';
+
 import { MONTHS, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import type { MonthRecord, ProcessStatus } from '../../domain/types';
 
@@ -48,9 +47,6 @@ export default function DashboardOverview({
       .finally(() => setLoading(false));
   }, [user, storage, storageVersion]);
 
-  const masters = useMemo(() => listMasters(storage), [storage]);
-  const pkTotal = masters.filter((m) => courseTypeFromId(m.tnId) === 'PK').length;
-  const blTotal = masters.filter((m) => courseTypeFromId(m.tnId) === 'BL').length;
 
   const perMonth = useMemo(
     () =>
@@ -71,11 +67,6 @@ export default function DashboardOverview({
     [byMonth, rules],
   );
 
-  const grandTotalEur = perMonth.reduce((sum, m) => sum + m.totalEur, 0);
-  const totalExceptions = perMonth.reduce((sum, m) => sum + m.exceptionsOpen, 0);
-  const totalMissingDocs = perMonth.reduce((sum, m) => sum + m.missingDocs, 0);
-  const totalRecords = perMonth.reduce((sum, m) => sum + m.records.length, 0);
-
   const statusCounts = useMemo(() => {
     const counts = new Map<ProcessStatus, number>();
     for (const m of perMonth) {
@@ -88,31 +79,6 @@ export default function DashboardOverview({
 
   return (
     <div className="space-y-4">
-      {/* Kennzahlen */}
-      <Card>
-        <Eyebrow>Gesamtübersicht · Januar–Juni 2026</Eyebrow>
-        <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
-          <Stat label="TN gesamt" value={String(masters.length)} sub={`${pkTotal} PK / ${blTotal} BL`} />
-          <Stat label="Monatsdatensätze" value={String(totalRecords)} />
-          <Stat label="Erstattung gesamt" value={formatEuro(grandTotalEur)} highlight />
-          <Stat
-            label="Offene Ausnahmen"
-            value={String(totalExceptions)}
-            tone={totalExceptions > 0 ? 'warn' : undefined}
-          />
-          <Stat
-            label="Fehlende Belege"
-            value={String(totalMissingDocs)}
-            tone={totalMissingDocs > 0 ? 'danger' : undefined}
-          />
-          <Stat
-            label="Ausgezahlt"
-            value={String(statusCounts.get('PAID') ?? 0)}
-            tone="success"
-          />
-        </div>
-      </Card>
-
       {/* Status-Verteilung über alle Monate */}
       <Card>
         <Eyebrow>Status-Verteilung · alle Monate zusammen</Eyebrow>
@@ -186,34 +152,3 @@ export default function DashboardOverview({
   );
 }
 
-function Stat({
-  label,
-  value,
-  sub,
-  highlight,
-  tone,
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-  highlight?: boolean;
-  tone?: 'warn' | 'danger' | 'success';
-}) {
-  const toneCls =
-    tone === 'warn'
-      ? 'text-orange-600'
-      : tone === 'danger'
-      ? 'text-red-600'
-      : tone === 'success'
-      ? 'text-green-600'
-      : highlight
-      ? 'text-primary'
-      : '';
-  return (
-    <div>
-      <div className="text-xs uppercase tracking-wider text-ink-dim">{label}</div>
-      <div className={`mt-0.5 text-2xl font-bold ${toneCls}`}>{value}</div>
-      {sub && <div className="text-xs text-ink-dim">{sub}</div>}
-    </div>
-  );
-}
