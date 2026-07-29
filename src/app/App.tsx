@@ -7,8 +7,7 @@ import { ParticipantNamesProvider } from './participant-names';
 import HeaderSearch from './HeaderSearch';
 import TnFlow from '../features/tn/TnFlow';
 import TnCorrection from '../features/tn/Correction';
-import AdminDashboard from '../features/admin/Dashboard';
-import AdminPipeline from '../features/admin/Pipeline';
+import Uebersicht from '../features/admin/Uebersicht';
 import YearOverview from '../features/admin/YearOverview';
 import YearCalendar from '../features/admin/YearCalendar';
 import CalendarOverlay from './CalendarOverlay';
@@ -44,8 +43,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { to: '/tn', label: 'Mein Monat', roles: ['TN'], end: true },
   { to: '/tn/correction', label: 'Korrektur', roles: ['TN'] },
-  { to: '/admin', label: 'Dashboard', roles: ['ADMIN'], end: true },
-  { to: '/admin/pipeline', label: 'Pipeline', roles: ['ADMIN'] },
+  { to: '/admin', label: 'Übersicht', roles: ['ADMIN'], end: true },
   { to: '/admin/daten', label: 'TN-Daten', roles: ['ADMIN', 'DOZENT'] },
   { to: '/admin/protokoll', label: 'Protokoll', roles: ['ADMIN'] },
   { to: '/dozent', label: 'Anwesenheit', roles: ['DOZENT', 'ADMIN'] },
@@ -200,8 +198,13 @@ function Shell() {
               <Route path="/" element={<Navigate to={roleHome(user.role)} replace />} />
               <Route path="/tn" element={<TnFlow />} />
               <Route path="/tn/correction" element={<TnCorrection />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/pipeline" element={<AdminPipeline />} />
+              <Route path="/admin" element={<Uebersicht />} />
+              {/* Alter Pipeline-Link bleibt gueltig und oeffnet die
+                  Uebersicht direkt in der Pipeline-Darstellung. */}
+              <Route
+                path="/admin/pipeline"
+                element={<Uebersicht initialLayout="pipeline" />}
+              />
               <Route path="/admin/jahr" element={<YearOverview />} />
               <Route path="/admin/kalender" element={<YearCalendar />} />
               <Route path="/admin/daten" element={<TnData />} />

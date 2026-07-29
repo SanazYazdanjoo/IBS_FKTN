@@ -23,7 +23,7 @@ const COLUMNS: { statuses: ProcessStatus[]; label: string }[] = [
 /** Ein Record plus dem Monat, aus dem er stammt (für die Gesamtübersicht). */
 type TaggedRecord = MonthRecord & { __ym: string };
 
-export default function AdminPipeline() {
+export default function AdminPipeline({ embedded = false }: { embedded?: boolean } = {}) {
   const { user, storage, storageVersion, month: MONTH, setMonth, showAllMonths } = useSession();
   const [records, setRecords] = useState<TaggedRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +52,7 @@ export default function AdminPipeline() {
 
   return (
     <div className="space-y-4">
-      <MonthContextBox />
+      {!embedded && <MonthContextBox />}
       <div className="flex items-center justify-between">
         <Eyebrow>
           {showAllMonths

@@ -39,12 +39,12 @@ const STATUS_FILTERS: ProcessStatus[] = [
   'PAID',
 ];
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ embedded = false }: { embedded?: boolean } = {}) {
   const { showAllMonths, setShowAllMonths, setMonth } = useSession();
 
   return (
     <div className="space-y-4">
-      <MonthContextBox />
+      {!embedded && <MonthContextBox />}
       {showAllMonths ? (
         <DashboardOverview
           onSelectMonth={(ym) => {
