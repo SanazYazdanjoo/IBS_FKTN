@@ -12,7 +12,7 @@
  * es ein" ist damit ein Klick statt einer Suche.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { Card, Eyebrow, CourseChip } from '../../app/ui';
 import { summarizeAttendance } from '../../domain/attendance';
@@ -76,6 +76,8 @@ export default function YearOverview({ embedded = false, onOpenMonth }: YearView
   const currentYear = Number(currentYm.slice(0, 4));
   const [year, setYear] = useState(currentYear);
   const [grid, setGrid] = useState<Grid>(new Map());
+  /** TN-ID → voller Name, für Tooltip und Verlinkung. */
+  const [names, setNames] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -112,6 +114,7 @@ export default function YearOverview({ embedded = false, onOpenMonth }: YearView
         if (cancelled) return;
 
         const next: Grid = new Map();
+        const nextNames = new Map<string, string>();
         for (const [m, records] of results) {
           const cal = monthCalendar(year, m);
           for (const record of records) {
@@ -121,9 +124,11 @@ export default function YearOverview({ embedded = false, onOpenMonth }: YearView
             const row = next.get(record.participantId) ?? new Map<number, MonthStatus>();
             row.set(m, status);
             next.set(record.participantId, row);
+            if (record.participantName) nextNames.set(record.participantId, record.participantName);
           }
         }
         setGrid(next);
+        setNames(nextNames);
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
       } finally {
@@ -264,7 +269,22 @@ export default function YearOverview({ embedded = false, onOpenMonth }: YearView
                       scope="row"
                       className="sticky left-0 z-10 bg-[var(--surface)] px-2 py-1 text-left font-normal"
                     >
-                      <CourseChip id={tnId} />
+                      {/* Nur Admins koennen die TN-Seite oeffnen; fuer
+                          Dozent:innen bleibt der Name als Tooltip, aber ohne
+                          Link, der ins Leere fuehren wuerde. */}
+                      {user.role === 'ADMIN' ? (
+                        <Link
+                          to={`/admin/tn/${tnId}`}
+                          title={names.get(tnId) ?? tnId}
+                          className="inline-block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] hover:opacity-80"
+                        >
+                          <CourseChip id={tnId} />
+                        </Link>
+                      ) : (
+                        <span title={names.get(tnId) ?? tnId}>
+                          <CourseChip id={tnId} />
+                        </span>
+                      )}
                     </th>
                     {MONTH_LABELS.map((_, i) => {
                       const month = i + 1;
