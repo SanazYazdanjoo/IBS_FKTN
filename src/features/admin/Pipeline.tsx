@@ -8,7 +8,7 @@ import MonthContextBox from '../../app/MonthContextBox';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
-import { Card, Eyebrow, TnName } from '../../app/ui';
+import { Card, CourseChip, Eyebrow } from '../../app/ui';
 import { MONTHS, monthLabel } from '../../adapters/mock/seed';
 import type { MonthRecord } from '../../domain/types';
 import { PROCESS_GROUPS } from '../../domain/processGroups';
@@ -81,7 +81,10 @@ export default function AdminPipeline({ embedded = false }: { embedded?: boolean
                     >
                       <Card className="!p-3 hover:border-primary">
                         <p className="flex items-center justify-between gap-2 text-sm">
-                          <TnName id={r.participantId} name={r.participantName} />
+                          {/* Nur die TN-ID; der volle Name steht im Tooltip
+                              des Chips. link=false, weil die Karte selbst
+                              bereits ein Link ist. */}
+                          <CourseChip id={r.participantId} link={false} />
                           {showAllMonths && (
                             <span className="whitespace-nowrap rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-ink-dim">
                               {monthLabel(r.__ym)}
