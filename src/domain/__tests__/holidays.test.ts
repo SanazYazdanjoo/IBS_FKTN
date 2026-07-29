@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   easterSunday, holidaysThuringia, monthCalendar, monthStatus,
+  workdayExplanation,
 } from '../holidays';
 
 const isoOf = (d: Date) => d.toISOString().slice(0, 10);
@@ -91,5 +92,22 @@ describe('Feiertage am Wochenende', () => {
     expect(monthCalendar(2026, 9).workdays).toBe(22);
     // 20.9.2027 ist ein Montag und wird abgezogen.
     expect(monthCalendar(2027, 9).workdays).toBe(21);
+  });
+});
+
+describe('Erklärung der Arbeitstage', () => {
+  it('nennt die abgezogenen Feiertage', () => {
+    expect(workdayExplanation(2026, 4))
+      .toBe('20 Arbeitstage — ohne Karfreitag (3.4.) und Ostermontag (6.4.)');
+  });
+
+  it('erklärt, warum Feiertage am Wochenende nichts abziehen', () => {
+    const text = workdayExplanation(2026, 10);
+    expect(text).toContain('22 Arbeitstage');
+    expect(text).toContain('fallen auf ein Wochenende');
+  });
+
+  it('bleibt schlicht, wenn es keine Feiertage gibt', () => {
+    expect(workdayExplanation(2026, 2)).toBe('20 Arbeitstage');
   });
 });

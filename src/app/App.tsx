@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { HashRouter, Link, Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from './ErrorBoundary';
 import { SessionProvider, useSession } from './session';
@@ -9,6 +10,7 @@ import AdminDashboard from '../features/admin/Dashboard';
 import AdminPipeline from '../features/admin/Pipeline';
 import YearOverview from '../features/admin/YearOverview';
 import YearCalendar from '../features/admin/YearCalendar';
+import CalendarOverlay from './CalendarOverlay';
 import TnData from '../features/admin/TnData';
 import AuditLogScreen from '../features/admin/AuditLog';
 import TnDetail from '../features/admin/TnDetail';
@@ -89,6 +91,7 @@ function Sidebar() {
 
 function Header() {
   const { user } = useSession();
+  const [calendarOpen, setCalendarOpen] = useState(false);
   return (
     <header className="border-b border-line bg-surface">
       <div className="flex flex-wrap items-center gap-3 px-4 py-3">
@@ -106,8 +109,17 @@ function Header() {
           <span className="text-primary">Fahrtkostenerstattung</span>
         </Link>
         <HeaderSearch />
+        <button
+          type="button"
+          onClick={() => setCalendarOpen(true)}
+          title="Feiertage und Arbeitstage nachschlagen"
+          className="rounded-full border border-line px-3 py-1.5 text-sm text-ink-dim hover:bg-muted hover:text-ink"
+        >
+          Kalender
+        </button>
         <RoleSwitcher />
       </div>
+      <CalendarOverlay open={calendarOpen} onClose={() => setCalendarOpen(false)} />
       {/* Mobile-Navigation */}
       <MobileNav />
     </header>

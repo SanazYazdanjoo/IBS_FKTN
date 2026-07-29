@@ -16,7 +16,12 @@ import { useNavigate } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { Card, Eyebrow, CourseChip } from '../../app/ui';
 import { summarizeAttendance } from '../../domain/attendance';
-import { monthCalendar, monthStatus, type MonthStatus } from '../../domain/holidays';
+import {
+  monthCalendar,
+  monthStatus,
+  workdayExplanation,
+  type MonthStatus,
+} from '../../domain/holidays';
 import { useRules } from '../../app/rules-context';
 import type { MonthRecord } from '../../domain/types';
 
@@ -50,6 +55,7 @@ function cellTitle(status: MonthStatus | undefined, monthName: string): string {
     return `${monthName}: ${status.openDays} von ${status.workdays} Arbeitstagen ohne Eintrag`;
   }
   return `${monthName}: vollständig erfasst — ${status.presentDays} anwesend, ${status.absentDays} Fehltage`;
+
 }
 
 interface YearViewProps {
@@ -236,7 +242,10 @@ export default function YearOverview({ embedded = false, onOpenMonth }: YearView
                       <button
                         type="button"
                         onClick={() => openMonth(i + 1)}
-                        title={`${MONTH_NAMES[i]} ${year} öffnen`}
+                        title={`${MONTH_NAMES[i]} ${year} öffnen · ${workdayExplanation(
+                          year,
+                          i + 1,
+                        )}`}
                         className="w-full rounded px-1 text-center font-medium text-[var(--text-dim)] hover:bg-[var(--muted)] hover:text-[var(--text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"
                       >
                         <span className="block">{label}</span>

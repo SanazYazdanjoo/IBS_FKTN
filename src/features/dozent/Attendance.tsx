@@ -15,15 +15,13 @@ import { countWeekPresence, isPresenceDay } from '../../domain/attendance';
 import { CodeCell } from './CodeCell';
 import MonthMatrix from './MonthMatrix';
 import YearOverview from '../admin/YearOverview';
-import YearCalendar from '../admin/YearCalendar';
 
-type View = 'jahr' | 'kalender' | 'monat';
+type View = 'jahr' | 'monat';
 /** Zwei Darstellungen desselben Monats — keine eigenen Ansichten. */
 type MonthLayout = 'wochen' | 'matrix';
 
 const VIEWS: readonly (readonly [View, string])[] = [
   ['jahr', 'Jahr'],
-  ['kalender', 'Kalender'],
   ['monat', 'Monat'],
 ] as const;
 
@@ -362,8 +360,6 @@ export default function DozentAttendance() {
       </div>
 
       {view === 'jahr' && <YearOverview embedded onOpenMonth={openMonth} />}
-
-      {view === 'kalender' && <YearCalendar embedded onOpenMonth={openMonth} />}
 
       {isMonthView && monthLayout === 'matrix' && (
         <MonthMatrix

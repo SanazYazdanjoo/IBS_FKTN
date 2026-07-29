@@ -141,3 +141,35 @@ export function monthStatus(
     openDays,
   };
 }
+
+/**
+ * Erklärt die Arbeitstagszahl eines Monats in einem Satz.
+ *
+ * Die Zahl steht an mehreren Stellen (Jahresübersicht, Erstattungsformel)
+ * und wirft dort immer dieselbe Frage auf: warum genau so viele? Besonders
+ * bei Feiertagen am Wochenende wirkt sie falsch — der Monat nennt zwei
+ * Feiertage und zieht trotzdem keinen Tag ab.
+ */
+export function workdayExplanation(year: number, month: number): string {
+  const cal = monthCalendar(year, month);
+  const fmt = (h: Holiday) => {
+    const [, , d] = h.date.split('-');
+    return `${h.name} (${Number(d)}.${month}.)`;
+  };
+
+  const reducing = cal.holidays.filter((h) => !isWeekend(h.date));
+  const onWeekend = cal.holidays.filter((h) => isWeekend(h.date));
+
+  let text = `${cal.workdays} Arbeitstage`;
+  if (reducing.length > 0) {
+    text += ` — ohne ${reducing.map(fmt).join(' und ')}`;
+  }
+  if (onWeekend.length > 0) {
+    text +=
+      `${reducing.length > 0 ? '. ' : ' — '}` +
+      `${onWeekend.map(fmt).join(' und ')} ` +
+      `${onWeekend.length === 1 ? 'fällt' : 'fallen'} auf ein Wochenende und ` +
+      `${onWeekend.length === 1 ? 'senkt' : 'senken'} die Arbeitstage nicht`;
+  }
+  return text;
+}
