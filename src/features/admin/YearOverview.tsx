@@ -52,7 +52,7 @@ function cellTitle(status: MonthStatus | undefined, monthName: string): string {
   return `${monthName}: vollständig erfasst — ${status.presentDays} anwesend, ${status.absentDays} Fehltage`;
 }
 
-export default function YearOverview() {
+export default function YearOverview({ embedded = false }: { embedded?: boolean } = {}) {
   const { user, storage, storageVersion, month: currentYm, setMonth, attendanceYears } = useSession();
   const { rules } = useRules();
   const navigate = useNavigate();
@@ -138,10 +138,12 @@ export default function YearOverview() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <Eyebrow>Anwesenheit</Eyebrow>
-          <h1 className="text-2xl font-semibold text-[var(--text-display)]">Übersicht</h1>
-        </div>
+        {!embedded && (
+          <div>
+            <Eyebrow>Anwesenheit</Eyebrow>
+            <h1 className="text-2xl font-semibold text-[var(--text-display)]">Übersicht</h1>
+          </div>
+        )}
         <div role="tablist" aria-label="Jahr" className="flex gap-1">
           {years.map((y) => (
             <button

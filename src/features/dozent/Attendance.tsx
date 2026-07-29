@@ -12,8 +12,9 @@ import { MONTHS, tnNames } from '../../adapters/mock/seed';
 import { ExcelStorageAdapter } from '../../adapters/excel/excelStorage';
 import { logChange } from '../../app/auditLog';
 import { countWeekPresence, isPresenceDay } from '../../domain/attendance';
-import { CodeCell, CodeLegend } from './CodeCell';
+import { CodeCell } from './CodeCell';
 import MonthMatrix from './MonthMatrix';
+import YearOverview from '../admin/YearOverview';
 import { monthCalendar, isWeekend } from '../../domain/holidays';
 import type { AttendanceCode, DayMarks, MonthRecord } from '../../domain/types';
 
@@ -52,7 +53,8 @@ export default function DozentAttendance() {
   const { user, storage, storageVersion, attendanceSource, dataSource, month: ym, setMonth: setYm } = useSession();
   const excelMode = attendanceSource !== null && dataSource.kind === 'EXCEL';
   const [records, setRecords] = useState<MonthRecord[]>([]);
-  const [view, setView] = useState<'wochen' | 'matrix'>('wochen');
+  // Jahresübersicht ist der Einstieg: erst das Jahr, dann hineinzoomen.
+  const [view, setView] = useState<'jahr' | 'wochen' | 'matrix'>('jahr');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -198,7 +200,7 @@ export default function DozentAttendance() {
 
       {/* Monatswechsel als Schritt-Navigation (Wireframe 2a) statt zwölf Tabs. */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+        <div className={`flex items-center gap-2 ${view === 'jahr' ? 'hidden' : ''}`}>
           <button
             type="button"
             disabled={!prevYm}
@@ -222,7 +224,7 @@ export default function DozentAttendance() {
         </div>
 
         <div role="tablist" aria-label="Ansicht" className="flex gap-1">
-          {([['wochen', 'Wochenbänder'], ['matrix', 'Ganzer Monat']] as const).map(([k, t]) => (
+          {([['jahr', 'Jahr'], ['wochen', 'Wochenbänder'], ['matrix', 'Ganzer Monat']] as const).map(([k, t]) => (
             <button
               key={k}
               role="tab"
@@ -296,6 +298,8 @@ export default function DozentAttendance() {
           </table>
         </Card>
       </div>
+
+      {view === 'jahr' && <YearOverview embedded />}
 
       {view === 'matrix' && (
         <MonthMatrix
@@ -405,7 +409,6 @@ export default function DozentAttendance() {
               })}
             </tbody>
           </table>
-          <CodeLegend />
         </Card>
       ))}
 

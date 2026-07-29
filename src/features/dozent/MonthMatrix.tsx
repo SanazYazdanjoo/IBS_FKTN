@@ -11,7 +11,7 @@
  */
 import { useMemo, useState } from 'react';
 import { Card, CourseChip, Eyebrow, TnName } from '../../app/ui';
-import { CodeCell, CodeLegend } from './CodeCell';
+import { CodeCell } from './CodeCell';
 import { isPresenceDay } from '../../domain/attendance';
 import { monthCalendar, isWeekend } from '../../domain/holidays';
 import type { AttendanceCode, DayMarks, MonthRecord } from '../../domain/types';
@@ -221,8 +221,6 @@ export default function MonthMatrix({
           </div>
         </div>
       )}
-
-      <CodeLegend />
     </Card>
   );
 }
