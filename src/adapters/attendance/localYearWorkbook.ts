@@ -13,6 +13,7 @@ import ExcelJS from 'exceljs';
 import {
   readMonthFromYearSheet,
   readNotesFromYearSheet,
+  readParticipantsFromYearSheet,
   parseYearSheetBlocks,
   type MalformedRow,
 } from './yearSheetLayout';
@@ -24,6 +25,9 @@ import type { DayMarks } from '../../domain/types';
 export interface YearMonthRead {
   marks: Map<string, DayMarks[]>;
   notes: Map<string, Record<string, string>>;
+  /** TN-ID → Name, aus dem Jahresblatt. Nötig, um Monate anzulegen, die
+   *  in der Datenquelle noch gar nicht existieren. */
+  participants: Map<string, { lastName: string; firstName: string }>;
   crossCheck: CrossCheckRow[];
   warnings: MalformedRow[];
 }
@@ -114,7 +118,13 @@ export class LocalYearWorkbook {
       crossCheck = crossCheckMonth(computed, overall);
     }
 
-    return { marks, notes, crossCheck, warnings };
+    return {
+      marks,
+      notes,
+      participants: readParticipantsFromYearSheet(daily, tab.year),
+      crossCheck,
+      warnings,
+    };
   }
 
   /** Alle Monate eines Jahres — für die Überlagerung der Datenquelle. */

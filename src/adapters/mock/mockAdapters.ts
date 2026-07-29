@@ -2,6 +2,7 @@
 import type { DayMarks, MonthRecord, ProcessException, SessionUser } from '../../domain/types';
 import { AccessDeniedError, STAFF_ROLES, type AuthAdapter, type StorageAdapter } from '../types';
 import { demoUsers, seedRecords } from './seed';
+import { monthCalendar } from '../../domain/holidays';
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
@@ -42,12 +43,55 @@ export interface MockStorageAdapter extends StorageAdapter {
 export type AttendanceOverlay = (month: string) => {
   marks: Map<string, DayMarks[]>;
   notes: Map<string, Record<string, string>>;
+  participants?: Map<string, { lastName: string; firstName: string }>;
 };
 
 export function createMockStorage(): MockStorageAdapter {
   const records: MonthRecord[] = clone(seedRecords);
 
   let attendanceOverlay: AttendanceOverlay | null = null;
+
+  /**
+   * Monate, die es nur in der externen Quelle gibt, ergänzen.
+   *
+   * Die Demo-Saat kennt nur 2026. Ohne diesen Schritt blieben 2025 und 2027
+   * leer, obwohl die Anwesenheitsliste sie enthält — und eine leere
+   * Jahresübersicht wäre nicht von einem Jahr ohne Eintragungen zu
+   * unterscheiden. Die ergänzten Datensätze tragen ausschließlich
+   * Anwesenheit; Ticket, Dokumente und Status bleiben auf Standardwerten,
+   * weil die Liste dazu nichts weiß.
+   */
+  function withOverlayOnly(existing: MonthRecord[], month: string): MonthRecord[] {
+    if (!attendanceOverlay) return existing;
+    const { marks, participants } = attendanceOverlay(month);
+    if (marks.size === 0) return existing;
+
+    const known = new Set(existing.map((r) => r.participantId.toUpperCase()));
+    const added: MonthRecord[] = [];
+    for (const [tnId, attendance] of marks) {
+      if (known.has(tnId)) continue;
+      const person = participants?.get(tnId);
+      added.push({
+        participantId: tnId,
+        participantName: person ? `${person.firstName} ${person.lastName}`.trim() : tnId,
+        month,
+        ticketType: 'ABO',
+        ticketPriceEur: 49,
+        distanceKm: 0,
+        hasPraktikum: false,
+        workdaysInMonth: monthCalendar(
+          Number(month.slice(0, 4)),
+          Number(month.slice(5, 7)),
+        ).workdays,
+        documents: [],
+        attendance,
+        status: 'NOT_SUBMITTED',
+        signature: { mode: 'PAPER' },
+        exceptions: [],
+      });
+    }
+    return [...existing, ...added];
+  }
 
   /** Legt externe Tagesmarkierungen über einen Datensatz. */
   function overlay(r: MonthRecord): MonthRecord {
@@ -100,7 +144,10 @@ export function createMockStorage(): MockStorageAdapter {
     },
 
     async listMonthRecords(actor, month) {
-      const inMonth = records.filter((r) => r.month === month).map((r) => overlay(r));
+      const inMonth = withOverlayOnly(
+        records.filter((r) => r.month === month).map((r) => overlay(r)),
+        month,
+      );
       if (STAFF_ROLES.includes(actor.role)) return clone(inMonth);
       // TN: the result set itself is scoped — isolation by construction.
       return clone(inMonth.filter((r) => r.participantId === actor.participantId));

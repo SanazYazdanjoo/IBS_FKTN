@@ -489,7 +489,11 @@ function YearListPanel() {
       const byMonth = wbk.readAllYears();
       storage.setAttendanceOverlay?.((monthYm) => {
         const r = byMonth.get(monthYm);
-        return { marks: r?.marks ?? new Map(), notes: r?.notes ?? new Map() };
+        return {
+          marks: r?.marks ?? new Map(),
+          notes: r?.notes ?? new Map(),
+          participants: r?.participants,
+        };
       });
       const mismatches = [...byMonth.values()].flatMap((r) =>
         r.crossCheck.filter((c) => !c.agrees),
