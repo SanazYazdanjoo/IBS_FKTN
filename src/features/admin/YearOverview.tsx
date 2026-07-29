@@ -52,7 +52,17 @@ function cellTitle(status: MonthStatus | undefined, monthName: string): string {
   return `${monthName}: vollständig erfasst — ${status.presentDays} anwesend, ${status.absentDays} Fehltage`;
 }
 
-export default function YearOverview({ embedded = false }: { embedded?: boolean } = {}) {
+interface YearViewProps {
+  /** Ohne eigene Seitenueberschrift, wenn in die Anwesenheitsliste eingebettet. */
+  embedded?: boolean;
+  /**
+   * Uebernimmt den Sprung in einen Monat. Fehlt der Callback, wird wie
+   * bisher navigiert — die Route bleibt damit eigenstaendig nutzbar.
+   */
+  onOpenMonth?: (year: number, month: number) => void;
+}
+
+export default function YearOverview({ embedded = false, onOpenMonth }: YearViewProps = {}) {
   const { user, storage, storageVersion, month: currentYm, setMonth, attendanceYears } = useSession();
   const { rules } = useRules();
   const navigate = useNavigate();
@@ -131,6 +141,10 @@ export default function YearOverview({ embedded = false }: { embedded?: boolean 
   }, [years, year]);
 
   function openMonth(month: number) {
+    if (onOpenMonth) {
+      onOpenMonth(year, month);
+      return;
+    }
     setMonth(`${year}-${String(month).padStart(2, '0')}`);
     navigate('/dozent');
   }

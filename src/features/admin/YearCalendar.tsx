@@ -47,7 +47,17 @@ function buildMonth(year: number, month: number, holidays: Holiday[]): Cell[] {
   return cells;
 }
 
-export default function YearCalendar() {
+interface YearViewProps {
+  /** Ohne eigene Seitenueberschrift, wenn in die Anwesenheitsliste eingebettet. */
+  embedded?: boolean;
+  /**
+   * Uebernimmt den Sprung in einen Monat. Fehlt der Callback, wird wie
+   * bisher navigiert — die Route bleibt damit eigenstaendig nutzbar.
+   */
+  onOpenMonth?: (year: number, month: number) => void;
+}
+
+export default function YearCalendar({ embedded = false, onOpenMonth }: YearViewProps = {}) {
   const { month: currentYm, setMonth, attendanceYears } = useSession();
   const navigate = useNavigate();
   const currentYear = Number(currentYm.slice(0, 4));
@@ -77,6 +87,10 @@ export default function YearCalendar() {
   }, [years, year]);
 
   function open(month: number) {
+    if (onOpenMonth) {
+      onOpenMonth(year, month);
+      return;
+    }
     setMonth(`${year}-${String(month).padStart(2, '0')}`);
     navigate('/dozent');
   }
@@ -84,12 +98,14 @@ export default function YearCalendar() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <Eyebrow>Kalenderjahr</Eyebrow>
-          <h1 className="text-2xl font-semibold text-[var(--text-display)]">
-            Feiertage &amp; Arbeitstage
-          </h1>
-        </div>
+        {!embedded && (
+          <div>
+            <Eyebrow>Kalenderjahr</Eyebrow>
+            <h1 className="text-2xl font-semibold text-[var(--text-display)]">
+              Feiertage &amp; Arbeitstage
+            </h1>
+          </div>
+        )}
         <div role="tablist" aria-label="Jahr" className="flex gap-1">
           {years.map((y) => (
             <button

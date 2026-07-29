@@ -15,6 +15,16 @@ import { countWeekPresence, isPresenceDay } from '../../domain/attendance';
 import { CodeCell } from './CodeCell';
 import MonthMatrix from './MonthMatrix';
 import YearOverview from '../admin/YearOverview';
+import YearCalendar from '../admin/YearCalendar';
+
+type View = 'jahr' | 'kalender' | 'wochen' | 'matrix';
+
+const VIEWS: readonly (readonly [View, string])[] = [
+  ['jahr', 'Jahr'],
+  ['kalender', 'Kalender'],
+  ['wochen', 'Wochenbänder'],
+  ['matrix', 'Ganzer Monat'],
+] as const;
 import { monthCalendar, isWeekend } from '../../domain/holidays';
 import type { AttendanceCode, DayMarks, MonthRecord } from '../../domain/types';
 
@@ -54,7 +64,7 @@ export default function DozentAttendance() {
   const excelMode = attendanceSource !== null && dataSource.kind === 'EXCEL';
   const [records, setRecords] = useState<MonthRecord[]>([]);
   // Jahresübersicht ist der Einstieg: erst das Jahr, dann hineinzoomen.
-  const [view, setView] = useState<'jahr' | 'wochen' | 'matrix'>('jahr');
+  const [view, setView] = useState<View>('jahr');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -177,6 +187,18 @@ export default function DozentAttendance() {
     }
   };
 
+  const isMonthView = view === 'wochen' || view === 'matrix';
+
+  /**
+   * Sprung aus einer Jahresansicht in einen Monat: Monat setzen UND die
+   * Ansicht wechseln. Nur den Monat zu setzen liess den Nutzer in der
+   * Jahresansicht zurueck, wo sich lediglich eine Zelle aenderte.
+   */
+  function openMonth(targetYear: number, targetMonth: number) {
+    setYm(`${targetYear}-${String(targetMonth).padStart(2, '0')}`);
+    setView('matrix');
+  }
+
   const monthTotal = (r: MonthRecord) => r.attendance.filter(isPresenceDay).length;
   const label = MONTHS.find((m) => m.ym === ym)?.label ?? ym;
   const yearNo = Number(ym.slice(0, 4));
@@ -193,7 +215,9 @@ export default function DozentAttendance() {
       <div className="flex items-baseline justify-between gap-4 flex-wrap">
         <div>
           <Eyebrow>Anwesenheitsliste</Eyebrow>
-          <h1 className="text-2xl font-bold uppercase tracking-wide">{label}</h1>
+          <h1 className="text-2xl font-bold uppercase tracking-wide">
+            {isMonthView ? label : VIEWS.find(([k]) => k === view)?.[1]}
+          </h1>
         </div>
         {saving && <span className="text-sm text-ink-dim">Speichere in die Liste …</span>}
       </div>
@@ -224,7 +248,7 @@ export default function DozentAttendance() {
         </div>
 
         <div role="tablist" aria-label="Ansicht" className="flex gap-1">
-          {([['jahr', 'Jahr'], ['wochen', 'Wochenbänder'], ['matrix', 'Ganzer Monat']] as const).map(([k, t]) => (
+          {VIEWS.map(([k, t]) => (
             <button
               key={k}
               role="tab"
@@ -244,7 +268,13 @@ export default function DozentAttendance() {
 
       {error && <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>}
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
+      {/* Legende und Monatssumme beziehen sich auf einen einzelnen Monat und
+          gehoeren nicht zu den Jahresansichten. */}
+      <div
+        className={`grid gap-4 lg:grid-cols-[1fr_auto] ${
+          isMonthView ? '' : 'hidden'
+        }`}
+      >
         {/* Legende — Wortlaut der Liste. */}
         <Card>
           <p className="text-sm font-semibold">Folgende Auswahlmöglichkeit:</p>
@@ -299,7 +329,9 @@ export default function DozentAttendance() {
         </Card>
       </div>
 
-      {view === 'jahr' && <YearOverview embedded />}
+      {view === 'jahr' && <YearOverview embedded onOpenMonth={openMonth} />}
+
+      {view === 'kalender' && <YearCalendar embedded onOpenMonth={openMonth} />}
 
       {view === 'matrix' && (
         <MonthMatrix

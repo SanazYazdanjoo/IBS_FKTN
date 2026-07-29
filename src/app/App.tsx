@@ -43,7 +43,6 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/tn/correction', label: 'Korrektur', roles: ['TN'] },
   { to: '/admin', label: 'Dashboard', roles: ['ADMIN'], end: true },
   { to: '/admin/pipeline', label: 'Pipeline', roles: ['ADMIN'] },
-  { to: '/admin/kalender', label: 'Kalender', roles: ['ADMIN', 'DOZENT'] },
   { to: '/admin/daten', label: 'TN-Daten', roles: ['ADMIN'] },
   { to: '/admin/protokoll', label: 'Protokoll', roles: ['ADMIN'] },
   { to: '/dozent', label: 'Anwesenheit', roles: ['DOZENT', 'ADMIN'] },
