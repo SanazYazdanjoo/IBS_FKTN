@@ -229,15 +229,21 @@ export default function YearOverview({ embedded = false, onOpenMonth }: YearView
                     TN-ID
                   </th>
                   {MONTH_LABELS.map((label, i) => (
-                    <th
-                      key={label}
-                      scope="col"
-                      className="px-1 py-2 text-center font-medium text-[var(--text-dim)]"
-                    >
-                      <span className="block">{label}</span>
-                      <span className="block text-[10px] font-normal">
-                        {monthCalendar(year, i + 1).workdays} AT
-                      </span>
+                    <th key={label} scope="col" className="px-1 py-2">
+                      {/* Auch die Monatsueberschrift oeffnet den Monat — wer
+                          einen ganzen Monat pruefen will, zielt eher auf die
+                          Spalte als auf die Zelle einer einzelnen Person. */}
+                      <button
+                        type="button"
+                        onClick={() => openMonth(i + 1)}
+                        title={`${MONTH_NAMES[i]} ${year} öffnen`}
+                        className="w-full rounded px-1 text-center font-medium text-[var(--text-dim)] hover:bg-[var(--muted)] hover:text-[var(--text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"
+                      >
+                        <span className="block">{label}</span>
+                        <span className="block text-[10px] font-normal">
+                          {monthCalendar(year, i + 1).workdays} AT
+                        </span>
+                      </button>
                     </th>
                   ))}
                 </tr>

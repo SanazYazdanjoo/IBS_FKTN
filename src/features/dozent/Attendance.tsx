@@ -17,13 +17,19 @@ import MonthMatrix from './MonthMatrix';
 import YearOverview from '../admin/YearOverview';
 import YearCalendar from '../admin/YearCalendar';
 
-type View = 'jahr' | 'kalender' | 'wochen' | 'matrix';
+type View = 'jahr' | 'kalender' | 'monat';
+/** Zwei Darstellungen desselben Monats — keine eigenen Ansichten. */
+type MonthLayout = 'wochen' | 'matrix';
 
 const VIEWS: readonly (readonly [View, string])[] = [
   ['jahr', 'Jahr'],
   ['kalender', 'Kalender'],
-  ['wochen', 'Wochenbänder'],
+  ['monat', 'Monat'],
+] as const;
+
+const MONTH_LAYOUTS: readonly (readonly [MonthLayout, string])[] = [
   ['matrix', 'Ganzer Monat'],
+  ['wochen', 'Wochenbänder'],
 ] as const;
 import { monthCalendar, isWeekend } from '../../domain/holidays';
 import type { AttendanceCode, DayMarks, MonthRecord } from '../../domain/types';
@@ -65,6 +71,7 @@ export default function DozentAttendance() {
   const [records, setRecords] = useState<MonthRecord[]>([]);
   // Jahresübersicht ist der Einstieg: erst das Jahr, dann hineinzoomen.
   const [view, setView] = useState<View>('jahr');
+  const [monthLayout, setMonthLayout] = useState<MonthLayout>('matrix');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -187,7 +194,7 @@ export default function DozentAttendance() {
     }
   };
 
-  const isMonthView = view === 'wochen' || view === 'matrix';
+  const isMonthView = view === 'monat';
 
   /**
    * Sprung aus einer Jahresansicht in einen Monat: Monat setzen UND die
@@ -196,7 +203,8 @@ export default function DozentAttendance() {
    */
   function openMonth(targetYear: number, targetMonth: number) {
     setYm(`${targetYear}-${String(targetMonth).padStart(2, '0')}`);
-    setView('matrix');
+    setView('monat');
+    setMonthLayout('matrix');
   }
 
   const monthTotal = (r: MonthRecord) => r.attendance.filter(isPresenceDay).length;
@@ -216,15 +224,33 @@ export default function DozentAttendance() {
         <div>
           <Eyebrow>Anwesenheitsliste</Eyebrow>
           <h1 className="text-2xl font-bold uppercase tracking-wide">
-            {isMonthView ? label : VIEWS.find(([k]) => k === view)?.[1]}
+            {isMonthView ? label : (VIEWS.find(([k]) => k === view)?.[1] ?? '')}
           </h1>
         </div>
         {saving && <span className="text-sm text-ink-dim">Speichere in die Liste …</span>}
       </div>
 
       {/* Monatswechsel als Schritt-Navigation (Wireframe 2a) statt zwölf Tabs. */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className={`flex items-center gap-2 ${view === 'jahr' ? 'hidden' : ''}`}>
+      <div className="flex flex-wrap items-center gap-3">
+        <div role="tablist" aria-label="Ansicht" className="flex gap-1">
+          {VIEWS.map(([k, t]) => (
+            <button
+              key={k}
+              role="tab"
+              aria-selected={view === k}
+              onClick={() => setView(k)}
+              className={`rounded-full px-3 py-1 text-sm ${
+                view === k
+                  ? 'bg-[var(--primary)] text-white'
+                  : 'text-[var(--text-dim)] hover:bg-[var(--muted)]'
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
+        <div className={`flex items-center gap-2 ${isMonthView ? '' : 'hidden'}`}>
           <button
             type="button"
             disabled={!prevYm}
@@ -247,17 +273,23 @@ export default function DozentAttendance() {
           </span>
         </div>
 
-        <div role="tablist" aria-label="Ansicht" className="flex gap-1">
-          {VIEWS.map(([k, t]) => (
+        {/* Darstellung des Monats — Nebensache gegenueber der Ansichtswahl,
+            deshalb rechts und schwaecher betont. */}
+        <div
+          role="radiogroup"
+          aria-label="Darstellung"
+          className={`ml-auto flex gap-1 ${isMonthView ? '' : 'hidden'}`}
+        >
+          {MONTH_LAYOUTS.map(([k, t]) => (
             <button
               key={k}
-              role="tab"
-              aria-selected={view === k}
-              onClick={() => setView(k)}
-              className={`rounded-full px-3 py-1 text-sm ${
-                view === k
-                  ? 'bg-[var(--primary)] text-white'
-                  : 'text-[var(--text-dim)] hover:bg-[var(--muted)]'
+              role="radio"
+              aria-checked={monthLayout === k}
+              onClick={() => setMonthLayout(k)}
+              className={`rounded-full border px-3 py-1 text-sm ${
+                monthLayout === k
+                  ? 'border-[var(--primary)] font-semibold text-[var(--primary)]'
+                  : 'border-transparent text-[var(--text-dim)] hover:bg-[var(--muted)]'
               }`}
             >
               {t}
@@ -333,7 +365,7 @@ export default function DozentAttendance() {
 
       {view === 'kalender' && <YearCalendar embedded onOpenMonth={openMonth} />}
 
-      {view === 'matrix' && (
+      {isMonthView && monthLayout === 'matrix' && (
         <MonthMatrix
           records={listed}
           year={yearNo}
@@ -346,7 +378,7 @@ export default function DozentAttendance() {
       )}
 
       {/* Wochenblöcke — exakt wie die Liste: Tageskopf, darunter V/N, dann TN-Zeilen. */}
-      {view === 'wochen' && weeks.map(([weekStart, dates]) => (
+      {isMonthView && monthLayout === 'wochen' && weeks.map(([weekStart, dates]) => (
         <Card key={weekStart} className="overflow-x-auto">
           <table className="min-w-full border-collapse text-sm">
             <thead>
