@@ -6,12 +6,17 @@ dist
 # Privacy safety net — never commit project documents
 *.docx
 *.pdf
+# Echte Teilnehmerdaten gehoeren nicht ins Repository.
 *.xlsx
 *.csv
 docs-private/
 
 .env
 .env.local
+# Echte Teilnehmerdaten gehoeren nicht ins Repository.
 *.xlsx
 *.docx
 *.pdf
+
+# Ausnahme: die pseudonymisierte Demodatei wird bewusst mitgeliefert.
+!public/demo/*.xlsx
