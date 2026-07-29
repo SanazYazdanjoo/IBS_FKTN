@@ -10,6 +10,7 @@ import { AttendanceWorkbook } from '../../adapters/excel/attendanceWorkbook';
 import { createFolderPersistence, openProjectFolder } from '../../adapters/excel/folderSource';
 import type { ExcelValidationReport } from '../../adapters/excel/workbook';
 import { GoogleSheetsAttendanceSource } from '../../adapters/attendance/googleSheetsSource';
+import { LocalYearWorkbook } from '../../adapters/attendance/localYearWorkbook';
 
 export default function DataSourceSettings() {
   const {
@@ -251,6 +252,7 @@ export default function DataSourceSettings() {
         </Card>
       )}
 
+      <YearListPanel />
       <SheetsPanel />
     </div>
   );
@@ -412,6 +414,142 @@ function SheetsPanel() {
           {busy ? 'Lädt…' : 'Verbinden und prüfen'}
         </PrimaryButton>
         {info && <SecondaryButton onClick={disconnect}>Verbindung lösen</SecondaryButton>}
+      </div>
+
+      {err && <p className="mt-2 text-sm text-danger">{err}</p>}
+      {info && <p className="mt-2 text-sm text-success">{info}</p>}
+    </Card>
+  );
+}
+
+/**
+ * Anwesenheitsliste als .xlsx im Jahresblatt-Layout.
+ *
+ * Die Jahre werden aus den Blattnamen ermittelt, nicht eingestellt: legt der
+ * Träger ein Blatt „2027" an, erscheint 2027 hier ohne Codeänderung und ohne
+ * Konfiguration. Damit bleibt die Datei das, was sie beim Träger ohnehin ist —
+ * eine Excel-Mappe, die pro Jahr um ein Blatt wächst.
+ */
+function YearListPanel() {
+  const { storage, refreshStorage } = useSession();
+  const [wbk, setWbk] = useState<LocalYearWorkbook | null>(null);
+  const [year, setYear] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [info, setInfo] = useState<string | null>(null);
+
+  const canOverlay = typeof storage.setAttendanceOverlay === 'function';
+
+  async function load(buffer: ArrayBuffer, name: string) {
+    const loaded = await LocalYearWorkbook.fromBuffer(buffer, name);
+    setWbk(loaded);
+    const preferred = loaded.years.includes(new Date().getFullYear())
+      ? new Date().getFullYear()
+      : loaded.years[loaded.years.length - 1];
+    setYear(preferred);
+    setInfo(
+      `„${name}" geladen · Jahresblätter: ${loaded.years.join(', ')}` +
+        (loaded.overallTabName ? ` · Abgleich gegen „${loaded.overallTabName}"` : ''),
+    );
+  }
+
+  async function loadDemo() {
+    setErr(''); setInfo(null); setBusy(true);
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}demo/Anwesenheitsliste_Demo.xlsx`);
+      if (!res.ok) throw new Error(`Demodatei nicht gefunden (${res.status}).`);
+      await load(await res.arrayBuffer(), 'Anwesenheitsliste_Demo.xlsx');
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function loadOwn() {
+    setErr(''); setInfo(null); setBusy(true);
+    try {
+      const file = await pickFileFallback();
+      await load(await file.arrayBuffer(), file.name);
+    } catch (e) {
+      if ((e as DOMException).name !== 'AbortError') {
+        setErr(e instanceof Error ? e.message : String(e));
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function apply() {
+    if (!wbk || year === null) return;
+    setErr('');
+    try {
+      const byMonth = wbk.readYear(year);
+      storage.setAttendanceOverlay?.((monthYm) => {
+        const r = byMonth.get(monthYm);
+        return { marks: r?.marks ?? new Map(), notes: r?.notes ?? new Map() };
+      });
+      const mismatches = [...byMonth.values()].flatMap((r) =>
+        r.crossCheck.filter((c) => !c.agrees),
+      );
+      const warnings = [...byMonth.values()].flatMap((r) => r.warnings);
+      setInfo(
+        `${year} aktiv. ` +
+          (mismatches.length === 0
+            ? 'Alle Monate stimmen mit dem Overall-Blatt überein.'
+            : `${mismatches.length} Abweichung(en): ` +
+              mismatches.slice(0, 5).map((m) => `${m.tnId} ${m.computed}≠${m.reported}`).join(', ')) +
+          (warnings.length > 0
+            ? ` · ${warnings.length} Zeile(n) mit ungültiger TN-ID: ` +
+              warnings.slice(0, 3).map((w) => `Zeile ${w.row} (${w.lastName})`).join(', ')
+            : ''),
+      );
+      refreshStorage();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  return (
+    <Card>
+      <Eyebrow>Anwesenheitsliste (.xlsx, ein Blatt je Jahr)</Eyebrow>
+      <p className="mt-1 text-xs text-ink-dim">
+        Die Jahre werden aus den Blattnamen gelesen. Ein neues Blatt „2027" in der Datei
+        genügt — hier ist nichts einzustellen. Blätter wie „Regeln" oder „Overall" werden
+        automatisch übersprungen; „Overall" dient dem Abgleich der Monatssummen.
+      </p>
+
+      {!canOverlay && (
+        <p className="mt-2 text-xs text-danger">
+          Die aktive Datenquelle unterstützt keine externe Anwesenheitsquelle.
+        </p>
+      )}
+
+      <div className="mt-3 flex flex-wrap items-end gap-2">
+        <PrimaryButton onClick={loadDemo} disabled={busy || !canOverlay}>
+          {busy ? 'Lädt…' : 'Demodatei laden'}
+        </PrimaryButton>
+        <SecondaryButton onClick={loadOwn}>Eigene Datei öffnen</SecondaryButton>
+
+        {wbk && (
+          <>
+            <label className="text-sm">
+              Jahr
+              <select
+                value={year ?? ''}
+                onChange={(e) => setYear(Number(e.target.value))}
+                className="mt-1 block rounded-lg border border-line p-2"
+              >
+                {wbk.years.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <PrimaryButton onClick={apply}>Jahr übernehmen</PrimaryButton>
+          </>
+        )}
       </div>
 
       {err && <p className="mt-2 text-sm text-danger">{err}</p>}
