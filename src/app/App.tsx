@@ -11,6 +11,11 @@ import Uebersicht from '../features/admin/Uebersicht';
 import YearOverview from '../features/admin/YearOverview';
 import YearCalendar from '../features/admin/YearCalendar';
 import CalendarOverlay from './CalendarOverlay';
+import {
+  AutoReminderEmails,
+  Documentation,
+  Vergleichsrechnung,
+} from '../features/docs/Placeholders';
 import TnData from '../features/admin/TnData';
 import AuditLogScreen from '../features/admin/AuditLog';
 import TnDetail from '../features/admin/TnDetail';
@@ -38,6 +43,10 @@ interface NavItem {
   label: string;
   roles: string[];
   end?: boolean;
+  /** Noch nicht fertig — gedaempft dargestellt, aber erreichbar. */
+  pending?: boolean;
+  /** Ans untere Ende der Navigation. */
+  footer?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -47,33 +56,64 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/admin/daten', label: 'TN-Daten', roles: ['ADMIN', 'DOZENT'] },
   { to: '/admin/protokoll', label: 'Protokoll', roles: ['ADMIN'] },
   { to: '/dozent', label: 'Anwesenheit', roles: ['DOZENT', 'ADMIN'] },
-  { to: '/manager', label: 'Freigaben', roles: ['MANAGER', 'ADMIN'] },
-  { to: '/settings', label: 'Einstellungen', roles: ['ADMIN'], end: true },
-  { to: '/settings/data', label: 'Datenquelle', roles: ['ADMIN'] },
+  { to: '/manager', label: 'Freigaben', roles: ['MANAGER', 'ADMIN'], pending: true },
+  { to: '/reminder', label: 'Auto-Reminder Emails', roles: ['ADMIN'], pending: true },
+  { to: '/vergleichsrechnung', label: 'Vergleichrechnung', roles: ['ADMIN'], pending: true },
+  { to: '/settings', label: 'Einstellungen', roles: ['ADMIN'], end: true, pending: true },
+  { to: '/settings/data', label: 'Datenquelle', roles: ['ADMIN'], pending: true },
+  {
+    to: '/dokumentation',
+    label: 'Documentation',
+    roles: ['ADMIN', 'DOZENT', 'MANAGER'],
+    footer: true,
+  },
 ];
+
+/**
+ * Ein Navigationseintrag. Unfertige Bereiche sind gedaempft und mit einem
+ * Titel versehen — erreichbar, aber erkennbar noch nicht fertig.
+ */
+function SidebarLink({ item }: { item: NavItem }) {
+  return (
+    <NavLink
+      to={item.to}
+      end={item.end}
+      title={item.pending ? `${item.label} — in Arbeit` : undefined}
+      className={({ isActive }) =>
+        `block rounded-lg px-3 py-2 text-sm font-medium transition ${
+          isActive
+            ? 'bg-primary text-white'
+            : item.pending
+              ? 'text-ink-dim/60 hover:bg-muted hover:text-ink-dim'
+              : 'text-ink hover:bg-muted'
+        }`
+      }
+    >
+      {item.label}
+    </NavLink>
+  );
+}
 
 function Sidebar() {
   const { user, dataSource } = useSession();
   const items = NAV_ITEMS.filter((l) => l.roles.includes(user.role));
+  const main = items.filter((l) => !l.footer);
+  const footer = items.filter((l) => l.footer);
 
   return (
     <aside className="hidden w-56 shrink-0 border-r border-line bg-surface md:flex md:flex-col">
       <nav className="flex-1 space-y-1 p-3">
-        {items.map((l) => (
-          <NavLink
-            key={l.to}
-            to={l.to}
-            end={l.end}
-            className={({ isActive }) =>
-              `block rounded-lg px-3 py-2 text-sm font-medium transition ${
-                isActive ? 'bg-primary text-white' : 'text-ink hover:bg-muted'
-              }`
-            }
-          >
-            {l.label}
-          </NavLink>
+        {main.map((l) => (
+          <SidebarLink key={l.to} item={l} />
         ))}
       </nav>
+      {footer.length > 0 && (
+        <nav className="space-y-1 border-t border-line p-3">
+          {footer.map((l) => (
+            <SidebarLink key={l.to} item={l} />
+          ))}
+        </nav>
+      )}
       <div className="border-t border-line p-3 text-xs text-ink-dim">
         Datenquelle:{' '}
         {dataSource.kind === 'MOCK' ? (
@@ -207,6 +247,9 @@ function Shell() {
               />
               <Route path="/admin/jahr" element={<YearOverview />} />
               <Route path="/admin/kalender" element={<YearCalendar />} />
+              <Route path="/reminder" element={<AutoReminderEmails />} />
+              <Route path="/vergleichsrechnung" element={<Vergleichsrechnung />} />
+              <Route path="/dokumentation" element={<Documentation />} />
               <Route path="/admin/daten" element={<TnData />} />
               <Route path="/admin/protokoll" element={<AuditLogScreen />} />
               <Route path="/admin/tn/:participantId" element={<TnDetail />} />
