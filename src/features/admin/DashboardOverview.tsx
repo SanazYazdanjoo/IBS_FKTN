@@ -13,7 +13,7 @@ import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
 import { Card, Eyebrow, statusColorClass, statusLabel } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
-import { formatEuro } from '../../domain/reimbursement';
+import { PROCESS_GROUPS, countByGroup } from '../../domain/processGroups';
 
 import { MONTHS, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import type { MonthRecord, ProcessStatus } from '../../domain/types';
@@ -62,7 +62,15 @@ export default function DashboardOverview({
         );
         const exceptionsOpen = records.filter((r) => r.exceptions.length > 0).length;
         const missingDocs = records.filter((r) => r.documents.length === 0).length;
-        return { ym: m.ym, label: m.label, records, totalEur, exceptionsOpen, missingDocs };
+        return {
+          ym: m.ym,
+          label: m.label,
+          records,
+          totalEur,
+          exceptionsOpen,
+          missingDocs,
+          groupCounts: countByGroup(records),
+        };
       }),
     [byMonth, rules],
   );
@@ -103,7 +111,11 @@ export default function DashboardOverview({
             <tr className="text-left text-xs text-ink-dim">
               <th className="pr-3 pb-1">Monat</th>
               <th className="pr-3 pb-1 text-right">TN</th>
-              <th className="pr-3 pb-1 text-right">Erstattung gesamt</th>
+              {PROCESS_GROUPS.map((g) => (
+                <th key={g.key} className="pr-3 pb-1 text-right">
+                  {g.label}
+                </th>
+              ))}
               <th className="pr-3 pb-1 text-right">Ausnahmen offen</th>
               <th className="pb-1 text-right">Fehlende Belege</th>
             </tr>
@@ -125,7 +137,19 @@ export default function DashboardOverview({
               >
                 <td className="pr-3 py-1.5 font-semibold">{m.label}</td>
                 <td className="pr-3 py-1.5 text-right">{m.records.length}</td>
-                <td className="pr-3 py-1.5 text-right">{formatEuro(m.totalEur)}</td>
+                {PROCESS_GROUPS.map((g) => {
+                  const n = m.groupCounts.get(g.key) ?? 0;
+                  return (
+                    <td
+                      key={g.key}
+                      className={`pr-3 py-1.5 text-right tabular-nums ${
+                        n === 0 ? 'text-ink-dim' : ''
+                      }`}
+                    >
+                      {n}
+                    </td>
+                  );
+                })}
                 <td className="pr-3 py-1.5 text-right">
                   {m.exceptionsOpen > 0 ? (
                     <span className="font-semibold text-orange-600">{m.exceptionsOpen}</span>

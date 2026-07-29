@@ -10,15 +10,11 @@ import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { Card, Eyebrow, TnName } from '../../app/ui';
 import { MONTHS, monthLabel } from '../../adapters/mock/seed';
-import type { MonthRecord, ProcessStatus } from '../../domain/types';
+import type { MonthRecord } from '../../domain/types';
+import { PROCESS_GROUPS } from '../../domain/processGroups';
 
-const COLUMNS: { statuses: ProcessStatus[]; label: string }[] = [
-  { statuses: ['NOT_SUBMITTED', 'SUBMITTED'], label: 'Warten auf TN' },
-  { statuses: ['IN_REVIEW', 'AWAITING_CORRECTION'], label: 'Prüfen' },
-  { statuses: ['AWAITING_SIGNATURE'], label: 'Signatur TN' },
-  { statuses: ['READY_FOR_APPROVAL', 'APPROVED'], label: 'Freigabe' },
-  { statuses: ['SENT_TO_ACCOUNTING', 'PAID'], label: 'Buchhaltung' },
-];
+/** Spalten der Pipeline — dieselbe Einteilung wie in der Monatstabelle. */
+const COLUMNS = PROCESS_GROUPS;
 
 /** Ein Record plus dem Monat, aus dem er stammt (für die Gesamtübersicht). */
 type TaggedRecord = MonthRecord & { __ym: string };
