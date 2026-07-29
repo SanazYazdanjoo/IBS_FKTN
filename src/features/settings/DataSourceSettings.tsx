@@ -431,7 +431,7 @@ function SheetsPanel() {
  * eine Excel-Mappe, die pro Jahr um ein Blatt wächst.
  */
 function YearListPanel() {
-  const { storage, refreshStorage } = useSession();
+  const { storage, refreshStorage, setAttendanceYears } = useSession();
   const [wbk, setWbk] = useState<LocalYearWorkbook | null>(null);
   const [year, setYear] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
@@ -481,10 +481,12 @@ function YearListPanel() {
   }
 
   function apply() {
-    if (!wbk || year === null) return;
+    if (!wbk) return;
     setErr('');
     try {
-      const byMonth = wbk.readYear(year);
+      // Alle Jahresblätter auf einmal — die Jahresübersicht und das
+      // Kalenderblatt schalten zwischen Jahren um und brauchen sie alle.
+      const byMonth = wbk.readAllYears();
       storage.setAttendanceOverlay?.((monthYm) => {
         const r = byMonth.get(monthYm);
         return { marks: r?.marks ?? new Map(), notes: r?.notes ?? new Map() };
@@ -493,8 +495,9 @@ function YearListPanel() {
         r.crossCheck.filter((c) => !c.agrees),
       );
       const warnings = [...byMonth.values()].flatMap((r) => r.warnings);
+      setAttendanceYears(wbk.years);
       setInfo(
-        `${year} aktiv. ` +
+        `${wbk.years.join(', ')} aktiv. ` +
           (mismatches.length === 0
             ? 'Alle Monate stimmen mit dem Overall-Blatt überein.'
             : `${mismatches.length} Abweichung(en): ` +

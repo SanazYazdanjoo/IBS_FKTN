@@ -127,4 +127,23 @@ export class LocalYearWorkbook {
     }
     return out;
   }
+
+  /**
+   * Alle vorhandenen Jahre in einem Durchgang.
+   *
+   * Die Anwendung lädt bewusst nicht ein Jahr nach dem anderen: Jahres-
+   * übersicht und Kalenderblatt lassen zwischen Jahren umschalten, und ein
+   * Jahr ohne geladene Daten wäre dort von einem Jahr ohne Eintragungen
+   * nicht zu unterscheiden. Legt der Träger ein Blatt „2027" an, ist es
+   * nach dem nächsten Laden automatisch dabei.
+   */
+  readAllYears(): Map<string, YearMonthRead> {
+    const out = new Map<string, YearMonthRead>();
+    for (const tab of this.yearTabs) {
+      for (let m = 1; m <= 12; m += 1) {
+        out.set(`${tab.year}-${String(m).padStart(2, '0')}`, this.readMonth(tab.year, m));
+      }
+    }
+    return out;
+  }
 }

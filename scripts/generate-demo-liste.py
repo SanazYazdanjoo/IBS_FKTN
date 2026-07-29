@@ -14,7 +14,9 @@ MON = ["JANUAR","FEBRUAR","MÄRZ","APRIL","MAI","JUNI","JULI","AUGUST",
 HOL = {2025:{"2025-01-01","2025-04-18","2025-04-21","2025-05-01","2025-05-29",
              "2025-06-09","2025-10-03","2025-10-31","2025-12-25","2025-12-26"},
        2026:{"2026-01-01","2026-04-03","2026-04-06","2026-05-01","2026-05-14",
-             "2026-05-25","2026-09-20","2026-10-03","2026-10-31","2026-12-25","2026-12-26"}}
+             "2026-05-25","2026-09-20","2026-10-03","2026-10-31","2026-12-25","2026-12-26"},
+       2027:{"2027-01-01","2027-03-26","2027-03-29","2027-05-01","2027-05-06",
+             "2027-05-17","2027-09-20","2027-10-03","2027-10-31","2027-12-25","2027-12-26"}}
 HDR = PatternFill("solid", fgColor="DDDDDD")
 
 def weeks(year):
@@ -66,6 +68,7 @@ def build(ws, year):
                     iso=d.isoformat()
                     if iso in HOL[year] or d.year!=year: continue
                     if tid=="PK24" and d.month<4: continue
+                    if year==2027: continue  # Blatt im Voraus angelegt, noch leer
                     code=random.choices(["X","X","X","(x)","E","K","A","U",""],
                                         [50,20,10,5,5,3,2,3,2])[0]
                     row[5+(offset+i)*2]=code
@@ -80,7 +83,7 @@ def build(ws, year):
 
 wb=Workbook(); wb.remove(wb.active)
 allt={}
-for y in (2026,2025):
+for y in (2027,2026,2025):
     ws=wb.create_sheet(str(y)); allt[y]=build(ws,y)
 
 ws=wb.create_sheet("Regeln")
@@ -93,7 +96,7 @@ for row in [["Code","Bedeutung","Zaehlt als"],["X","Anwesend","Anwesend"],
 
 ws=wb.create_sheet("Overall")
 ws.append(["Jahr","TN-ID","Nachname","Vorname"]+MON)
-for y in (2025,2026):
+for y in (2025,2026,2027):
     for tid,nn,vnn in TN:
         ws.append([str(y),tid,nn,vnn]+[allt[y][(tid,m)] for m in range(1,13)])
 wb.save("public/demo/Anwesenheitsliste_Demo.xlsx")

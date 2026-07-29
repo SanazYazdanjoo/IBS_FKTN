@@ -8,7 +8,7 @@
  * Jeder Monat ist anklickbar und springt an dieselbe Stelle wie die
  * Zellen der Jahresübersicht — in die Anwesenheitsliste des Monats.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { Card, Eyebrow } from '../../app/ui';
@@ -48,15 +48,20 @@ function buildMonth(year: number, month: number, holidays: Holiday[]): Cell[] {
 }
 
 export default function YearCalendar() {
-  const { month: currentYm, setMonth } = useSession();
+  const { month: currentYm, setMonth, attendanceYears } = useSession();
   const navigate = useNavigate();
   const currentYear = Number(currentYm.slice(0, 4));
   const [year, setYear] = useState(currentYear);
 
+  // Jahre aus der geladenen Liste; nur solange keine geladen ist, wird um
+  // das laufende Jahr herum geraten. Sonst bietet die Ansicht Jahre an,
+  // fuer die es kein Blatt gibt — nicht unterscheidbar von leeren Jahren.
   const years = useMemo(() => {
-    const set = new Set([currentYear - 1, currentYear, currentYear + 1, year]);
-    return [...set].sort((a, b) => a - b);
-  }, [currentYear, year]);
+    if (attendanceYears.length > 0) return attendanceYears;
+    return [...new Set([currentYear - 1, currentYear, currentYear + 1, year])].sort(
+      (a, b) => a - b,
+    );
+  }, [attendanceYears, currentYear, year]);
 
   const months = useMemo(
     () =>
@@ -66,6 +71,10 @@ export default function YearCalendar() {
       }),
     [year],
   );
+
+  useEffect(() => {
+    if (years.length > 0 && !years.includes(year)) setYear(years[years.length - 1]);
+  }, [years, year]);
 
   function open(month: number) {
     setMonth(`${year}-${String(month).padStart(2, '0')}`);

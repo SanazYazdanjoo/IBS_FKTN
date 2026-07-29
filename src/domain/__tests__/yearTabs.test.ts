@@ -42,12 +42,12 @@ describe('Jahresblätter erkennen', () => {
 describe('Demo-Arbeitsmappe', () => {
   const buf = readFileSync('public/demo/Anwesenheitsliste_Demo.xlsx');
 
-  it('entdeckt beide Jahre ohne Konfiguration', async () => {
+  it('entdeckt alle Jahre ohne Konfiguration, auch das leere Folgejahr', async () => {
     const wbk = await LocalYearWorkbook.fromBuffer(
       buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer,
       'demo.xlsx',
     );
-    expect(wbk.years).toEqual([2025, 2026]);
+    expect(wbk.years).toEqual([2025, 2026, 2027]);
     expect(wbk.overallTabName).toBe('Overall');
   });
 
@@ -68,6 +68,20 @@ describe('Demo-Arbeitsmappe', () => {
       }
     }
     expect(mismatches).toEqual(['2025-3 PK23', '2026-3 PK23']);
+  });
+
+  it('liest alle Jahre in einem Durchgang', async () => {
+    const wbk = await LocalYearWorkbook.fromBuffer(
+      buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer,
+      'demo.xlsx',
+    );
+    const all = wbk.readAllYears();
+    expect(all.size).toBe(36); // 3 Jahre x 12 Monate
+    expect(all.has('2027-01')).toBe(true);
+    // Das im Voraus angelegte, leere Blatt liefert keine Markierungen —
+    // die Ansicht muss daraus 'nicht erfasst' machen, nicht 'null Tage'.
+    expect([...(all.get('2027-03')?.marks.values() ?? [])].flat()
+      .every((d) => d.morning === '' && d.afternoon === '')).toBe(true);
   });
 
   it('meldet die absichtlich defekte TN-ID der Demodatei', async () => {

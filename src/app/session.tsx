@@ -46,6 +46,9 @@ interface SessionContextValue {
   storageVersion: number;
   /** Ansichten neu laden lassen, ohne die Quelle zu wechseln. */
   refreshStorage: () => void;
+  /** Jahre, für die Anwesenheitsdaten geladen sind (aus den Blattnamen). */
+  attendanceYears: number[];
+  setAttendanceYears: (years: number[]) => void;
   /** Global gewählter Monat ('YYYY-MM') — Kopfzeilen-Auswahl, gilt für alle Ansichten. */
   month: string;
   setMonth: (ym: string) => void;
@@ -67,6 +70,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [storage, setStorage] = useState<AppStorage>(mock);
   const [dataSource, setDataSource] = useState<DataSource>({ kind: 'MOCK' });
   const [storageVersion, setStorageVersion] = useState(0);
+  const [attendanceYears, setAttendanceYears] = useState<number[]>([]);
   const [attendanceSource, setAttendanceSourceState] = useState<AttendanceSource | null>(null);
   const [formularContext, setFormularContext] = useState<FormularContext | null>(null);
   const [month, setMonth] = useState<string>(DEFAULT_MONTH);
@@ -115,6 +119,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     resetToMock,
     storageVersion,
     refreshStorage: () => setStorageVersion((v) => v + 1),
+    attendanceYears,
+    setAttendanceYears,
     month,
     setMonth,
     showAllMonths,
