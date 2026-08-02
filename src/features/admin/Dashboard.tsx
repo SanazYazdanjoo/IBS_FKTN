@@ -195,7 +195,7 @@ function DashboardMonthView() {
                     {docsTotal > 0 ? (
                       `${docsOk}/${docsTotal} ✓`
                     ) : (
-                      <span className="text-red-600 font-semibold">fehlt</span>
+                      <span className="text-problem-ink font-semibold">fehlt</span>
                     )}
                   </td>
                   <td className="py-2 pr-3">

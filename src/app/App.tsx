@@ -24,6 +24,7 @@ import DozentAttendance from '../features/dozent/Attendance';
 import ManagerQueue from '../features/manager/Queue';
 import SignatureSettings from '../features/settings/SignatureSettings';
 import DataSourceSettings from '../features/settings/DataSourceSettings';
+import { RoleChip } from './ui';
 
 function roleHome(role: string): string {
   switch (role) {
@@ -184,7 +185,8 @@ function RoleSwitcher() {
 
   return (
     <label className="ml-auto flex items-center gap-2 text-sm">
-      <span className="text-xs uppercase tracking-wider text-ink-dim">Rolle</span>
+      <span className="text-xs uppercase tracking-label text-ink-dim">Rolle</span>
+      <RoleChip role={user.role} />
       <select
         value={currentRole}
         onChange={(e) => switchUser(e.target.value)}

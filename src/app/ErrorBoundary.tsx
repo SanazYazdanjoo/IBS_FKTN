@@ -27,13 +27,13 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
   render() {
     if (!this.state.error) return this.props.children;
     return (
-      <div className="mx-auto max-w-xl space-y-3 rounded-2xl border border-red-200 bg-red-50 p-6 text-sm">
-        <h2 className="text-lg font-bold text-red-700">Etwas ist schiefgelaufen.</h2>
-        <p className="text-red-800">
+      <div className="mx-auto max-w-xl space-y-3 rounded-card border border-problem-ink/30 bg-problem-bg p-6 text-sm">
+        <h2 className="text-lg font-bold text-problem-ink">Etwas ist schiefgelaufen.</h2>
+        <p className="text-problem-ink">
           Diese Ansicht konnte nicht dargestellt werden. Der Fehler wurde in der
           Konsole protokolliert.
         </p>
-        <details className="text-xs text-red-900">
+        <details className="text-xs text-problem-ink">
           <summary className="cursor-pointer font-semibold">Technische Details</summary>
           <pre className="mt-2 overflow-x-auto whitespace-pre-wrap">
             {this.state.error.message}
@@ -44,13 +44,13 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
         <div className="flex flex-wrap gap-2 pt-2">
           <button
             onClick={this.reset}
-            className="rounded-full bg-red-700 px-4 py-2 font-semibold text-white hover:bg-red-800"
+            className="rounded-full bg-danger px-4 py-2 font-semibold text-white hover:opacity-90"
           >
             Erneut versuchen
           </button>
           <a
             href="/"
-            className="rounded-full border border-red-300 bg-white px-4 py-2 font-semibold text-red-800 hover:border-red-500"
+            className="rounded-full border border-problem-ink/40 bg-white px-4 py-2 font-semibold text-problem-ink hover:border-danger"
           >
             Zur Startseite
           </a>

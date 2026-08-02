@@ -152,14 +152,14 @@ export default function DashboardOverview({
                 })}
                 <td className="pr-3 py-1.5 text-right">
                   {m.exceptionsOpen > 0 ? (
-                    <span className="font-semibold text-orange-600">{m.exceptionsOpen}</span>
+                    <span className="font-semibold text-gate-ink">{m.exceptionsOpen}</span>
                   ) : (
                     <span className="text-ink-dim">0</span>
                   )}
                 </td>
                 <td className="py-1.5 text-right">
                   {m.missingDocs > 0 ? (
-                    <span className="font-semibold text-red-600">{m.missingDocs}</span>
+                    <span className="font-semibold text-problem-ink">{m.missingDocs}</span>
                   ) : (
                     <span className="text-ink-dim">0</span>
                   )}

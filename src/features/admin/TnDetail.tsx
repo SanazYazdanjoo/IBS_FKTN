@@ -240,20 +240,20 @@ export default function TnDetail() {
                 const d = rec.documents.find((x) => x.kind === kind);
                 if (!d)
                   return (
-                    <span className="text-red-600 font-semibold" title="fehlt">
+                    <span className="text-problem-ink font-semibold" title="fehlt">
                       fehlt
                     </span>
                   );
-                if (d.state === 'VERIFIED') return <span className="text-green-600 font-semibold">✓</span>;
+                if (d.state === 'VERIFIED') return <span className="text-win-ink font-semibold">✓</span>;
                 if (d.state === 'ILLEGIBLE')
                   return (
-                    <span className="text-red-600 font-semibold" title="unleserlich">
+                    <span className="text-problem-ink font-semibold" title="unleserlich">
                       ✗
                     </span>
                   );
                 if (d.state === 'MISSING')
                   return (
-                    <span className="text-red-600 font-semibold" title="fehlt">
+                    <span className="text-problem-ink font-semibold" title="fehlt">
                       fehlt
                     </span>
                   );
@@ -366,10 +366,10 @@ export default function TnDetail() {
                     <span className="font-semibold">{PROOF_LABELS[doc.kind]}</span>
                   </CheckItem>
                   {doc.state === 'ILLEGIBLE' && (
-                    <span className="text-xs text-red-600 font-semibold">unleserlich</span>
+                    <span className="text-xs text-problem-ink font-semibold">unleserlich</span>
                   )}
                   {doc.state === 'MISSING' && (
-                    <span className="text-xs text-red-600 font-semibold">fehlt</span>
+                    <span className="text-xs text-problem-ink font-semibold">fehlt</span>
                   )}
                   {doc.state === 'UPLOADED' && (
                     <span className="flex gap-1">
@@ -382,7 +382,7 @@ export default function TnDetail() {
                       </button>
                       <button
                         onClick={() => flagIllegible(doc.kind)}
-                        className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold hover:bg-red-600 hover:text-white"
+                        className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold hover:bg-problem-ink hover:text-white"
                         title={`${PROOF_LABELS[doc.kind]}: als unleserlich markieren`}
                       >
                         unleserlich
@@ -433,11 +433,11 @@ export default function TnDetail() {
               <div>
                 <span className="text-xs text-ink-dim">Ergebnis: </span>
                 {view.result.eligible ? (
-                  <span className="font-semibold text-green-600">
+                  <span className="font-semibold text-win-ink">
                     erstattungsfähig (≥ 3 km)
                   </span>
                 ) : (
-                  <span className="font-semibold text-red-600">
+                  <span className="font-semibold text-problem-ink">
                     &lt; 3 km — nicht erstattungsfähig (Ausnahme mit Begründung möglich)
                   </span>
                 )}
@@ -539,7 +539,7 @@ export default function TnDetail() {
               </p>
             )}
             {view.amountMismatch && (
-              <p className="mt-2 rounded-lg bg-blush-weak p-2 text-sm text-red-600">
+              <p className="mt-2 rounded-lg bg-blush-weak p-2 text-sm text-problem-ink">
                 ≠ In der Excel steht {formatEuro(view.amountMismatch.excel)}, die Engine berechnet{' '}
                 {formatEuro(view.amountMismatch.engine)} — bitte klären, bevor bestätigt wird.
               </p>

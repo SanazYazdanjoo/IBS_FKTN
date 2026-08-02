@@ -1,12 +1,12 @@
 import { useParticipantName } from './participant-names';
 import { Link } from 'react-router-dom';
 /** Gemeinsame UI-Bausteine (rein präsentational). */
-import type { ReactNode } from 'react';
-import type { ExceptionCategory, ProcessStatus } from '../domain/types';
+import type { InputHTMLAttributes, ReactNode } from 'react';
+import type { ExceptionCategory, ProcessStatus, Role } from '../domain/types';
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-2xl border border-line bg-surface p-5 shadow-sm ${className}`}>
+    <div className={`rounded-card border border-line bg-surface p-5 shadow-sm ${className}`}>
       {children}
     </div>
   );
@@ -14,7 +14,7 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
 
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <p className="text-xs font-semibold uppercase tracking-wide text-ink-dim">{children}</p>
+    <p className="text-xs font-semibold uppercase tracking-label text-ink-dim">{children}</p>
   );
 }
 
@@ -59,6 +59,38 @@ export function SecondaryButton({
   );
 }
 
+/** Ablehnen-Button — Rot ist knapp und nur für Fehler/Blocker reserviert. */
+export function DangerButton({
+  children,
+  onClick,
+  disabled,
+  className = '',
+}: {
+  children: ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  className?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`rounded-full border-2 border-danger px-5 py-2 font-semibold text-danger transition hover:bg-danger hover:text-white disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Gedämpfter Button-Zustand für „wartet auf etwas außerhalb der eigenen Spur". */
+export function WaitingBadge({ children }: { children: ReactNode }) {
+  return (
+    <span className="inline-flex cursor-not-allowed items-center rounded-full bg-muted px-5 py-2 font-semibold text-ink-dim">
+      {children}
+    </span>
+  );
+}
+
 const STATUS_LABELS: Record<ProcessStatus, string> = {
   NOT_SUBMITTED: 'Noch nichts eingereicht',
   SUBMITTED: 'Eingereicht',
@@ -95,28 +127,172 @@ export function statusLabel(status: ProcessStatus): string {
 export function statusColorClass(status: ProcessStatus): string {
   switch (status) {
     case 'PAID':
-      return 'text-green-600 font-semibold';
+      return 'text-win-ink font-semibold';
     case 'SENT_TO_ACCOUNTING':
-      return 'text-blue-600 font-semibold';
+      return 'text-note-ink font-semibold';
     case 'AWAITING_CORRECTION':
-      return 'text-orange-600 font-semibold';
+      return 'text-gate-ink font-semibold';
     default:
       return '';
   }
 }
 
-/** Farbschema für Dokument-Zustände; „fehlt" (MISSING) wird rot dargestellt. */
+/** Farbschema für Dokument-Zustände; „fehlt" (MISSING) wird als Problem dargestellt. */
 export function docStateColorClass(state: 'MISSING' | 'UPLOADED' | 'VERIFIED' | 'ILLEGIBLE'): string {
   switch (state) {
     case 'MISSING':
-      return 'text-red-600 font-semibold';
+      return 'text-problem-ink font-semibold';
     case 'ILLEGIBLE':
-      return 'text-red-600 font-semibold';
+      return 'text-problem-ink font-semibold';
     case 'VERIFIED':
-      return 'text-green-600 font-semibold';
+      return 'text-win-ink font-semibold';
     default:
       return '';
   }
+}
+
+// ── Role palette ─────────────────────────────────────────────────────────
+// One role, one colour — never reuse a lane tone for anything else. All
+// three participant variants share the TN tone; told apart by name/status.
+
+const ROLE_META: Record<Role, { label: string; bg: string; text: string }> = {
+  TN: { label: 'Teilnehmer:in (TN)', bg: 'bg-role-tn', text: 'text-role-tn' },
+  DOZENT: { label: 'Dozent', bg: 'bg-role-dozent', text: 'text-role-dozent' },
+  ADMIN: { label: 'Admin', bg: 'bg-role-admin', text: 'text-role-admin' },
+  MANAGER: { label: 'Approver', bg: 'bg-role-approver', text: 'text-role-approver' },
+  ACCOUNTING: { label: 'Accounting / Finance', bg: 'bg-role-finance', text: 'text-role-finance' },
+};
+
+/** Rollen-Chip in voller Sättigung, weißer Text — wie im Design-System §05. */
+export function RoleChip({ role, className = '' }: { role: Role; className?: string }) {
+  const meta = ROLE_META[role];
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-label text-white ${meta.bg} ${className}`}
+    >
+      {meta.label}
+    </span>
+  );
+}
+
+/** Nur die Rollenfarbe als Label-Text — für Aktivitätsboxen (§05: Farbe nur als Label, nie als Box-Füllung). */
+export function RoleLabel({ role, className = '' }: { role: Role; className?: string }) {
+  const meta = ROLE_META[role];
+  return (
+    <span className={`text-xs font-bold uppercase tracking-label ${meta.text} ${className}`}>
+      {meta.label}
+    </span>
+  );
+}
+
+/** Aktivitätsbox aus dem Prozessdiagramm: weiße Fläche, handgezeichneter Stroke, farbiges Rollen-Label. */
+export function ActivityBox({
+  role,
+  children,
+  className = '',
+}: {
+  role: Role;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`rounded-xl border-2 border-stroke bg-white px-4 py-3 ${className}`}>
+      <RoleLabel role={role} />
+      <p className="mt-1 font-display text-step-title text-ink">{children}</p>
+    </div>
+  );
+}
+
+// ── Note states ──────────────────────────────────────────────────────────
+// Four pale note tones annotate the diagrams; state is carried by fill and
+// left rule, never by the text alone.
+
+export type NoteKind = 'note' | 'problem' | 'gate' | 'win';
+
+const NOTE_META: Record<NoteKind, { label: string; bg: string; ink: string; border: string }> = {
+  note: { label: 'Note', bg: 'bg-note-bg', ink: 'text-note-ink', border: 'border-note-ink' },
+  problem: {
+    label: 'Problem',
+    bg: 'bg-problem-bg',
+    ink: 'text-problem-ink',
+    border: 'border-problem-ink',
+  },
+  gate: { label: 'Gate', bg: 'bg-gate-bg', ink: 'text-gate-ink', border: 'border-gate-ink' },
+  win: { label: 'Win', bg: 'bg-win-bg', ink: 'text-win-ink', border: 'border-win-ink' },
+};
+
+/** Notiz-Callout für Diagramme/Dokumentation: Note (Kontext) / Problem (AS-IS-Bruch) / Gate (wartet extern) / Win (TO-BE-Loesung). */
+export function Callout({
+  kind,
+  children,
+  className = '',
+}: {
+  kind: NoteKind;
+  children: ReactNode;
+  className?: string;
+}) {
+  const meta = NOTE_META[kind];
+  return (
+    <div className={`rounded-note border-l-4 p-3 ${meta.border} ${meta.bg} ${className}`}>
+      <p className={`text-[11px] font-semibold uppercase tracking-label ${meta.ink}`}>
+        {meta.label}
+      </p>
+      <p className="mt-1 text-sm text-ink">{children}</p>
+    </div>
+  );
+}
+
+// ── Status tags ──────────────────────────────────────────────────────────
+
+export type StatusTagKind = 'approved' | 'blocked' | 'needsFix' | 'inReview';
+
+const STATUS_TAG_META: Record<StatusTagKind, { label: string; className: string }> = {
+  approved: { label: 'Approved', className: 'bg-win-bg text-win-ink' },
+  blocked: { label: 'Blocked', className: 'bg-problem-bg text-problem-ink' },
+  needsFix: { label: 'Needs a fix', className: 'bg-gate-bg text-gate-ink' },
+  inReview: { label: 'In review', className: 'bg-note-bg text-note-ink' },
+};
+
+export function StatusTag({ kind, children }: { kind: StatusTagKind; children?: ReactNode }) {
+  const meta = STATUS_TAG_META[kind];
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${meta.className}`}
+    >
+      {children ?? meta.label}
+    </span>
+  );
+}
+
+// ── Form field ───────────────────────────────────────────────────────────
+
+/** Formularfeld mit Hinweis/Pflichtfeld-Text — Design-System §05. */
+export function FormField({
+  label,
+  hint,
+  required = false,
+  className = '',
+  ...inputProps
+}: {
+  label: string;
+  hint?: ReactNode;
+  required?: boolean;
+  className?: string;
+} & Omit<InputHTMLAttributes<HTMLInputElement>, 'className'>) {
+  return (
+    <label className={`block ${className}`}>
+      <span className="text-sm font-semibold text-ink">{label}</span>
+      <input
+        {...inputProps}
+        className="mt-1 block w-full rounded-xl border border-line bg-surface px-3 py-2 text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+      />
+      {hint && (
+        <span className={`mt-1 block text-xs ${required ? 'font-semibold text-danger' : 'text-ink-dim'}`}>
+          {hint}
+        </span>
+      )}
+    </label>
+  );
 }
 
 /** Status-Tracker des TN-Prozesses. */
