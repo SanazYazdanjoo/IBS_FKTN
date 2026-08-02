@@ -3,6 +3,8 @@ import type { DayMarks, MonthRecord, ProcessException, SessionUser } from '../..
 import { AccessDeniedError, STAFF_ROLES, type AuthAdapter, type StorageAdapter } from '../types';
 import { demoUsers, seedRecords } from './seed';
 import { monthCalendar } from '../../domain/holidays';
+import { REVIEW_BUILD } from '../../app/reviewBuild';
+import { applyReviewTaskFixture } from './reviewTaskFixture';
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
@@ -47,7 +49,9 @@ export type AttendanceOverlay = (month: string) => {
 };
 
 export function createMockStorage(): MockStorageAdapter {
-  const records: MonthRecord[] = clone(seedRecords);
+  const records: MonthRecord[] = REVIEW_BUILD
+    ? applyReviewTaskFixture(clone(seedRecords))
+    : clone(seedRecords);
 
   let attendanceOverlay: AttendanceOverlay | null = null;
 

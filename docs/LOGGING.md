@@ -101,8 +101,8 @@ per event type below. Empty/false/zero fields are omitted entirely.
 `ADMIN_VERGLEICHSRECHNUNG`, `DOCS_DOCUMENTATION`, `ADMIN_TN_DATA`,
 `ADMIN_AUDIT_LOG`, `ADMIN_TN_DETAIL`, `ADMIN_FORMULAR`,
 `DOZENT_ATTENDANCE`, `MANAGER_QUEUE`, `SETTINGS_SIGNATURE`,
-`SETTINGS_DATA_SOURCE`, `SETTINGS_LOGGING` — numeric ids and route mapping
-in `src/logging/events.ts` (`Screen`, `SCREEN_DICT`).
+`SETTINGS_DATA_SOURCE`, `SETTINGS_LOGGING`, `REVIEW_FEEDBACK` — numeric ids
+and route mapping in `src/logging/events.ts` (`Screen`, `SCREEN_DICT`).
 
 ## Event types (`ty`)
 
@@ -200,6 +200,13 @@ matching entry here.
 - **CONSENT_REVOKED** — user opted out; existing data deleted.
 - **LOG_EXPORTED** — user exported their own log.
 - **LOG_DELETED** — user deleted their own log.
+
+### Guided review-task runner (review build only)
+
+- **TASK_STARTED** — a guided task became active. `task` = task id.
+- **TASK_COMPLETED** — reviewer clicked "Fertig". `task`, `dur` = duration bucket.
+- **TASK_GIVEN_UP** — reviewer clicked "Ich komme nicht weiter". `task`, `dur`.
+- **TASK_ABANDONED** — a task was still active when the page reloaded; the interrupted attempt is logged as abandoned and a fresh attempt starts. `task`, `dur`.
 
 ## Sampling
 

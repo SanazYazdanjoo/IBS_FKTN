@@ -92,6 +92,12 @@ export const EventType = {
   CONSENT_REVOKED: 181,
   LOG_EXPORTED: 182,
   LOG_DELETED: 183,
+
+  // Guided review-task runner (190–199) — review build only
+  TASK_STARTED: 190,
+  TASK_COMPLETED: 191,
+  TASK_GIVEN_UP: 192,
+  TASK_ABANDONED: 193,
 } as const;
 
 export type EventTypeId = (typeof EventType)[keyof typeof EventType];
@@ -168,6 +174,11 @@ export const EVENT_TYPE_DICT: Record<number, { name: string; desc: string }> = {
   [EventType.CONSENT_REVOKED]: { name: 'CONSENT_REVOKED', desc: 'User opted out; existing data deleted' },
   [EventType.LOG_EXPORTED]: { name: 'LOG_EXPORTED', desc: 'User exported their own log' },
   [EventType.LOG_DELETED]: { name: 'LOG_DELETED', desc: 'User deleted their own log' },
+
+  [EventType.TASK_STARTED]: { name: 'TASK_STARTED', desc: 'Guided review task became active; a.task = task id' },
+  [EventType.TASK_COMPLETED]: { name: 'TASK_COMPLETED', desc: '"Fertig" clicked; a.task = task id, a.dur = duration bucket' },
+  [EventType.TASK_GIVEN_UP]: { name: 'TASK_GIVEN_UP', desc: '"Ich komme nicht weiter" clicked; a.task = task id, a.dur = duration bucket' },
+  [EventType.TASK_ABANDONED]: { name: 'TASK_ABANDONED', desc: 'Task was still active when the page reloaded; a.task = task id, a.dur = duration bucket' },
 };
 
 // ── Screens (sc) ─────────────────────────────────────────────────────────
@@ -190,6 +201,7 @@ export const Screen = {
   SETTINGS_SIGNATURE: 15,
   SETTINGS_DATA_SOURCE: 16,
   SETTINGS_LOGGING: 17,
+  REVIEW_FEEDBACK: 18,
 } as const;
 
 export type ScreenId = (typeof Screen)[keyof typeof Screen];
@@ -213,6 +225,7 @@ export const SCREEN_DICT: Record<number, { name: string; path: string }> = {
   [Screen.SETTINGS_SIGNATURE]: { name: 'SETTINGS_SIGNATURE', path: '/settings' },
   [Screen.SETTINGS_DATA_SOURCE]: { name: 'SETTINGS_DATA_SOURCE', path: '/settings/data' },
   [Screen.SETTINGS_LOGGING]: { name: 'SETTINGS_LOGGING', path: '/settings/logging' },
+  [Screen.REVIEW_FEEDBACK]: { name: 'REVIEW_FEEDBACK', path: '/review/feedback' },
 };
 
 /** Maps a HashRouter pathname to its screen id. Longest-prefix match so nested/dynamic routes resolve. */
@@ -237,7 +250,7 @@ export const PAYLOAD_KEY_ALLOWLIST: ReadonlySet<string> = new Set([
   'dw', 'v', 'g', 'd', 'id', 'pct', 'f', 'ttfi', 'n', 'ec', 'form',
   'kind', 'mime', 'sz', 'ok', 'dur', 'reason', 'from', 'to', 'pid', 'rv',
   'mag', 'cat', 'mode', 'unknownCols', 'rows', 'rowIssues', 'fail', 'op',
-  'ty', 'rate', 'comp', 'sh', 'layout',
+  'ty', 'rate', 'comp', 'sh', 'layout', 'task',
 ]);
 
 /** Buckets a byte/duration/amount magnitude into a small closed set of labels — never the exact number. */

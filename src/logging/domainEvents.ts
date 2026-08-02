@@ -150,3 +150,32 @@ export function logUploadOutcome(
     reason,
   });
 }
+
+// ── Guided review-task runner (review build only) ────────────────────────
+// `taskId` is one of our own static ids (e.g. "mgr-approve-queue") — a
+// stable enum-like label, never participant data, so it's logged as-is.
+
+export function logTaskStarted(logger: Logger | null, taskId: string): void {
+  logger?.emit(EventType.TASK_STARTED, undefined, { task: taskId });
+}
+
+export function logTaskCompleted(logger: Logger | null, taskId: string, durationMs: number): void {
+  logger?.emit(EventType.TASK_COMPLETED, undefined, {
+    task: taskId,
+    dur: bucket(durationMs, DURATION_BUCKETS_MS),
+  });
+}
+
+export function logTaskGivenUp(logger: Logger | null, taskId: string, durationMs: number): void {
+  logger?.emit(EventType.TASK_GIVEN_UP, undefined, {
+    task: taskId,
+    dur: bucket(durationMs, DURATION_BUCKETS_MS),
+  });
+}
+
+export function logTaskAbandoned(logger: Logger | null, taskId: string, durationMs: number): void {
+  logger?.emit(EventType.TASK_ABANDONED, undefined, {
+    task: taskId,
+    dur: bucket(durationMs, DURATION_BUCKETS_MS),
+  });
+}

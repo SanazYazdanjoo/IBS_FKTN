@@ -30,6 +30,8 @@ import DozentAttendance from '../features/dozent/Attendance';
 import ManagerQueue from '../features/manager/Queue';
 import SignatureSettings from '../features/settings/SignatureSettings';
 import DataSourceSettings from '../features/settings/DataSourceSettings';
+import TaskBar from '../features/review-tasks/TaskBar';
+import ReviewFeedbackScreen from '../features/review-tasks/FeedbackScreen';
 import { RoleChip } from './ui';
 
 function roleHome(role: string): string {
@@ -40,6 +42,8 @@ function roleHome(role: string): string {
       return '/dozent';
     case 'MANAGER':
       return '/manager';
+    case 'ACCOUNTING':
+      return '/admin';
     default:
       return '/admin';
   }
@@ -59,7 +63,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { to: '/tn', label: 'Mein Monat', roles: ['TN'], end: true },
   { to: '/tn/correction', label: 'Korrektur', roles: ['TN'] },
-  { to: '/admin', label: 'Übersicht', roles: ['ADMIN'], end: true },
+  { to: '/admin', label: 'Übersicht', roles: ['ADMIN', 'ACCOUNTING'], end: true },
   { to: '/admin/daten', label: 'TN-Daten', roles: ['ADMIN', 'DOZENT'] },
   { to: '/admin/protokoll', label: 'Protokoll', roles: ['ADMIN'] },
   { to: '/dozent', label: 'Anwesenheit', roles: ['DOZENT', 'ADMIN'] },
@@ -71,13 +75,13 @@ const NAV_ITEMS: NavItem[] = [
   {
     to: '/settings/logging',
     label: 'Datenschutz & Protokoll',
-    roles: ['TN', 'ADMIN', 'DOZENT', 'MANAGER'],
+    roles: ['TN', 'ADMIN', 'DOZENT', 'MANAGER', 'ACCOUNTING'],
     footer: true,
   },
   {
     to: '/dokumentation',
     label: 'Documentation',
-    roles: ['ADMIN', 'DOZENT', 'MANAGER'],
+    roles: ['ADMIN', 'DOZENT', 'MANAGER', 'ACCOUNTING'],
     footer: true,
   },
 ];
@@ -183,7 +187,7 @@ function Header() {
  * (Admin, TN, Dozent, Manager) — nicht mehr pro Demo-Nutzer, damit die
  * Auswahl klar auf „welche Rolle simuliere ich gerade" abzielt.
  */
-const ROLE_ORDER = ['ADMIN', 'TN', 'DOZENT', 'MANAGER'] as const;
+const ROLE_ORDER = ['ADMIN', 'TN', 'DOZENT', 'MANAGER', 'ACCOUNTING'] as const;
 
 function RoleSwitcher() {
   const { user, demoUsers, switchUser } = useSession();
@@ -261,6 +265,7 @@ function Shell() {
   return (
     <div className="min-h-screen bg-bg">
       {REVIEW_BUILD && <ReviewBanner />}
+      {REVIEW_BUILD && <TaskBar key={user.role} />}
       <Header />
       <div className="flex">
         <Sidebar />
@@ -292,6 +297,7 @@ function Shell() {
               <Route path="/settings" element={<SignatureSettings />} />
               <Route path="/settings/data" element={<DataSourceSettings />} />
               <Route path="/settings/logging" element={<LoggingSettings />} />
+              <Route path="/review/feedback" element={<ReviewFeedbackScreen />} />
             </Routes>
           </ErrorBoundary>
         </main>

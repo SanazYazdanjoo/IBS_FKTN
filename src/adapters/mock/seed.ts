@@ -36,6 +36,7 @@ export const demoUsers: SessionUser[] = [
   { id: 'u-kaan', name: 'Kaan Fischer (TN)', role: 'TN', participantId: 'PK19' },
   { id: 'u-dozent', name: 'Dozent:in', role: 'DOZENT' },
   { id: 'u-petra', name: 'Petra Lang (Manager)', role: 'MANAGER' },
+  { id: 'u-jonas', name: 'Jonas Brandt (Accounting)', role: 'ACCOUNTING' },
 ];
 
 const toDayMarks = (att: [string, string, string][]): DayMarks[] =>
