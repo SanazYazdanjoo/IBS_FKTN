@@ -29,12 +29,13 @@ export const MONTHS = MONTH_LABELS.map((label, i) => ({
 export const monthLabel = (ym: string): string =>
   MONTHS.find((m) => m.ym === ym)?.label ?? ym;
 
+/** Fiktive Namen — keine reale Person. */
 export const demoUsers: SessionUser[] = [
-  { id: 'u-sanaz', name: 'Sanaz (Admin)', role: 'ADMIN' },
-  { id: 'u-safaa', name: 'Safaa Al Helal (TN)', role: 'TN', participantId: 'PK01' },
-  { id: 'u-sueheyl', name: 'Süheyl Sönmezoglu (TN)', role: 'TN', participantId: 'PK19' },
+  { id: 'u-mira', name: 'Mira Vogel (Admin)', role: 'ADMIN' },
+  { id: 'u-lina', name: 'Lina Keller (TN)', role: 'TN', participantId: 'PK01' },
+  { id: 'u-kaan', name: 'Kaan Fischer (TN)', role: 'TN', participantId: 'PK19' },
   { id: 'u-dozent', name: 'Dozent:in', role: 'DOZENT' },
-  { id: 'u-kristin', name: 'Kristin (Manager)', role: 'MANAGER' },
+  { id: 'u-petra', name: 'Petra Lang (Manager)', role: 'MANAGER' },
 ];
 
 const toDayMarks = (att: [string, string, string][]): DayMarks[] =>

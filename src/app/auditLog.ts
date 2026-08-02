@@ -12,7 +12,7 @@ export interface AuditEntry {
   id: string;
   /** ISO-Zeitstempel des Ereignisses. */
   at: string;
-  /** Name/Rolle der handelnden Person, z. B. "Sanaz (Admin)". */
+  /** Name/Rolle der handelnden Person, z. B. "Mira Vogel (Admin)". */
   actor: string;
   /** Menschenlesbare Beschreibung der Änderung. */
   message: string;

@@ -8,6 +8,7 @@ import {
   parseMonat,
   parseTicketart,
   parseZustand,
+  statusToZustand,
   courseTypeFromId,
 } from '../../adapters/excel/values';
 import { ExcelWorkbookSource } from '../../adapters/excel/workbook';
@@ -28,7 +29,7 @@ function buildWorkbook(headers: unknown[], rows: unknown[][]): ExcelJS.Workbook 
 }
 
 const ROW_PK01 = [
-  'PK01', 'Al Helal', 'Safaa', '1. (Januar)', 2026, '', 21, '27,04,26', 'Fertig (bezahlt)',
+  'PK01', 'Keller', 'Lina', '1. (Januar)', 2026, '', 21, '27,04,26', 'Fertig (bezahlt)',
   'ÖPNV', 'Abo_Karte', 'nein', 'verfügbar', 'verfügbar', 'verfügbar', 'verfügbar', 'ja',
   20, 60.0, 'verfügbar', '',
 ];
@@ -102,7 +103,16 @@ describe('tolerant value parsing (real-file vocabulary)', () => {
     expect(parseZustand('Buchhaltung').status).toBe('SENT_TO_ACCOUNTING');
     expect(parseZustand('Fehlende_Nachweisen').status).toBe('AWAITING_CORRECTION');
     expect(parseZustand('Nicht_relevant').notRelevant).toBe(true);
+  });
+
+  it('Zustand question flag: legacy real-name literal still reads, new neutral form is canonical', () => {
+    // legacy — real staff first names, older workbooks only, read-only
     expect(parseZustand('Frage (von Tine/Kristin)').question).toBe(true);
+    expect(parseZustand('In_bearbeitung (Sanaz)').status).toBe('IN_REVIEW');
+    // current — neutral, role-based form written going forward
+    expect(parseZustand('Frage (von Verwaltung/Leitung)').question).toBe(true);
+    expect(parseZustand('In_bearbeitung (Verwaltung)').status).toBe('IN_REVIEW');
+    expect(statusToZustand('IN_REVIEW')).toBe('In_bearbeitung (Verwaltung)');
   });
 
   it("Ticketart incl. 'unbekannt ?'; ja/nein incl. 'to check' → unknown", () => {
@@ -150,7 +160,7 @@ describe('workbook round-trip', () => {
     expect(again.record.status).toBe('SENT_TO_ACCOUNTING');
     expect(again.record.amountOverride).toBe(58.33);
     // Foreign cell untouched: Nachname still there.
-    expect(again.record.participantName).toContain('Al Helal');
+    expect(again.record.participantName).toContain('Keller');
   });
 
   it('refuses to write when structure validation failed', async () => {

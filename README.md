@@ -26,9 +26,9 @@ amounts — the root fix for Problem 3).
 **2. The open E/K rule question is a single flag.**
 `RuleConfig.sickDaysAreReimbursable` in `src/domain/rules.ts` encodes the
 documented conflict between the Fahrkosten instruction ("x, E = present")
-and the Anwesenheitsberechnung (E, K, X, (x) count). Default: `false`
-(conservative — no travel on sick days). When Kristin decides, flip one
-boolean; tests cover both paths. Presence-for-the-list and
+and the Anwesenheitsberechnung (E, K, X, (x) count). Default: `true`
+(the legend reading — K/Kulanztag counts as reimbursable). When die Leitung
+decides otherwise, flip one boolean; tests cover both paths. Presence-for-the-list and
 reimbursable-for-the-money are deliberately separate concepts in
 `attendance.ts`.
 

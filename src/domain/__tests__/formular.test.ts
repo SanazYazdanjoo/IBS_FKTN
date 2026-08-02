@@ -51,7 +51,7 @@ describe('PKW km-formula (from the official Formular: x 0,20 €/km)', () => {
 function makeRecord(overrides: Partial<MonthRecord> = {}): MonthRecord {
   return {
     participantId: 'PK01',
-    participantName: 'Safaa Al Helal',
+    participantName: 'Lina Keller',
     month: '2026-01',
     ticketType: 'ABO',
     ticketPriceEur: 34, // Sozialticket 2026
@@ -76,10 +76,10 @@ function makeData(record: MonthRecord): FormularData {
     record,
     view: computeMonthView(record, defaultRules),
     master: {
-      tnId: 'PK01', nachname: 'Al Helal', vorname: 'Safaa',
+      tnId: 'PK01', nachname: 'Keller', vorname: 'Lina',
       strasse: 'Jakob-Kaiser-Ring', hausnr: '4', plz: '99087', ort: 'Erfurt',
       fahrtroute: 'Erfurt Stadtverkehr', entfernungKm: 4.7, kennzeichen: '',
-      kontoinhaber: 'Safaa Al Helal', iban: 'DE00 0000', bank: 'Sparkasse', bic: 'HELADEF1WEM',
+      kontoinhaber: 'Lina Keller', iban: 'DE00 0000', bank: 'Sparkasse', bic: 'HELADEF1WEM',
       email: '', verkehrsmittel: 'ÖPNV', ticket: 'Deutschlandticket', ticketart: 'Abo-karte',
       aboNummer: '', vmtZone: '', bemerkungen: '', lastUpdate: '', berechnung: '', cloud: '',
     },
@@ -124,8 +124,8 @@ describe('fills the REAL template (probe, sandbox only)', () => {
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(filled);
     const ws = wb.worksheets[0];
-    expect(ws.getCell('A6').value).toBe('Al Helal');
-    expect(ws.getCell('D6').value).toBe('Safaa');
+    expect(ws.getCell('A6').value).toBe('Keller');
+    expect(ws.getCell('D6').value).toBe('Lina');
     expect(ws.getCell('K20').value).toBe(34);
     // 34 ÷ 21 × 18 = 29.14 → Abzug = 34 − 29.14 = 4.86
     expect(ws.getCell('K32').value).toBe(-4.86);

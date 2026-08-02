@@ -6,6 +6,7 @@ import type { MonthRecord, SessionUser } from '../domain/types';
 import { MONTH as DEFAULT_MONTH } from '../adapters/mock/seed';
 import type { AttendanceWorkbook } from '../adapters/excel/attendanceWorkbook';
 import type { ExcelPersistence } from '../adapters/excel/excelStorage';
+import { REVIEW_BUILD } from './reviewBuild';
 
 /** Storage-Oberfläche; get-or-create existiert nur im Demo-Adapter. */
 export type AppStorage = StorageAdapter & {
@@ -64,7 +65,7 @@ interface SessionContextValue {
 const SessionContext = createContext<SessionContextValue | null>(null);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const auth = useMemo(() => createMockAuth('u-sanaz'), []);
+  const auth = useMemo(() => createMockAuth('u-mira'), []);
   const mock = useMemo(() => createMockStorage(), []);
   const [user, setUser] = useState<SessionUser>(auth.currentUser());
   const [storage, setStorage] = useState<AppStorage>(mock);
@@ -83,6 +84,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   };
 
   const setExcelStorage: SessionContextValue['setExcelStorage'] = (next, source) => {
+    // Review build: mock data only, no matter what a caller passes in —
+    // the last line of defense behind the disabled UI in DataSourceSettings.
+    if (REVIEW_BUILD) return;
     setStorage(next);
     setDataSource(source);
     setMonth(`${source.year}-${String(source.month).padStart(2, '0')}`);

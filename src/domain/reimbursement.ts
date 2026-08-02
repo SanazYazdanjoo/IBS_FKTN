@@ -15,7 +15,7 @@ export function formatEuro(value: number): string {
 
 export interface EligibilityInput {
   distanceKm: number;
-  /** §VI: <3 km is reimbursable only with a justification approved by Kristin. */
+  /** §VI: <3 km is reimbursable only with a justification approved by die Leitung. */
   hasApprovedDistanceException: boolean;
 }
 

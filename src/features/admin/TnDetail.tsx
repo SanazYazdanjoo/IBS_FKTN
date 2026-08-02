@@ -556,7 +556,7 @@ export default function TnDetail() {
                   );
                 }}
               >
-                Bestätigen → an Kristin
+                Bestätigen → an die Leitung
               </PrimaryButton>
               <Link
                 to={`/admin/tn/${record.participantId}/formular`}
@@ -656,7 +656,7 @@ function ExceptionForm({
         className="w-full rounded-lg border border-line p-2 text-sm"
         placeholder="z. B. Upload erst am 16.07. — Krankenhausaufenthalt, Nachweis liegt vor."
       />
-      <p className="text-xs text-ink-dim">Sichtbarkeit · Genehmigung: Team · Kristin (Pflicht)</p>
+      <p className="text-xs text-ink-dim">Sichtbarkeit · Genehmigung: Team · die Leitung (Pflicht)</p>
       <PrimaryButton
         disabled={reason.trim().length === 0}
         onClick={() => onSubmit(category, reason.trim())}

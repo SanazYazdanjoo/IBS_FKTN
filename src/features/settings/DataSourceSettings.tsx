@@ -9,10 +9,11 @@ import {
 import { AttendanceWorkbook } from '../../adapters/excel/attendanceWorkbook';
 import { createFolderPersistence, openProjectFolder } from '../../adapters/excel/folderSource';
 import type { ExcelValidationReport } from '../../adapters/excel/workbook';
-import { GoogleSheetsAttendanceSource } from '../../adapters/attendance/googleSheetsSource';
+import type { GoogleSheetsAttendanceSource as GoogleSheetsAttendanceSourceType } from '../../adapters/attendance/googleSheetsSource';
 import { LocalYearWorkbook } from '../../adapters/attendance/localYearWorkbook';
 import { useLogger } from '../../logging/react.tsx';
 import { logAdapterSelected, logWorkbookValidation } from '../../logging/domainEvents.ts';
+import { REVIEW_BUILD, SHEETS_SOURCE_ENABLED } from '../../app/reviewBuild';
 
 export default function DataSourceSettings() {
   const {
@@ -32,6 +33,7 @@ export default function DataSourceSettings() {
   const [loading, setLoading] = useState(false);
 
   const openFolder = async () => {
+    if (REVIEW_BUILD) return;
     setError('');
     setLoading(true);
     try {
@@ -92,6 +94,7 @@ export default function DataSourceSettings() {
   };
 
   const openExcel = async () => {
+    if (REVIEW_BUILD) return;
     setError('');
     setLoading(true);
     try {
@@ -132,6 +135,24 @@ export default function DataSourceSettings() {
       setLoading(false);
     }
   };
+
+  if (REVIEW_BUILD) {
+    return (
+      <div className="space-y-4">
+        <Eyebrow>Einstellungen · Datenquelle</Eyebrow>
+        <Card>
+          <p className="font-semibold">
+            Aktive Quelle: <span className="text-ink-dim">Demo-Daten</span>
+          </p>
+          <p className="mt-2 text-sm text-ink-dim">
+            Demofassung: Datei- und Ordner-Ladepfade sowie die Google-Sheets-Anbindung sind
+            deaktiviert. Es lassen sich in dieser Fassung keine echten Dateien öffnen oder
+            überschreiben.
+          </p>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -267,7 +288,7 @@ export default function DataSourceSettings() {
       )}
 
       <YearListPanel />
-      <SheetsPanel />
+      {SHEETS_SOURCE_ENABLED && <SheetsPanel />}
     </div>
   );
 }
@@ -297,6 +318,18 @@ function pickFileFallback(): Promise<File> {
  *
  * Nur lesend — mit einem API-Key ist kein Schreiben möglich. Eingaben in der
  * Anwesenheitsliste gehen daher weiterhin an die darunterliegende Quelle.
+ *
+ * NFR-01: sends the spreadsheet ID and API key to sheets.googleapis.com —
+ * a real external SaaS call. Off by default (VITE_ENABLE_SHEETS_SOURCE),
+ * forced off entirely in the review build (see src/app/reviewBuild.ts).
+ * Local-experiment only — must never be pointed at a real cohort's sheet.
+ *
+ * The adapter module is dynamically imported inside connect() below, not
+ * statically at the top of this file: that keeps sheets.googleapis.com out
+ * of the main bundle entirely (it ends up in its own chunk, fetched only if
+ * this panel is both enabled and actually used) rather than merely
+ * unreachable-but-present, which is what the build-time no-external-URL
+ * guard test checks for.
  */
 function SheetsPanel() {
   const { storage, month: ym, refreshStorage } = useSession();
@@ -317,7 +350,10 @@ function SheetsPanel() {
     setInfo(null);
     setBusy(true);
     try {
-      const source = new GoogleSheetsAttendanceSource({
+      const { GoogleSheetsAttendanceSource } = await import(
+        '../../adapters/attendance/googleSheetsSource'
+      );
+      const source: GoogleSheetsAttendanceSourceType = new GoogleSheetsAttendanceSource({
         spreadsheetId: spreadsheetId.trim(),
         apiKey: apiKey.trim(),
         dailyTab: dailyTab.trim(),

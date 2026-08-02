@@ -9,6 +9,7 @@ import { LoggingProvider, useScreenLog } from '../logging/react.tsx';
 import { DevPanel } from '../logging/DevPanel.tsx';
 import { screenForPath, SCREEN_DICT } from '../logging/events.ts';
 import { version as appVersion } from '../../package.json';
+import { REVIEW_BUILD, GIT_SHA } from './reviewBuild';
 import LoggingSettings from '../features/settings/LoggingSettings';
 import TnFlow from '../features/tn/TnFlow';
 import TnCorrection from '../features/tn/Correction';
@@ -236,6 +237,22 @@ function MobileNav() {
   );
 }
 
+/**
+ * Persistent, non-dismissable — reviewers must never mistake this build for
+ * live operation. Doubles as the unobtrusive version/sha readout so feedback
+ * can be tied to a specific build.
+ */
+function ReviewBanner() {
+  return (
+    <div className="flex items-center justify-between gap-2 bg-highlight px-4 py-1.5 text-xs font-semibold text-ink">
+      <span>Demofassung · Testdaten · kein Echtbetrieb</span>
+      <span className="font-mono font-normal text-ink-dim">
+        v{appVersion} · {GIT_SHA}
+      </span>
+    </div>
+  );
+}
+
 function Shell() {
   const { user } = useSession();
   const location = useLocation();
@@ -243,6 +260,7 @@ function Shell() {
   useScreenLog(screen);
   return (
     <div className="min-h-screen bg-bg">
+      {REVIEW_BUILD && <ReviewBanner />}
       <Header />
       <div className="flex">
         <Sidebar />

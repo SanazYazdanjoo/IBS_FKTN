@@ -12,12 +12,12 @@ async function buildAttendanceBuffer(): Promise<ArrayBuffer> {
   // Block 1 at arbitrary row 17
   ws.getRow(17).values = [undefined, 'TN', undefined, undefined, 'M 5.01', undefined, 'D 6.01'];
   ws.getRow(18).values = [undefined, undefined, undefined, undefined, 'V', 'N', 'V', 'N'];
-  ws.getRow(19).values = [undefined, 'PK01', 'Al Helal', 'Safaa', 'E', 'E', 'X', 'X'];
+  ws.getRow(19).values = [undefined, 'PK01', 'Keller', 'Lina', 'E', 'E', 'X', 'X'];
   ws.getRow(20).values = [undefined, 'PK03', 'Alchadaida', 'Najwa', '(x)', 'U', 'A', 'A'];
   // Block 2
   ws.getRow(31).values = [undefined, 'TN', undefined, undefined, 'M 12.01', undefined, 'D 13.01'];
   ws.getRow(32).values = [undefined, undefined, undefined, undefined, 'V', 'N', 'V', 'N'];
-  ws.getRow(33).values = [undefined, 'PK01', 'Al Helal', 'Safaa', 'K', '', 'X', 'X'];
+  ws.getRow(33).values = [undefined, 'PK01', 'Keller', 'Lina', 'K', '', 'X', 'X'];
   ws.getRow(34).values = [undefined, 'PK03', 'Alchadaida', 'Najwa', 'X', 'X', 'E', 'E'];
   return (await wb.xlsx.writeBuffer()) as ArrayBuffer;
 }

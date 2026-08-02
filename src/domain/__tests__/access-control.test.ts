@@ -5,7 +5,7 @@ import { MONTH } from '../../adapters/mock/seed';
 
 describe('data isolation (NFR-01: privacy by design, not by CSS)', () => {
   it('a TN receives ONLY their own record from list queries', async () => {
-    const auth = createMockAuth('u-safaa');
+    const auth = createMockAuth('u-lina');
     const storage = createMockStorage();
     const records = await storage.listMonthRecords(auth.currentUser(), MONTH);
     expect(records).toHaveLength(1);
@@ -13,7 +13,7 @@ describe('data isolation (NFR-01: privacy by design, not by CSS)', () => {
   });
 
   it("a TN requesting another TN's record gets AccessDeniedError", async () => {
-    const auth = createMockAuth('u-safaa');
+    const auth = createMockAuth('u-lina');
     const storage = createMockStorage();
     await expect(
       storage.getMonthRecord(auth.currentUser(), 'PK19', MONTH),
@@ -21,10 +21,10 @@ describe('data isolation (NFR-01: privacy by design, not by CSS)', () => {
   });
 
   it("a TN cannot write another TN's record", async () => {
-    const auth = createMockAuth('u-sueheyl');
+    const auth = createMockAuth('u-kaan');
     const storage = createMockStorage();
     const foreign = await storage.getMonthRecord(
-      { id: 'u-sanaz', name: 'Sanaz', role: 'ADMIN' },
+      { id: 'u-mira', name: 'Mira', role: 'ADMIN' },
       'PK01',
       MONTH,
     );
@@ -34,7 +34,7 @@ describe('data isolation (NFR-01: privacy by design, not by CSS)', () => {
   });
 
   it('staff roles see all records', async () => {
-    const auth = createMockAuth('u-sanaz');
+    const auth = createMockAuth('u-mira');
     const storage = createMockStorage();
     const records = await storage.listMonthRecords(auth.currentUser(), MONTH);
     expect(records.length).toBeGreaterThanOrEqual(5);
@@ -42,7 +42,7 @@ describe('data isolation (NFR-01: privacy by design, not by CSS)', () => {
 
   it('only staff can record exceptions', async () => {
     const storage = createMockStorage();
-    const tn = createMockAuth('u-safaa').currentUser();
+    const tn = createMockAuth('u-lina').currentUser();
     await expect(
       storage.addException(tn, 'PK01', MONTH, {
         id: 'x',

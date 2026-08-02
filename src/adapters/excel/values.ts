@@ -52,15 +52,27 @@ export function docStateToExcel(state: DocumentState | 'NOT_APPLICABLE'): string
 }
 
 // ── Zustand ↔ ProcessStatus ───────────────────────────────────────────────
-/** Zustand ↔ Pipeline-Status. Unbekannte Werte bleiben erhalten und werden gemeldet. */
+/**
+ * Zustand ↔ Pipeline-Status. Unbekannte Werte bleiben erhalten und werden gemeldet.
+ *
+ * The two `legacy` entries below are read-only compatibility for older
+ * workbooks that still carry real staff first names in this cell
+ * ("Frage (von Tine/Kristin)", "In_bearbeitung (Sanaz)"). New files are
+ * written with the neutral role-based forms further down; both read the
+ * same way, so opening an old workbook never breaks the pipeline status.
+ */
 const ZUSTAND_TO_STATUS: Record<string, ProcessStatus | 'NOT_RELEVANT' | 'QUESTION'> = {
   'nicht_relevant': 'NOT_RELEVANT',
   'fehlende_nachweisen': 'AWAITING_CORRECTION',
-  'in_bearbeitung (sanaz)': 'IN_REVIEW',
   'in_bearbeitung': 'IN_REVIEW',
-  'frage (von tine/kristin)': 'QUESTION',
   'buchhaltung': 'SENT_TO_ACCOUNTING',
   'fertig (bezahlt)': 'PAID',
+  // legacy (real names, read-only — do not write these forms)
+  'in_bearbeitung (sanaz)': 'IN_REVIEW',
+  'frage (von tine/kristin)': 'QUESTION',
+  // current (neutral, role-based — canonical for reading and writing)
+  'in_bearbeitung (verwaltung)': 'IN_REVIEW',
+  'frage (von verwaltung/leitung)': 'QUESTION',
 };
 
 export function parseZustand(raw: unknown): {
@@ -89,7 +101,7 @@ export function statusToZustand(status: ProcessStatus): string {
     case 'NOT_SUBMITTED':
       return 'Fehlende_Nachweisen';
     default:
-      return 'In_bearbeitung (Sanaz)';
+      return 'In_bearbeitung (Verwaltung)';
   }
 }
 

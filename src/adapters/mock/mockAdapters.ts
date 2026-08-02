@@ -6,7 +6,7 @@ import { monthCalendar } from '../../domain/holidays';
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
-export function createMockAuth(initialUserId = 'u-sanaz'): AuthAdapter {
+export function createMockAuth(initialUserId = 'u-mira'): AuthAdapter {
   let current = demoUsers.find((u) => u.id === initialUserId) ?? demoUsers[0];
   return {
     currentUser: () => current,
