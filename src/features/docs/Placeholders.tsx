@@ -27,10 +27,6 @@ export function AutoReminderEmails() {
   return <Placeholder title="Auto-Reminder Emails" />;
 }
 
-export function Vergleichsrechnung() {
-  return <Placeholder title="Vergleichrechnung" />;
-}
-
 /** Ablageort der Grafik; die Datei wird separat hinterlegt. */
 const DOC_SVG = `${import.meta.env.BASE_URL}assets/documentation.svg`;
 

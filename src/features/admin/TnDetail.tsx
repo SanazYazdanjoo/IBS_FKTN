@@ -16,11 +16,13 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
+import { useVmtFares } from '../../app/vmt-fares-context';
 import {
   Card,
   CheckItem,
   ExceptionFlag,
   Eyebrow,
+  FormulaBox,
   KnownFlag,
   PrimaryButton,
   SecondaryButton,
@@ -30,7 +32,8 @@ import {
 } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
-import { MONTHS, monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { toFareLookup } from '../../domain/vmtFares';
+import { MONTHS, monthLabel } from '../../adapters/mock/seed';
 import { getMaster } from '../../adapters/masters';
 import { logChange } from '../../app/auditLog';
 import type { ExceptionCategory, MonthRecord, ProofKind } from '../../domain/types';
@@ -49,6 +52,8 @@ export default function TnDetail() {
   const { participantId } = useParams<{ participantId: string }>();
   const { user, storage, month: MONTH, setMonth: setGlobalMonth } = useSession();
   const { rules } = useRules();
+  const { fares } = useVmtFares();
+  const vmtSingleFaresEur = toFareLookup(fares);
   const [allMonths, setAllMonths] = useState<(MonthRecord | null)[]>([]);
   const [selectedYm, setSelectedYm] = useState<string>(MONTH);
   const [loading, setLoading] = useState(true);
@@ -684,54 +689,3 @@ function MasterField({
   );
 }
 
-/**
- * Beschriftete Formel-Darstellung: über jedem Wert steht sein Name
- * (z. B. „Ticketpreis", „Arbeitstage", „Anwesenheitstage"), darunter
- * der Wert; Operatoren stehen groß zwischen den Termen. So ist auf
- * einen Blick klar, welche Zahl was bedeutet.
- * Fällt auf `raw` zurück, wenn keine strukturierten Terme vorliegen
- * (z. B. bei VMT-Einzelfahrten, deren Formel textuell aus dem Trace kommt).
- */
-function FormulaBox({
-  label,
-  terms,
-  raw,
-  result,
-}: {
-  label?: string;
-  terms?: { name: string; value: string; op?: string }[];
-  raw?: string;
-  result: string;
-}) {
-  return (
-    <div className="rounded-xl border border-line bg-surface p-3">
-      {label && <p className="mb-2 text-xs font-semibold text-ink-dim">{label}</p>}
-      {terms ? (
-        <div className="flex flex-wrap items-end gap-x-2 gap-y-2 text-sm">
-          {terms.map((t, i) => (
-            <div key={t.name} className="flex items-end gap-2">
-              {i > 0 && t.op && (
-                <span className="pb-0.5 font-display text-xl text-ink-dim">{t.op}</span>
-              )}
-              <div className="text-center">
-                <div className="text-[10px] uppercase tracking-wider text-ink-dim">
-                  {t.name}
-                </div>
-                <div className="font-display text-lg font-bold">{t.value}</div>
-              </div>
-            </div>
-          ))}
-          <span className="pb-0.5 font-display text-xl text-ink-dim">=</span>
-          <div className="text-center">
-            <div className="text-[10px] uppercase tracking-wider text-ink-dim">Erstattung</div>
-            <div className="font-display text-lg font-bold text-primary">{result}</div>
-          </div>
-        </div>
-      ) : (
-        <p className="text-sm">
-          <span className="font-mono">{raw}</span> = <strong>{result}</strong>
-        </p>
-      )}
-    </div>
-  );
-}

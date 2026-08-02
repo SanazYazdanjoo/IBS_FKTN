@@ -432,6 +432,58 @@ export function CourseChip({
  * TN-Name in Kursfarbe + Kurs-Chip. Zentraler Baustein für alle Ansichten,
  * damit die Farbcodierung überall identisch ist (Wireframe-Vorgabe).
  */
+/**
+ * Beschriftete Formel-Darstellung: über jedem Wert steht sein Name
+ * (z. B. „Ticketpreis", „Arbeitstage", „Anwesenheitstage"), darunter
+ * der Wert; Operatoren stehen groß zwischen den Termen. So ist auf
+ * einen Blick klar, welche Zahl was bedeutet.
+ * Fällt auf `raw` zurück, wenn keine strukturierten Terme vorliegen
+ * (z. B. bei VMT-Einzelfahrten, deren Formel textuell aus dem Trace kommt).
+ */
+export function FormulaBox({
+  label,
+  terms,
+  raw,
+  result,
+}: {
+  label?: string;
+  terms?: { name: string; value: string; op?: string }[];
+  raw?: string;
+  result: string;
+}) {
+  return (
+    <div className="rounded-xl border border-line bg-surface p-3">
+      {label && <p className="mb-2 text-xs font-semibold text-ink-dim">{label}</p>}
+      {terms ? (
+        <div className="flex flex-wrap items-end gap-x-2 gap-y-2 text-sm">
+          {terms.map((t, i) => (
+            <div key={t.name} className="flex items-end gap-2">
+              {i > 0 && t.op && (
+                <span className="pb-0.5 font-display text-xl text-ink-dim">{t.op}</span>
+              )}
+              <div className="text-center">
+                <div className="text-[10px] uppercase tracking-wider text-ink-dim">
+                  {t.name}
+                </div>
+                <div className="font-display text-lg font-bold">{t.value}</div>
+              </div>
+            </div>
+          ))}
+          <span className="pb-0.5 font-display text-xl text-ink-dim">=</span>
+          <div className="text-center">
+            <div className="text-[10px] uppercase tracking-wider text-ink-dim">Erstattung</div>
+            <div className="font-display text-lg font-bold text-primary">{result}</div>
+          </div>
+        </div>
+      ) : (
+        <p className="text-sm">
+          <span className="font-mono">{raw}</span> = <strong>{result}</strong>
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function TnName({
   id,
   name,

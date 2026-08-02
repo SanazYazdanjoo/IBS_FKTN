@@ -3,6 +3,7 @@ import { HashRouter, Link, Navigate, NavLink, Route, Routes, useLocation } from 
 import { ErrorBoundary } from './ErrorBoundary';
 import { SessionProvider, useSession } from './session';
 import { RulesProvider } from './rules-context';
+import { VmtFaresProvider } from './vmt-fares-context';
 import { ParticipantNamesProvider } from './participant-names';
 import HeaderSearch from './HeaderSearch';
 import { LoggingProvider, useScreenLog } from '../logging/react.tsx';
@@ -17,11 +18,8 @@ import Uebersicht from '../features/admin/Uebersicht';
 import YearOverview from '../features/admin/YearOverview';
 import YearCalendar from '../features/admin/YearCalendar';
 import CalendarOverlay from './CalendarOverlay';
-import {
-  AutoReminderEmails,
-  Documentation,
-  Vergleichsrechnung,
-} from '../features/docs/Placeholders';
+import { AutoReminderEmails, Documentation } from '../features/docs/Placeholders';
+import Vergleichsrechnung from '../features/admin/Vergleichsrechnung';
 import TnData from '../features/admin/TnData';
 import AuditLogScreen from '../features/admin/AuditLog';
 import TnDetail from '../features/admin/TnDetail';
@@ -71,7 +69,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/dozent', label: 'Anwesenheit', roles: ['DOZENT', 'ADMIN'] },
   { to: '/manager', label: 'Freigaben', roles: ['MANAGER', 'ADMIN'], pending: true },
   { to: '/reminder', label: 'Auto-Reminder Emails', roles: ['ADMIN'], pending: true },
-  { to: '/vergleichsrechnung', label: 'Vergleichrechnung', roles: ['ADMIN'], pending: true },
+  { to: '/vergleichsrechnung', label: 'Vergleichsrechnung', roles: ['ADMIN', 'ACCOUNTING'] },
   { to: '/settings', label: 'Einstellungen', roles: ['ADMIN'], end: true, pending: true },
   { to: '/settings/data', label: 'Datenquelle', roles: ['ADMIN'], pending: true },
   {
@@ -330,11 +328,13 @@ export default function App() {
     <SessionProvider>
       <LoggingBridge>
         <RulesProvider>
+          <VmtFaresProvider>
           <ParticipantNamesProvider>
           <HashRouter>
             <Shell />
           </HashRouter>
           </ParticipantNamesProvider>
+          </VmtFaresProvider>
         </RulesProvider>
       </LoggingBridge>
     </SessionProvider>

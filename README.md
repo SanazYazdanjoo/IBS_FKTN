@@ -10,17 +10,17 @@ Phase 1 (thematic analysis, personas, journeys, requirements) → Phase 2
 
 ```bash
 npm install
-npm test        # 143 tests across 23 files — must stay green
+npm test        # 156 tests across 25 files — must stay green
 npm run dev     # shell with role switcher at localhost:5173
 ```
 
 Real, functional screens are wired up across five roles — TN, Dozent,
 Manager, Admin, and Accounting (the last added for the review build, so an
 Accountant reviewer has a real login and a real path to the Formular-check
-task, not a borrowed Admin session). Three screens remain explicit
+task, not a borrowed Admin session). Two screens remain explicit
 placeholders
-(`src/features/docs/Placeholders.tsx`: Auto-Reminder Emails,
-Vergleichsrechnung, and the Documentation viewer — each says so in the UI).
+(`src/features/docs/Placeholders.tsx`: Auto-Reminder Emails and the
+Documentation viewer — each says so in the UI).
 Everything else in `src/features/<role>/` is real and functional, not a
 scaffold — see the route table in `src/app/App.tsx` for the full list.
 
@@ -69,11 +69,12 @@ Covered by `access-control.test.ts`.
 
 **5. Rules are data, not scattered code.**
 Prices, thresholds, the signature mode (Modus A Papier / Modus B digital,
-FR-09), and the deputy-activation delay (P16) all live in `RuleConfig`.
-VMT single fares are a maintained table in the seed (`vmtSingleFaresEur`),
-replacing the manual lookup (P15). See `docs/DECISIONS.md` for why Modus B
-and the deputy automation aren't switched on yet — both are implemented,
-neither is a technical gap.
+FR-09), and the deputy-activation delay (P16) all live in `RuleConfig`. VMT
+single fares are a maintained table (`src/domain/vmtFares.ts`, held at
+runtime by `src/app/vmt-fares-context.tsx`), editable from
+`/vergleichsrechnung`, replacing the manual per-case lookup (P15). See
+`docs/DECISIONS.md` for why Modus B and the deputy automation aren't
+switched on yet — both are implemented, neither is a technical gap.
 
 ## Review build (`VITE_REVIEW_BUILD=1`)
 

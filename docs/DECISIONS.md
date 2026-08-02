@@ -63,6 +63,45 @@ threshold keeps the requirement visible and testable (P16, `REQUIREMENTS.md`)
 without quietly deciding, on the institute's behalf, how "manager absence"
 gets detected.
 
+## VMT-Einzelfahrpreis-Tabelle — in-memory context, not adapter-persisted (P15)
+
+`src/domain/vmtFares.ts` defines the fare table shape (`VmtFareTable`); at
+runtime it lives in `src/app/vmt-fares-context.tsx` (`VmtFaresProvider`),
+the same in-memory-context pattern as `RulesProvider`
+(`src/app/rules-context.tsx`). Editing a fare on `/vergleichsrechnung`
+updates that context directly, which every reader downstream of it
+recomputes from immediately (no separate "recalculate" step).
+
+**Why in-memory, not behind `StorageAdapter`:** the rest of the app's
+data — attendance, documents, status — already goes through
+`StorageAdapter`, and in principle the fare table could too. It doesn't yet
+for the same reason `RuleConfig` doesn't: there is no real backend behind
+the mock adapter for either to persist into, and inventing one only for
+this table would be presentational (data resets on reload either way, same
+as every other rule/config value in the app today). Following the existing
+`RulesProvider` convention keeps the two "small, admin-maintained config
+tables" in the app consistent with each other instead of one gaining a
+different persistence story than the other for no functional reason.
+
+**Where this stops being enough:** the moment a real deployment persists
+`MonthRecord`s (the Excel adapter, or a future backend), the fare table
+should move behind `StorageAdapter` too, so a fare survives a reload the
+same way an attendance mark does. Until then, `vmtFaresSeed` in
+`src/adapters/mock/seed.ts` supplies the starting values each session.
+
+**Known gap:** only `TnDetail.tsx` and `/vergleichsrechnung` itself read
+`VmtFaresProvider` live. `Dashboard.tsx`, `DashboardOverview.tsx`,
+`TnFlow.tsx`, `Formular.tsx`, and `Queue.tsx` still read the seed snapshot
+(`vmtSingleFaresEur`, derived once from `vmtFaresSeed` at load) rather than
+the live context, so a fare edited on `/vergleichsrechnung` won't be
+reflected there until reload. Migrating those five call sites was left out
+of this change on purpose — the approval queue and the Formular filler are
+explicitly out of scope for the Vergleichsrechnung work, and touching the
+Dashboard screens for this alone would widen the change for no requirement
+that asked for it. Worth revisiting together with the `StorageAdapter`
+migration above, at which point every reader would naturally go through
+one adapter call instead of two parallel sources.
+
 ## Auto-Reminder emails — copy only, no send automation (FR-01)
 
 The Admin dashboard (`src/features/admin/Dashboard.tsx`) describes an
