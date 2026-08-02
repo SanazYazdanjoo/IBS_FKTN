@@ -12,7 +12,7 @@ import { join, relative } from 'node:path';
 
 const ROOT = process.cwd();
 
-const EXCLUDE_DIRS = new Set(['node_modules', '.git', 'dist', 'build', 'coverage']);
+const EXCLUDE_DIRS = new Set(['node_modules', '.git', 'dist', 'dist-review', 'build', 'coverage']);
 const BINARY_EXTENSIONS = new Set([
   '.woff2', '.woff', '.ttf', '.eot', '.png', '.jpg', '.jpeg', '.ico', '.gif',
   '.xlsx', '.zip', '.pdf',

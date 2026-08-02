@@ -32,6 +32,8 @@ import SignatureSettings from '../features/settings/SignatureSettings';
 import DataSourceSettings from '../features/settings/DataSourceSettings';
 import TaskBar from '../features/review-tasks/TaskBar';
 import ReviewFeedbackScreen from '../features/review-tasks/FeedbackScreen';
+import FeedbackButton from '../features/feedback/FeedbackButton';
+import FeedbackLog from '../features/feedback/FeedbackLog';
 import { RoleChip } from './ui';
 
 function roleHome(role: string): string {
@@ -84,6 +86,10 @@ const NAV_ITEMS: NavItem[] = [
     roles: ['ADMIN', 'DOZENT', 'MANAGER', 'ACCOUNTING'],
     footer: true,
   },
+  // Review build only — where collected feedback is reviewed/exported afterwards.
+  ...(REVIEW_BUILD
+    ? [{ to: '/review/log', label: 'Feedback-Protokoll', roles: ['ADMIN'], footer: true } as NavItem]
+    : []),
 ];
 
 /**
@@ -156,7 +162,7 @@ function Header() {
           className="mr-2 flex items-center gap-2 font-display text-lg font-bold"
         >
           <img
-            src="/logo.png"
+            src={`${import.meta.env.BASE_URL}logo.png`}
             alt="Fahrtkostenerstattung Logo"
             width={32}
             height={32}
@@ -266,6 +272,7 @@ function Shell() {
     <div className="min-h-screen bg-bg">
       {REVIEW_BUILD && <ReviewBanner />}
       {REVIEW_BUILD && <TaskBar key={user.role} />}
+      {REVIEW_BUILD && <FeedbackButton />}
       <Header />
       <div className="flex">
         <Sidebar />
@@ -298,6 +305,7 @@ function Shell() {
               <Route path="/settings/data" element={<DataSourceSettings />} />
               <Route path="/settings/logging" element={<LoggingSettings />} />
               <Route path="/review/feedback" element={<ReviewFeedbackScreen />} />
+              {REVIEW_BUILD && <Route path="/review/log" element={<FeedbackLog />} />}
             </Routes>
           </ErrorBoundary>
         </main>
