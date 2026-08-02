@@ -8,6 +8,9 @@ import { checkCompleteness, requiredProofs } from '../../domain/submission';
 import { formatEuro } from '../../domain/reimbursement';
 import { monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import type { MonthRecord, ProofKind, TicketType } from '../../domain/types';
+import { useLogger } from '../../logging/react.tsx';
+import { EventType } from '../../logging/events.ts';
+import { logStatusTransition, logUploadOutcome, logUploadStart } from '../../logging/domainEvents.ts';
 
 const PROOF_LABELS: Record<ProofKind, string> = {
   TICKET_PHOTO: 'Ticket-Foto / Screenshot',
@@ -37,6 +40,7 @@ function daysUntil15th(): number {
 export default function TnFlow() {
   const { user, storage, month: MONTH } = useSession();
   const { rules } = useRules();
+  const logger = useLogger();
   const [record, setRecord] = useState<MonthRecord | null>(null);
   const [step, setStep] = useState<Step>('home');
 
@@ -94,13 +98,29 @@ export default function TnFlow() {
         record={record}
         completeness={completeness}
         onUpload={async (kind, fileName) => {
-          const docs = record.documents.filter((d) => d.kind !== kind);
-          docs.push({ kind, fileName, state: 'UPLOADED', uploadedAt: new Date().toISOString() });
-          await persist({ ...record, documents: docs });
+          const start = performance.now();
+          logUploadStart(logger, kind, 'image/jpeg', 0);
+          try {
+            const docs = record.documents.filter((d) => d.kind !== kind);
+            docs.push({ kind, fileName, state: 'UPLOADED', uploadedAt: new Date().toISOString() });
+            await persist({ ...record, documents: docs });
+            logUploadOutcome(logger, true, performance.now() - start);
+          } catch {
+            logUploadOutcome(logger, false, performance.now() - start, 'WRITE_FAILED');
+          }
         }}
         onSubmit={async () => {
-          await persist({ ...record, status: 'IN_REVIEW' });
-          setStep('home');
+          logger?.emit(EventType.FORM_SUBMIT_ATTEMPT, undefined, { form: 'tnFlowSubmit' });
+          try {
+            const fromStatus = record.status;
+            await persist({ ...record, status: 'IN_REVIEW' });
+            void logStatusTransition(logger, fromStatus, 'IN_REVIEW', record.participantId);
+            logger?.emit(EventType.FORM_SUBMIT_SUCCESS, undefined, { form: 'tnFlowSubmit' });
+            setStep('home');
+          } catch (err) {
+            logger?.emit(EventType.FORM_SUBMIT_FAILURE, undefined, { form: 'tnFlowSubmit' });
+            throw err;
+          }
         }}
         onBack={() => setStep('home')}
       />
@@ -166,7 +186,9 @@ export default function TnFlow() {
               <span>
                 Nachweise hochladen <span className="text-ink-dim">· ca. 2 Minuten</span>
               </span>
-              <PrimaryButton onClick={() => setStep('ticketType')}>Los geht's →</PrimaryButton>
+              <PrimaryButton onClick={() => setStep('ticketType')} logId="tn-start-upload">
+                Los geht's →
+              </PrimaryButton>
             </li>
           )}
           {record.status === 'AWAITING_SIGNATURE' && (
@@ -280,7 +302,7 @@ function UploadStep({
         Wird sicher in der IBS-Cloud gespeichert — kein Versand per E-Mail nötig. (NFR-01)
       </p>
       <div className="mt-4 flex items-center gap-2">
-        <PrimaryButton onClick={onSubmit} disabled={!completeness.complete}>
+        <PrimaryButton onClick={onSubmit} disabled={!completeness.complete} logId="tn-submit">
           {completeness.complete
             ? 'Absenden — vollständig ✓'
             : `Absenden — ${required.length - completeness.missing.length}/${required.length} vollständig`}

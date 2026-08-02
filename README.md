@@ -59,6 +59,43 @@ Build the real screens per the Claude-Design wireframes in
 `src/features/<role>/` (tn, admin, dozent, manager, settings), styled with
 the Ink & Bloom tokens already mapped in `tailwind.config.js`.
 
+## Event log (usage analytics)
+
+`src/logging/` records how the process is actually used — cycle times,
+correction loops, drop-off points, pipeline-stage durations, calculation-vs-
+Excel disagreement rates, error rates — as a local-only, pseudonymous NDJSON
+stream. No names, addresses, IBANs, file names, or field values ever reach
+it (enforced by an allowlist scrubber, not just convention); everything is
+gated behind explicit consent except in demo mode. Full write-up, including
+every event type/field, retention period, legal basis, and the redaction
+guarantee: **[`docs/LOGGING.md`](docs/LOGGING.md)**.
+
+- `npm run log:decode -- <file>` — NDJSON → readable table.
+- `npm run log:report -- <file>` — cycle/funnel/time-on-task/error-rate
+  metrics via the pure functions in `src/logging/analysis/`.
+- Einstellungen → "Datenschutz & Protokoll" — consent toggle, export, delete.
+
+**Measured size** (representative 800-event session — a TN submission with a
+correction loop, several admin review actions, and normal navigation):
+
+| | bytes/event | file size |
+|---|---|---|
+| Uncompressed NDJSON | ~62 | ~48 KB |
+| Gzipped (as written by `FolderSink`/`FileDownloadSink`) | ~10 | ~8 KB |
+
+Well under the 100 bytes/event (compressed) target. Projected volume,
+assuming ~300 events per participant per month (initial submission plus a
+correction loop and the usual navigation/admin actions) and a 90-day
+retention window:
+
+- **Per participant-month**: ~300 events × 10 bytes ≈ **3 KB gzipped**.
+- **Per cohort-year** (formula — plug in the actual cohort size; the seed
+  cast below has 5 example participants, not a real cohort count): cohort
+  size × 12 × 3 KB. For a cohort of 50, that's ≈ **1.8 MB/year** — small
+  enough that the 20 MB total-size budget in `IndexedDbSink` and the 90-day
+  retention window are both comfortably conservative, not binding
+  constraints.
+
 ## Seed cast (mirrors the wireframes)
 
 | Participant | Case | Expected amount |

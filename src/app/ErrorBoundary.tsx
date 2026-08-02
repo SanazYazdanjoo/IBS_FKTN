@@ -5,12 +5,19 @@
  * in die Konsole, damit er beim Testen sofort sichtbar ist.
  */
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { reportErrorBoundaryTrip } from '../logging/activeLogger.ts';
+
+interface Props {
+  children: ReactNode;
+  /** Which screen this boundary is wrapping — carried into the event log as a's `comp`, never anything more specific (no stack text, no props). */
+  screenName?: string;
+}
 
 interface State {
   error: Error | null;
 }
 
-export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
+export class ErrorBoundary extends Component<Props, State> {
   state: State = { error: null };
 
   static getDerivedStateFromError(error: Error): State {
@@ -20,6 +27,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
   componentDidCatch(error: Error, info: ErrorInfo) {
     // Für die Entwickler:innen: vollständiger Stacktrace in der Konsole.
     console.error('UI-Fehler in einer Ansicht:', error, info);
+    reportErrorBoundaryTrip(error, this.props.screenName);
   }
 
   reset = () => this.setState({ error: null });

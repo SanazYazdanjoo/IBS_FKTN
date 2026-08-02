@@ -1,10 +1,15 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { HashRouter, Link, Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from './ErrorBoundary';
 import { SessionProvider, useSession } from './session';
 import { RulesProvider } from './rules-context';
 import { ParticipantNamesProvider } from './participant-names';
 import HeaderSearch from './HeaderSearch';
+import { LoggingProvider, useScreenLog } from '../logging/react.tsx';
+import { DevPanel } from '../logging/DevPanel.tsx';
+import { screenForPath, SCREEN_DICT } from '../logging/events.ts';
+import { version as appVersion } from '../../package.json';
+import LoggingSettings from '../features/settings/LoggingSettings';
 import TnFlow from '../features/tn/TnFlow';
 import TnCorrection from '../features/tn/Correction';
 import Uebersicht from '../features/admin/Uebersicht';
@@ -62,6 +67,12 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/vergleichsrechnung', label: 'Vergleichrechnung', roles: ['ADMIN'], pending: true },
   { to: '/settings', label: 'Einstellungen', roles: ['ADMIN'], end: true, pending: true },
   { to: '/settings/data', label: 'Datenquelle', roles: ['ADMIN'], pending: true },
+  {
+    to: '/settings/logging',
+    label: 'Datenschutz & Protokoll',
+    roles: ['TN', 'ADMIN', 'DOZENT', 'MANAGER'],
+    footer: true,
+  },
   {
     to: '/dokumentation',
     label: 'Documentation',
@@ -228,6 +239,8 @@ function MobileNav() {
 function Shell() {
   const { user } = useSession();
   const location = useLocation();
+  const screen = screenForPath(location.pathname);
+  useScreenLog(screen);
   return (
     <div className="min-h-screen bg-bg">
       <Header />
@@ -235,7 +248,7 @@ function Shell() {
         <Sidebar />
         <main className="min-w-0 flex-1 p-4 md:p-6">
           {/* Keyed by route: ein Fehler in einer Ansicht setzt sich beim Navigieren zurück. */}
-          <ErrorBoundary key={location.pathname}>
+          <ErrorBoundary key={location.pathname} screenName={SCREEN_DICT[screen]?.name}>
             <Routes>
               <Route path="/" element={<Navigate to={roleHome(user.role)} replace />} />
               <Route path="/tn" element={<TnFlow />} />
@@ -260,24 +273,38 @@ function Shell() {
               <Route path="/manager" element={<ManagerQueue />} />
               <Route path="/settings" element={<SignatureSettings />} />
               <Route path="/settings/data" element={<DataSourceSettings />} />
+              <Route path="/settings/logging" element={<LoggingSettings />} />
             </Routes>
           </ErrorBoundary>
         </main>
       </div>
+      <DevPanel />
     </div>
+  );
+}
+
+/** Bridges session state into the logging provider — role/actorId/env are read from useSession(), so this has to live inside SessionProvider. */
+function LoggingBridge({ children }: { children: ReactNode }) {
+  const { user, dataSource } = useSession();
+  return (
+    <LoggingProvider role={user.role} actorId={user.id} env={dataSource.kind} appVersion={appVersion}>
+      {children}
+    </LoggingProvider>
   );
 }
 
 export default function App() {
   return (
     <SessionProvider>
-      <RulesProvider>
-        <ParticipantNamesProvider>
-        <HashRouter>
-          <Shell />
-        </HashRouter>
-        </ParticipantNamesProvider>
-      </RulesProvider>
+      <LoggingBridge>
+        <RulesProvider>
+          <ParticipantNamesProvider>
+          <HashRouter>
+            <Shell />
+          </HashRouter>
+          </ParticipantNamesProvider>
+        </RulesProvider>
+      </LoggingBridge>
     </SessionProvider>
   );
 }

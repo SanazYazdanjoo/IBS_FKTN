@@ -23,16 +23,20 @@ export function PrimaryButton({
   onClick,
   disabled,
   className = '',
+  logId,
 }: {
   children: ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
+  /** Stable id for the event log's global click listener (data-log-id) — never the button's text. */
+  logId?: string;
 }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
+      data-log-id={logId}
       className={`rounded-full bg-primary px-5 py-2 font-semibold text-white transition hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
     >
       {children}
@@ -43,16 +47,22 @@ export function PrimaryButton({
 export function SecondaryButton({
   children,
   onClick,
+  disabled,
   className = '',
+  logId,
 }: {
   children: ReactNode;
   onClick?: () => void;
+  disabled?: boolean;
   className?: string;
+  logId?: string;
 }) {
   return (
     <button
       onClick={onClick}
-      className={`rounded-full border border-line bg-surface px-5 py-2 font-semibold text-ink transition hover:border-primary hover:text-primary ${className}`}
+      disabled={disabled}
+      data-log-id={logId}
+      className={`rounded-full border border-line bg-surface px-5 py-2 font-semibold text-ink transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
     >
       {children}
     </button>
@@ -65,16 +75,19 @@ export function DangerButton({
   onClick,
   disabled,
   className = '',
+  logId,
 }: {
   children: ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
+  logId?: string;
 }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
+      data-log-id={logId}
       className={`rounded-full border-2 border-danger px-5 py-2 font-semibold text-danger transition hover:bg-danger hover:text-white disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
     >
       {children}

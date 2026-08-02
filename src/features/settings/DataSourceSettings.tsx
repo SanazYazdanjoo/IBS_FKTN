@@ -11,6 +11,8 @@ import { createFolderPersistence, openProjectFolder } from '../../adapters/excel
 import type { ExcelValidationReport } from '../../adapters/excel/workbook';
 import { GoogleSheetsAttendanceSource } from '../../adapters/attendance/googleSheetsSource';
 import { LocalYearWorkbook } from '../../adapters/attendance/localYearWorkbook';
+import { useLogger } from '../../logging/react.tsx';
+import { logAdapterSelected, logWorkbookValidation } from '../../logging/domainEvents.ts';
 
 export default function DataSourceSettings() {
   const {
@@ -22,6 +24,7 @@ export default function DataSourceSettings() {
     formularContext,
     resetToMock,
   } = useSession();
+  const logger = useLogger();
   const [month, setMonth] = useState(1);
   const [year, setYear] = useState(2026);
   const [report, setReport] = useState<ExcelValidationReport | null>(null);
@@ -53,6 +56,7 @@ export default function DataSourceSettings() {
         persistence,
       );
       setReport(report);
+      logWorkbookValidation(logger, report.ok, report.rowCount, report.schema?.unknownHeaders.length ?? 0);
       if (!report.ok) return;
 
       // Anwesenheitsliste (optional)
@@ -79,6 +83,7 @@ export default function DataSourceSettings() {
       }
 
       setExcelStorage(adapter, { kind: 'EXCEL', fileName: project.hauptName, month, year });
+      logAdapterSelected(logger, 'EXCEL', 'FOLDER');
     } catch (e) {
       if ((e as Error).name !== 'AbortError') setError((e as Error).message);
     } finally {
@@ -116,8 +121,10 @@ export default function DataSourceSettings() {
         createBrowserPersistence(handle),
       );
       setReport(report);
+      logWorkbookValidation(logger, report.ok, report.rowCount, report.schema?.unknownHeaders.length ?? 0);
       if (report.ok) {
         setExcelStorage(adapter, { kind: 'EXCEL', fileName, month, year });
+        logAdapterSelected(logger, 'EXCEL', 'FILE');
       }
     } catch (e) {
       if ((e as Error).name !== 'AbortError') setError((e as Error).message);
@@ -177,7 +184,14 @@ export default function DataSourceSettings() {
             Nur Hauptdatei öffnen
           </SecondaryButton>
           {dataSource.kind === 'EXCEL' && (
-            <SecondaryButton onClick={resetToMock}>Zurück zu Demo-Daten</SecondaryButton>
+            <SecondaryButton
+              onClick={() => {
+                resetToMock();
+                logAdapterSelected(logger, 'MOCK');
+              }}
+            >
+              Zurück zu Demo-Daten
+            </SecondaryButton>
           )}
         </div>
         <p className="mt-2 text-xs text-ink-dim">
