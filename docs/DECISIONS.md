@@ -89,6 +89,24 @@ should move behind `StorageAdapter` too, so a fare survives a reload the
 same way an attendance mark does. Until then, `vmtFaresSeed` in
 `src/adapters/mock/seed.ts` supplies the starting values each session.
 
+**Where the official prices come from:** `src/domain/vmtTariff.ts` encodes
+the VMT-Preisübersicht's "Einzelfahrt" row (adult, no BahnCard) — the only
+ticket type the comparison formula (B) uses — for CityTarif (Erfurt, Weimar,
+Jena, Gera), CityRegioTarif (Preisstufe 2–11), and RegioTarif (Preisstufe
+1–11 plus Verbundweit), Stand 01.08.2025. The fare table's price input
+offers these as a dropdown (`VMT_TARIFF_GROUPS`) next to free-text entry, so
+an Admin normally *picks* a Preisstufe instead of typing a number — the
+number itself becomes untypeable-wrong. Free-text entry stays available
+for cases that don't map onto a Preisstufe (a negotiated "VMT
+Gesamtnetz" contract, for instance); picking one vs. typing one is recorded
+per fare (`VmtFareRecord.tariffZoneId`, shown in the Zone column) so a
+reviewer can tell which fares are traceable to the published tariff and
+which were a judgment call. When VMT next republishes prices, updating
+`vmtTariff.ts` is the one place that needs to change — every fare picked
+from the dropdown stays traceable to a Stand, but existing manually-entered
+fares are **not** revalidated automatically (no code re-checks a free-typed
+number against a newer tariff); that stays a manual review step.
+
 **Known gap:** only `TnDetail.tsx` and `/vergleichsrechnung` itself read
 `VmtFaresProvider` live. `Dashboard.tsx`, `DashboardOverview.tsx`,
 `TnFlow.tsx`, `Formular.tsx`, and `Queue.tsx` still read the seed snapshot

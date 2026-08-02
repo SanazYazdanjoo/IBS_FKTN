@@ -10,8 +10,12 @@ import { vmtFaresSeed } from '../adapters/mock/seed';
 
 interface VmtFaresContextValue {
   fares: VmtFareTable;
-  /** Preis setzen/ändern; „Stand" wird auf jetzt gesetzt. */
-  setFarePrice: (participantId: string, priceEur: number) => void;
+  /**
+   * Preis setzen/ändern; „Stand" wird auf jetzt gesetzt. `tariffZoneId`
+   * (optional) verweist auf die offizielle VMT-Tarifzone (`vmtTariff.ts`),
+   * falls der Preis von dort übernommen statt frei eingegeben wurde.
+   */
+  setFarePrice: (participantId: string, priceEur: number, tariffZoneId?: string) => void;
 }
 
 const VmtFaresContext = createContext<VmtFaresContextValue | null>(null);
@@ -19,11 +23,16 @@ const VmtFaresContext = createContext<VmtFaresContextValue | null>(null);
 export function VmtFaresProvider({ children }: { children: ReactNode }) {
   const [fares, setFares] = useState<VmtFareTable>(vmtFaresSeed);
 
-  const setFarePrice = (participantId: string, priceEur: number) => {
+  const setFarePrice = (participantId: string, priceEur: number, tariffZoneId?: string) => {
     const id = participantId.toUpperCase();
     setFares((prev) => ({
       ...prev,
-      [id]: { participantId: id, priceEur, updatedAt: new Date().toISOString().slice(0, 10) },
+      [id]: {
+        participantId: id,
+        priceEur,
+        updatedAt: new Date().toISOString().slice(0, 10),
+        tariffZoneId,
+      },
     }));
   };
 

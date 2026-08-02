@@ -33,6 +33,7 @@ import {
 } from '../../app/ui';
 import { collectComparisonCases, type ComparisonCase } from '../../domain/vergleichsrechnung';
 import { parseGermanDecimal, toFareLookup, type VmtFareRecord } from '../../domain/vmtFares';
+import { VMT_TARIFF_GROUPS, VMT_TARIFF_STAND, findTariffZone } from '../../domain/vmtTariff';
 import { formatEuro } from '../../domain/reimbursement';
 import { getMaster } from '../../adapters/masters';
 import { monthLabel } from '../../adapters/mock/seed';
@@ -70,14 +71,17 @@ export default function Vergleichsrechnung() {
     return [...ids].sort();
   }, [cases, fares]);
 
-  const saveFare = (participantId: string, priceEur: number) => {
+  const saveFare = (participantId: string, priceEur: number, tariffZoneId?: string) => {
     const previous = fares[participantId.toUpperCase()]?.priceEur;
-    setFarePrice(participantId, priceEur);
+    setFarePrice(participantId, priceEur, tariffZoneId);
+    const source = tariffZoneId
+      ? ` (${findTariffZone(tariffZoneId)?.label ?? tariffZoneId}, VMT-Tarif Stand ${VMT_TARIFF_STAND})`
+      : ' (manuell erfasst)';
     logChange(
       user.name,
       `VMT-Einzelfahrpreis geändert: ${participantId.toUpperCase()} · ${
         previous !== undefined ? `${formatEuro(previous)} → ` : ''
-      }${formatEuro(priceEur)}`,
+      }${formatEuro(priceEur)}${source}`,
     );
   };
 
@@ -119,7 +123,7 @@ export default function Vergleichsrechnung() {
               thresholdDays={rules.comparisonThresholdDays}
               fareEntry={fares[selected.participantId.toUpperCase()]}
               canEdit={canEdit}
-              onSaveFare={(price) => saveFare(selected.participantId, price)}
+              onSaveFare={(price, zoneId) => saveFare(selected.participantId, price, zoneId)}
             />
           )}
 
@@ -254,7 +258,7 @@ function DetailPanel({
   thresholdDays: number;
   fareEntry: VmtFareRecord | undefined;
   canEdit: boolean;
-  onSaveFare: (priceEur: number) => void;
+  onSaveFare: (priceEur: number, tariffZoneId?: string) => void;
 }) {
   const { record, view } = comparisonCase;
   const { proRata, vmt, chosenBecause } = view.result.trace;
@@ -352,7 +356,7 @@ function FareTable({
   fares: Record<string, VmtFareRecord>;
   storage: StorageAdapter;
   canEdit: boolean;
-  onSave: (participantId: string, priceEur: number) => void;
+  onSave: (participantId: string, priceEur: number, tariffZoneId?: string) => void;
 }) {
   return (
     <Card className="overflow-x-auto">
@@ -378,10 +382,10 @@ function FareTable({
               <FareRow
                 key={id}
                 participantId={id}
-                zone={getMaster(storage, id)?.vmtZone ?? ''}
+                masterZone={getMaster(storage, id)?.vmtZone ?? ''}
                 entry={fares[id]}
                 canEdit={canEdit}
-                onSave={(price) => onSave(id, price)}
+                onSave={(price, zoneId) => onSave(id, price, zoneId)}
               />
             ))}
           </tbody>
@@ -393,21 +397,29 @@ function FareTable({
 
 function FareRow({
   participantId,
-  zone,
+  masterZone,
   entry,
   canEdit,
   onSave,
 }: {
   participantId: string;
-  zone: string;
+  masterZone: string;
   entry: VmtFareRecord | undefined;
   canEdit: boolean;
-  onSave: (priceEur: number) => void;
+  onSave: (priceEur: number, tariffZoneId?: string) => void;
 }) {
+  const tariffLabel = entry?.tariffZoneId ? findTariffZone(entry.tariffZoneId)?.label : undefined;
   return (
     <tr className="border-b border-line/60 last:border-0">
       <td className="py-2 pr-3 font-semibold">{participantId}</td>
-      <td className="py-2 pr-3 text-ink-dim">{zone || '—'}</td>
+      <td className="py-2 pr-3 text-ink-dim">
+        {tariffLabel ?? (masterZone || '—')}
+        {tariffLabel && (
+          <span className="ml-1 text-[10px] uppercase tracking-wider text-ink-dim">
+            · VMT-Tarif {new Date(VMT_TARIFF_STAND).toLocaleDateString('de-DE')}
+          </span>
+        )}
+      </td>
       <td className="py-2 pr-3">
         <FareInlineEditor
           participantId={participantId}
@@ -423,7 +435,17 @@ function FareRow({
   );
 }
 
-/** Preisfeld mit Validierung (positiv, max. 2 Nachkommastellen, Komma erlaubt); gemeinsam von Fahrpreis-Tabelle und Detail-Panel genutzt. */
+/**
+ * Preisfeld mit Validierung (positiv, max. 2 Nachkommastellen, Komma
+ * erlaubt) plus Auswahl aus dem offiziellen VMT-Tarif (Stand
+ * `VMT_TARIFF_STAND`) — eine Admin wählt die zutreffende Preisstufe statt
+ * einen Preis frei zu tippen und übernimmt so garantiert den korrekten,
+ * geprüften Wert. Manuelles Eingeben bleibt für Sonderfälle möglich, die
+ * sich keiner Preisstufe zuordnen lassen (z. B. "VMT Gesamtnetz"-Verträge);
+ * jede Handeingabe verwirft die zuvor gewählte Tarifzone, damit ein
+ * abweichender Preis nie fälschlich als "aus dem offiziellen Tarif" gilt.
+ * Gemeinsam von Fahrpreis-Tabelle und Detail-Panel genutzt.
+ */
 function FareInlineEditor({
   participantId,
   entry,
@@ -432,19 +454,24 @@ function FareInlineEditor({
 }: {
   participantId: string;
   entry: VmtFareRecord | undefined;
-  onSave: (priceEur: number) => void;
+  onSave: (priceEur: number, tariffZoneId?: string) => void;
   disabled?: boolean;
 }) {
   const fieldLog = useFieldLog('vmt_fare_price');
   const [raw, setRaw] = useState(entry ? entry.priceEur.toFixed(2).replace('.', ',') : '');
+  const [zoneId, setZoneId] = useState<string | undefined>(entry?.tariffZoneId);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setRaw(entry ? entry.priceEur.toFixed(2).replace('.', ',') : '');
-  }, [entry?.priceEur]);
+    setZoneId(entry?.tariffZoneId);
+  }, [entry?.priceEur, entry?.tariffZoneId]);
 
   const parsed = parseGermanDecimal(raw);
-  const dirty = raw.trim() !== '' && parsed !== null && parsed !== entry?.priceEur;
+  const dirty =
+    raw.trim() !== '' &&
+    parsed !== null &&
+    (parsed !== entry?.priceEur || zoneId !== entry?.tariffZoneId);
 
   const save = () => {
     if (parsed === null) {
@@ -453,17 +480,47 @@ function FareInlineEditor({
       return;
     }
     setError(null);
-    onSave(parsed);
+    onSave(parsed, zoneId);
   };
 
   const fieldId = `vmt-fare-${participantId}`;
+  const selectId = `vmt-fare-zone-${participantId}`;
 
   return (
     <div>
+      <label className="sr-only" htmlFor={selectId}>
+        VMT-Tarifzone für {participantId}
+      </label>
       <label className="sr-only" htmlFor={fieldId}>
         VMT-Einzelfahrpreis für {participantId}
       </label>
       <div className="flex flex-wrap items-center gap-2">
+        <select
+          id={selectId}
+          value={zoneId ?? ''}
+          disabled={disabled}
+          data-log-id="vmt-fare-zone-select"
+          onChange={(e) => {
+            const nextId = e.target.value || undefined;
+            setZoneId(nextId);
+            setError(null);
+            const zone = nextId ? findTariffZone(nextId) : undefined;
+            if (zone) setRaw(zone.einzelfahrtEur.toFixed(2).replace('.', ','));
+            fieldLog.onChange();
+          }}
+          className="rounded-lg border border-line bg-surface px-2 py-1 text-xs focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <option value="">— manuell —</option>
+          {VMT_TARIFF_GROUPS.map((group) => (
+            <optgroup key={group.label} label={group.label}>
+              {group.zones.map((z) => (
+                <option key={z.id} value={z.id}>
+                  {z.label} · {formatEuro(z.einzelfahrtEur)}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
         <input
           id={fieldId}
           type="text"
@@ -474,6 +531,7 @@ function FareInlineEditor({
           onFocus={fieldLog.onFocus}
           onChange={(e) => {
             setRaw(e.target.value);
+            setZoneId(undefined);
             if (error) fieldLog.reportCorrection();
             setError(null);
             fieldLog.onChange();

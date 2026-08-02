@@ -10,6 +10,12 @@ export interface VmtFareRecord {
   priceEur: number;
   /** ISO-Datum der letzten Änderung ("Stand"). */
   updatedAt: string;
+  /**
+   * Id der offiziellen VMT-Tarifzone (`vmtTariff.ts`), falls der Preis von
+   * dort übernommen wurde — undefined bei manueller Eingabe (Sonderfälle,
+   * die sich keiner Preisstufe zuordnen lassen).
+   */
+  tariffZoneId?: string;
 }
 
 export type VmtFareTable = Record<string, VmtFareRecord>;
