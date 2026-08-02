@@ -7,7 +7,7 @@ import { demoUsers } from '../../adapters/mock/seed';
 const admin = demoUsers.find((u) => u.role === 'ADMIN')!;
 
 async function loaded() {
-  const buf = readFileSync('public/demo/Anwesenheitsliste_Demo.xlsx');
+  const buf = readFileSync('public/demo/Testdaten_Anwesenheitsliste.xlsx');
   const wbk = await LocalYearWorkbook.fromBuffer(
     buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer,
     'demo.xlsx',
@@ -37,7 +37,7 @@ describe('Jahresübersicht über mehrere Jahre', () => {
     const storage = await loaded();
     const rows = await storage.listMonthRecords(admin, '2025-03');
     const pk01 = rows.find((r) => r.participantId === 'PK01')!;
-    expect(pk01.participantName).toBe('Elif Aydin');
+    expect(pk01.participantName).toBe('Aesha Demir');
   });
 
   it('setzt Arbeitstage aus dem Feiertagskalender, nicht pauschal 22', async () => {

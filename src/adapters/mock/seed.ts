@@ -1,10 +1,8 @@
 /**
- * Demo-Daten, generiert aus den echten Dummy-Dateien:
- *  - Alle_TN_Daten_dummyData.xlsx (Stammdaten + 2026 Übersicht)
- *  - Anwesenheitsliste_2026.xlsx (Tagesmarkierungen Januar–Juni)
- * Struktur & Werte stammen aus den Dateien; nur Dateinamen der Nachweise
- * sind Platzhalter. Personenbezogene Details (IBAN, Adressen) werden
- * bewusst NICHT in den Seed übernommen.
+ * Demo-Daten, generiert aus den beiden Testdaten-Workbooks in public/demo/
+ * (Testdaten_Alle_TN_Daten.xlsx, Testdaten_Anwesenheitsliste.xlsx) via
+ * `npm run seed:build` (scripts/build-seed.ts). Struktur & Werte stammen aus
+ * diesen Dateien; nur Dateinamen der Nachweise sind Platzhalter.
  */
 import type {
   AttendanceCode,
@@ -18,14 +16,14 @@ import type {
 import { MONTH_LABELS, RAW_MASTERS, RAW_SEED } from './seedData';
 import { toFareLookup, type VmtFareTable } from '../../domain/vmtFares';
 
-/** Aktueller Demo-Monat (letzter vollständiger Monat der Anwesenheitsliste). */
-export const MONTH = '2026-06';
-
-/** Alle Monate mit Daten — entspricht den Tabs der Anwesenheitsliste 2026. */
+/** Alle Monate mit Daten — Länge folgt MONTH_LABELS aus der Testdaten-Übersicht. */
 export const MONTHS = MONTH_LABELS.map((label, i) => ({
   ym: `2026-${String(i + 1).padStart(2, '0')}`,
   label,
 }));
+
+/** Aktueller Demo-Monat (letzter Monat mit Daten in der Testdaten-Übersicht). */
+export const MONTH = MONTHS[MONTHS.length - 1].ym;
 
 export const monthLabel = (ym: string): string =>
   MONTHS.find((m) => m.ym === ym)?.label ?? ym;
@@ -34,7 +32,7 @@ export const monthLabel = (ym: string): string =>
 export const demoUsers: SessionUser[] = [
   { id: 'u-mira', name: 'Mira Vogel (Admin)', role: 'ADMIN' },
   { id: 'u-lina', name: 'Lina Keller (TN)', role: 'TN', participantId: 'PK01' },
-  { id: 'u-kaan', name: 'Kaan Fischer (TN)', role: 'TN', participantId: 'PK19' },
+  { id: 'u-kaan', name: 'Kaan Fischer (TN)', role: 'TN', participantId: 'PK10' },
   { id: 'u-dozent', name: 'Dozent:in', role: 'DOZENT' },
   { id: 'u-petra', name: 'Petra Lang (Manager)', role: 'MANAGER' },
   { id: 'u-jonas', name: 'Jonas Brandt (Accounting)', role: 'ACCOUNTING' },
@@ -69,8 +67,10 @@ export const seedRecords: MonthRecord[] = RAW_SEED.map((r) => ({
 /**
  * VMT-Einzelfahrpreise — Ausgangsdaten für den Fahrpreis-Kontext (P15,
  * `src/app/vmt-fares-context.tsx`). Zur Laufzeit gepflegt (Vergleichsrechnung
- * → VMT-Einzelfahrpreise), dies hier ist nur der Anfangszustand.
- *  PK10 Roman: Januar nur 6 Anwesenheitstage → Vergleichsrechnung. */
+ * → VMT-Einzelfahrpreise), dies hier ist nur der Anfangszustand: ein
+ * gepflegter Preis für PK10, falls ein Vergleichsfall auftritt. Die
+ * Testdaten enthalten aktuell keinen Monat mit < 10 Anwesenheitstagen (der
+ * Auslöser für einen Vergleichsfall) — siehe docs/DECISIONS.md. */
 export const vmtFaresSeed: VmtFareTable = {
   PK10: { participantId: 'PK10', priceEur: 2.4, updatedAt: '2026-01-15' },
 };

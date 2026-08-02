@@ -1,5 +1,7 @@
-/** AUTOGENERIERT aus Alle_TN_Daten_dummyData.xlsx + Anwesenheitsliste_2026.xlsx.
- *  Nicht von Hand editieren — Quelle sind die Excel-Dateien (Dummy-Daten).
+/** AUTOGENERIERT aus public/demo/Testdaten_Alle_TN_Daten.xlsx +
+ *  public/demo/Testdaten_Anwesenheitsliste.xlsx (beides Testdaten).
+ *  Nicht von Hand editieren — Quelle sind die beiden Workbooks.
+ *  Neu erzeugen: npm run seed:build
  */
 export interface RawSeedRecord {
   m: number; id: string; nach: string; vor: string;
@@ -11,9 +13,4693 @@ export interface RawSeedRecord {
   signedAt: string | null;
 }
 
-export const MONTH_LABELS = ["Januar", "Februar", "März", "April", "Mai", "Juni"] as const;
+export const MONTH_LABELS = ["Januar","Februar","März"];
 
-export const RAW_SEED: RawSeedRecord[] = [{"m":1,"id":"BL07","nach":"Al-Raheem","vor":"Wahhab","workdays":21,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":3.4,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":1,"id":"BL13","nach":"Eger","vor":"Sylwia","workdays":21,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":4.7,"plate":"EF SP 90","sozial":false,"hasPraktikum":true,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":1,"id":"BL15","nach":"Fischer","vor":"Tatjana","workdays":21,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":101.0,"plate":"MgN – KA 26","sozial":false,"hasPraktikum":true,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":1,"id":"BL22","nach":"Kayser","vor":"Evgenia","workdays":21,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":23.4,"plate":"SÖM J 9999","sozial":false,"hasPraktikum":true,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":1,"id":"BL23","nach":"Kenjo","vor":"Amal","workdays":21,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":0,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":1,"id":"BL27","nach":"Pahle","vor":"Agnes","workdays":21,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":32.6,"plate":"L-HP 21 38","sozial":false,"hasPraktikum":true,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":1,"id":"BL28","nach":"Palij","vor":"Natalja","workdays":21,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":28.3,"plate":"SÖM NP 848","sozial":false,"hasPraktikum":true,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":1,"id":"BL29","nach":"Qaddad","vor":"Aya","workdays":21,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":45.06,"plate":"IK MA828","sozial":false,"hasPraktikum":true,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":1,"id":"BL31","nach":"Ritter","vor":"Marina","workdays":21,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":61.51,"plate":"SDH - R 2317","sozial":false,"hasPraktikum":true,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":1,"id":"BL32","nach":"Shagalhakh","vor":"Saleh","workdays":21,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":60.62,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":1,"id":"BL33","nach":"Staneva","vor":"Ginka","workdays":21,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":43.14,"plate":"IL-GT 184","sozial":false,"hasPraktikum":true,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":1,"id":"PK01","nach":"Keller","vor":"Lina","workdays":21,"status":"PAID","ticketType":"ABO","price":63,"dist":4.7,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-01-05","E","E"],["2026-01-06","E","E"],["2026-01-07","E","E"],["2026-01-08","E","E"],["2026-01-09","X",""],["2026-01-12","X","X"],["2026-01-13","X","X"],["2026-01-14","X","X"],["2026-01-15","X","E"],["2026-01-16","X","X"],["2026-01-19","X","X"],["2026-01-20","X","X"],["2026-01-21","X","X"],["2026-01-22","X","X"],["2026-01-23","X","X"],["2026-01-26","X","X"],["2026-01-27","X","X"],["2026-01-28","X","X"],["2026-01-29","X","X"],["2026-01-30","X","X"]],"notes":{"2026-01-19":"OrientungsPraktikum (19.01.-30.01.2026)","2026-01-26":"OrientungsPraktikum (19.01.-30.01.2026)"},"signedAt":"2026-01-31"},{"m":1,"id":"PK03","nach":"Alchadaida","vor":"Najwa","workdays":21,"status":"PAID","ticketType":"ONLINE","price":63,"dist":23.52,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-01-05","E","E"],["2026-01-06","X","(x)"],["2026-01-07","E","E"],["2026-01-08","X","E"],["2026-01-09","X",""],["2026-01-12","E","E"],["2026-01-13","X","X"],["2026-01-14","X","X"],["2026-01-15","X","X"],["2026-01-16","X","A"],["2026-01-19","X","X"],["2026-01-20","X","X"],["2026-01-21","X","X"],["2026-01-22","X","X"],["2026-01-23","X","X"],["2026-01-26","X","X"],["2026-01-27","X","X"],["2026-01-28","X","X"],["2026-01-29","X","X"],["2026-01-30","X","X"]],"notes":null,"signedAt":"2026-01-31"},{"m":1,"id":"PK06","nach":"Bayir","vor":"Galip","workdays":21,"status":"PAID","ticketType":"ABO","price":63,"dist":6.9,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-01-05","X","X"],["2026-01-06","X","X"],["2026-01-07","X","X"],["2026-01-08","X","X"],["2026-01-09","X",""],["2026-01-12","X","X"],["2026-01-13","X","X"],["2026-01-14","X","X"],["2026-01-15","X","X"],["2026-01-16","X","X"],["2026-01-19","X","X"],["2026-01-20","X","X"],["2026-01-21","X","X"],["2026-01-22","X","X"],["2026-01-23","X","X"],["2026-01-26","X","X"],["2026-01-27","X","X"],["2026-01-28","X","X"],["2026-01-29","X","X"],["2026-01-30","X","X"]],"notes":null,"signedAt":"2026-01-31"},{"m":1,"id":"PK08","nach":"Daniel","vor":"Seba","workdays":21,"status":"PAID","ticketType":"ABO","price":63,"dist":4.2,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-01-05","X","X"],["2026-01-06","(x)","E"],["2026-01-07","E","E"],["2026-01-08","E","E"],["2026-01-09","X",""],["2026-01-12","E","E"],["2026-01-13","X","X"],["2026-01-14","X","X"],["2026-01-15","X","E"],["2026-01-16","X","X"],["2026-01-19","X","X"],["2026-01-20","X","X"],["2026-01-21","X","X"],["2026-01-22","X","X"],["2026-01-23","X","X"],["2026-01-26","X","X"],["2026-01-27","X","X"],["2026-01-28","X","X"],["2026-01-29","X","X"],["2026-01-30","X","X"]],"notes":null,"signedAt":"2026-01-31"},{"m":1,"id":"PK09","nach":"Hasaneen Mahmoud","vor":"Maha","workdays":21,"status":"AWAITING_CORRECTION","ticketType":"ONLINE","price":63,"dist":20.31,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-01-05","X","X"],["2026-01-06","X","E"],["2026-01-07","X","X"],["2026-01-08","X","X"],["2026-01-09","X",""],["2026-01-12","X","X"],["2026-01-13","X","X"],["2026-01-14","X","E"],["2026-01-15","X","X"],["2026-01-16","X","X"],["2026-01-19","X","X"],["2026-01-20","X","X"],["2026-01-21","X","X"],["2026-01-22","X","X"],["2026-01-23","X","X"],["2026-01-26","X","X"],["2026-01-27","X","X"],["2026-01-28","X","X"],["2026-01-29","X","X"],["2026-01-30","X","X"]],"notes":null,"signedAt":null},{"m":1,"id":"PK10","nach":"Hurzhyi","vor":"Roman","workdays":21,"status":"PAID","ticketType":"ONLINE","price":63,"dist":58.63,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-01-05","(x)","X"],["2026-01-06","X","X"],["2026-01-07","E","E"],["2026-01-08","X","X"],["2026-01-09","X",""],["2026-01-12","E","E"],["2026-01-13","A","A"],["2026-01-14","U","U"],["2026-01-15","U","U"],["2026-01-16","U","U"],["2026-01-19","A","A"],["2026-01-20","A","A"],["2026-01-21","A","A"],["2026-01-22","A","A"],["2026-01-23","A","A"],["2026-01-26","A","A"],["2026-01-27","A","A"],["2026-01-28","A","A"],["2026-01-29","A","A"],["2026-01-30","A","A"]],"notes":null,"signedAt":"2026-01-31"},{"m":1,"id":"PK11","nach":"Ibrahimi","vor":"Farid Ahmad","workdays":21,"status":"PAID","ticketType":"ABO","price":63,"dist":4.6,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-01-05","X","X"],["2026-01-06","X","X"],["2026-01-07","X","A"],["2026-01-08","X","X"],["2026-01-09","X",""],["2026-01-12","X","X"],["2026-01-13","X","X"],["2026-01-14","X","X"],["2026-01-15","X","X"],["2026-01-16","X","X"],["2026-01-19","X","X"],["2026-01-20","X","X"],["2026-01-21","X","X"],["2026-01-22","X","X"],["2026-01-23","X","X"],["2026-01-26","X","X"],["2026-01-27","X","X"],["2026-01-28","X","X"],["2026-01-29","X","X"],["2026-01-30","X","X"]],"notes":null,"signedAt":"2026-01-31"},{"m":1,"id":"PK15","nach":"Patricha","vor":"Polina","workdays":21,"status":"PAID","ticketType":"ABO","price":34,"dist":21.8,"plate":null,"sozial":true,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-01-05","X","X"],["2026-01-06","X","X"],["2026-01-07","X","X"],["2026-01-08","X","X"],["2026-01-09","X",""],["2026-01-12","X","(x)"],["2026-01-13","E","E"],["2026-01-14","U","U"],["2026-01-15","X","X"],["2026-01-16","X","U"],["2026-01-19","X","X"],["2026-01-20","X","X"],["2026-01-21","X","X"],["2026-01-22","X","X"],["2026-01-23","X","X"],["2026-01-26","X","X"],["2026-01-27","X","X"],["2026-01-28","X","X"],["2026-01-29","X","X"],["2026-01-30","X","X"]],"notes":null,"signedAt":"2026-01-31"},{"m":1,"id":"PK18","nach":"Salhani","vor":"Enaam","workdays":21,"status":"PAID","ticketType":"ABO","price":34,"dist":27.94,"plate":null,"sozial":true,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-01-05","E","E"],["2026-01-06","X","U"],["2026-01-07","X","X"],["2026-01-08","E","E"],["2026-01-09","X",""],["2026-01-12","E","E"],["2026-01-13","U","U"],["2026-01-14","U","U"],["2026-01-15","U","U"],["2026-01-16","X","X"],["2026-01-19","A","A"],["2026-01-20","A","A"],["2026-01-21","A","A"],["2026-01-22","A","A"],["2026-01-23","A","A"],["2026-01-26","A","A"],["2026-01-27","A","A"],["2026-01-28","A","A"],["2026-01-29","A","A"],["2026-01-30","A","A"]],"notes":null,"signedAt":"2026-01-31"},{"m":1,"id":"PK19","nach":"Fischer","vor":"Kaan","workdays":21,"status":"PAID","ticketType":"ABO","price":63,"dist":5.2,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-01-05","X","X"],["2026-01-06","X","X"],["2026-01-07","X","X"],["2026-01-08","X","E"],["2026-01-09","X",""],["2026-01-12","(x)","X"],["2026-01-13","X","X"],["2026-01-14","X","X"],["2026-01-15","X","X"],["2026-01-16","X","X"],["2026-01-19","A","A"],["2026-01-20","A","A"],["2026-01-21","A","A"],["2026-01-22","A","A"],["2026-01-23","A","A"],["2026-01-26","A","A"],["2026-01-27","A","A"],["2026-01-28","A","A"],["2026-01-29","A","A"],["2026-01-30","A","A"]],"notes":null,"signedAt":"2026-01-31"},{"m":1,"id":"PK20","nach":"Srour","vor":"Abeer","workdays":21,"status":"PAID","ticketType":"ONLINE","price":63,"dist":98.65,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-01-05","E","E"],["2026-01-06","E","E"],["2026-01-07","X","X"],["2026-01-08","X","X"],["2026-01-09","X",""],["2026-01-12","(x)","X"],["2026-01-13","E","E"],["2026-01-14","X","X"],["2026-01-15","X","E"],["2026-01-16","E","E"],["2026-01-19","X","X"],["2026-01-20","X","X"],["2026-01-21","X","X"],["2026-01-22","X","X"],["2026-01-23","X","X"],["2026-01-26","X","X"],["2026-01-27","X","X"],["2026-01-28","X","X"],["2026-01-29","X","X"],["2026-01-30","X","X"]],"notes":null,"signedAt":"2026-01-31"},{"m":1,"id":"PK23","nach":"Chmilenko","vor":"Maryna","workdays":21,"status":"PAID","ticketType":"ABO","price":34,"dist":22.0,"plate":null,"sozial":true,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-01-05","X","X"],["2026-01-06","X","X"],["2026-01-07","X","X"],["2026-01-08","E","E"],["2026-01-09","X",""],["2026-01-12","(x)","U"],["2026-01-13","E","E"],["2026-01-14","X","X"],["2026-01-15","X","X"],["2026-01-16","X","X"],["2026-01-19","X","X"],["2026-01-20","X","X"],["2026-01-21","X","X"],["2026-01-22","X","X"],["2026-01-23","X","X"],["2026-01-26","X","X"],["2026-01-27","X","X"],["2026-01-28","X","X"],["2026-01-29","X","X"],["2026-01-30","X","X"]],"notes":null,"signedAt":"2026-01-31"},{"m":2,"id":"BL07","nach":"Al-Raheem","vor":"Wahhab","workdays":20,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":3.4,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":2,"id":"BL13","nach":"Eger","vor":"Sylwia","workdays":20,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":4.7,"plate":"EF SP 90","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":2,"id":"BL15","nach":"Fischer","vor":"Tatjana","workdays":20,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":101.0,"plate":"MgN – KA 26","sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":2,"id":"BL22","nach":"Kayser","vor":"Evgenia","workdays":20,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":23.4,"plate":"SÖM J 9999","sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":2,"id":"BL23","nach":"Kenjo","vor":"Amal","workdays":20,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":0,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":2,"id":"BL27","nach":"Pahle","vor":"Agnes","workdays":20,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":32.6,"plate":"L-HP 21 38","sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":2,"id":"BL28","nach":"Palij","vor":"Natalja","workdays":20,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":28.3,"plate":"SÖM NP 848","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":2,"id":"BL29","nach":"Qaddad","vor":"Aya","workdays":20,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":45.06,"plate":"IK MA828","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":2,"id":"BL31","nach":"Ritter","vor":"Marina","workdays":20,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":61.51,"plate":"SDH - R 2317","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":2,"id":"BL32","nach":"Shagalhakh","vor":"Saleh","workdays":20,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":60.62,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":2,"id":"BL33","nach":"Staneva","vor":"Ginka","workdays":20,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":43.14,"plate":"IL-GT 184","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":2,"id":"PK01","nach":"Keller","vor":"Lina","workdays":20,"status":"PAID","ticketType":"ABO","price":63,"dist":4.7,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-02-02","X","X"],["2026-02-03","X","X"],["2026-02-04","X","X"],["2026-02-05","X","X"],["2026-02-06","X","X"],["2026-02-09","X",""],["2026-02-10","X","X"],["2026-02-11","X","E"],["2026-02-12","X","X"],["2026-02-13","X","E"],["2026-02-16","X",""],["2026-02-17","E","E"],["2026-02-18","X","E"],["2026-02-19","X","E"],["2026-02-20","K","K"],["2026-02-23","X",""],["2026-02-24","(x)","X"],["2026-02-25","E","X"],["2026-02-26","(x)","X"],["2026-02-27","X","E"]],"notes":null,"signedAt":"2026-02-28"},{"m":2,"id":"PK03","nach":"Alchadaida","vor":"Najwa","workdays":20,"status":"PAID","ticketType":"ONLINE","price":63,"dist":23.52,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-02-02","X","X"],["2026-02-03","X","X"],["2026-02-04","E","E"],["2026-02-05","E","E"],["2026-02-06","E","E"],["2026-02-09","X",""],["2026-02-10","X","X"],["2026-02-11","X","X"],["2026-02-12","X","X"],["2026-02-13","K","K"],["2026-02-16","X",""],["2026-02-17","(x)","X"],["2026-02-18","X","X"],["2026-02-19","A","A"],["2026-02-20","X","E"],["2026-02-23","X",""],["2026-02-24","K","K"],["2026-02-25","X","X"],["2026-02-26","X","X"],["2026-02-27","X","X"]],"notes":null,"signedAt":"2026-02-28"},{"m":2,"id":"PK06","nach":"Bayir","vor":"Galip","workdays":20,"status":"PAID","ticketType":"ABO","price":63,"dist":6.9,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-02-02","U","U"],["2026-02-03","X","X"],["2026-02-04","X","X"],["2026-02-05","X","X"],["2026-02-06","X","X"],["2026-02-09","X",""],["2026-02-10","X","X"],["2026-02-11","X","X"],["2026-02-12","X","X"],["2026-02-13","X","E"],["2026-02-16","X",""],["2026-02-17","K","K"],["2026-02-18","X","X"],["2026-02-19","X","X"],["2026-02-20","X","E"],["2026-02-23","X",""],["2026-02-24","X","X"],["2026-02-25","X","X"],["2026-02-26","X","X"],["2026-02-27","X","X"]],"notes":null,"signedAt":"2026-02-28"},{"m":2,"id":"PK08","nach":"Daniel","vor":"Seba","workdays":20,"status":"PAID","ticketType":"ABO","price":63,"dist":4.2,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-02-02","X","X"],["2026-02-03","(x)","E"],["2026-02-04","X","X"],["2026-02-05","X","X"],["2026-02-06","E","E"],["2026-02-09","X",""],["2026-02-10","E","E"],["2026-02-11","E","E"],["2026-02-12","E","E"],["2026-02-13","X","E"],["2026-02-16","X",""],["2026-02-17","K","K"],["2026-02-18","E","E"],["2026-02-19","E","E"],["2026-02-20","E","E"],["2026-02-23","X",""],["2026-02-24","(x)","X"],["2026-02-25","X","X"],["2026-02-26","K","K"],["2026-02-27","X","X"]],"notes":null,"signedAt":"2026-02-28"},{"m":2,"id":"PK09","nach":"Hasaneen Mahmoud","vor":"Maha","workdays":20,"status":"AWAITING_CORRECTION","ticketType":"ONLINE","price":63,"dist":20.31,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-02-02","X","X"],["2026-02-03","(x)","E"],["2026-02-04","X","(x)"],["2026-02-05","E","E"],["2026-02-06","E","E"],["2026-02-09","X",""],["2026-02-10","X","X"],["2026-02-11","X","E"],["2026-02-12","E","E"],["2026-02-13","E","E"],["2026-02-16","X",""],["2026-02-17","E","E"],["2026-02-18","E","E"],["2026-02-19","E","E"],["2026-02-20","E","E"],["2026-02-23","X",""],["2026-02-24","E","E"],["2026-02-25","E","E"],["2026-02-26","E","E"],["2026-02-27","E","E"]],"notes":null,"signedAt":null},{"m":2,"id":"PK10","nach":"Hurzhyi","vor":"Roman","workdays":20,"status":"PAID","ticketType":"ONLINE","price":63,"dist":58.63,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-02-02","U","U"],["2026-02-03","X","X"],["2026-02-04","(x)","X"],["2026-02-05","A","A"],["2026-02-06","A","A"],["2026-02-09","X",""],["2026-02-10","X","X"],["2026-02-11","X","X"],["2026-02-12","X","X"],["2026-02-13","U","U"],["2026-02-16","X",""],["2026-02-17","(x)","X"],["2026-02-18","(x)","X"],["2026-02-19","U","U"],["2026-02-20","U","U"],["2026-02-23","X",""],["2026-02-24","X","X"],["2026-02-25","(x)","X"],["2026-02-26","(x)","X"],["2026-02-27","X","X"]],"notes":null,"signedAt":"2026-02-28"},{"m":2,"id":"PK11","nach":"Ibrahimi","vor":"Farid Ahmad","workdays":20,"status":"PAID","ticketType":"ABO","price":63,"dist":4.6,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-02-02","X","X"],["2026-02-03","(x)","E"],["2026-02-04","X","X"],["2026-02-05","X","X"],["2026-02-06","E","E"],["2026-02-09","X",""],["2026-02-10","E","E"],["2026-02-11","X","A"],["2026-02-12","X","X"],["2026-02-13","X","E"],["2026-02-16","X",""],["2026-02-17","X","X"],["2026-02-18","E","E"],["2026-02-19","X","X"],["2026-02-20","X","E"],["2026-02-23","X",""],["2026-02-24","X","X"],["2026-02-25","(x)","X"],["2026-02-26","(x)","X"],["2026-02-27","X","X"]],"notes":null,"signedAt":"2026-02-28"},{"m":2,"id":"PK15","nach":"Patricha","vor":"Polina","workdays":20,"status":"PAID","ticketType":"ABO","price":34,"dist":21.8,"plate":null,"sozial":true,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-02-02","U","U"],["2026-02-03","X","X"],["2026-02-04","X","X"],["2026-02-05","(x)","X"],["2026-02-06","(x)","E"],["2026-02-09","X",""],["2026-02-10","X","X"],["2026-02-11","X","X"],["2026-02-12","X","X"],["2026-02-13","X","E"],["2026-02-16","X",""],["2026-02-17","X","X"],["2026-02-18","X","U"],["2026-02-19","X","U"],["2026-02-20","(x)","E"],["2026-02-23","X",""],["2026-02-24","K","K"],["2026-02-25","U","U"],["2026-02-26","U","U"],["2026-02-27","E","X"]],"notes":null,"signedAt":"2026-02-28"},{"m":2,"id":"PK19","nach":"Fischer","vor":"Kaan","workdays":20,"status":"PAID","ticketType":"ABO","price":63,"dist":5.2,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-02-02","X","X"],["2026-02-03","X","X"],["2026-02-04","X","X"],["2026-02-05","X","X"],["2026-02-06","E","E"],["2026-02-09","X",""],["2026-02-10","X","X"],["2026-02-11","X","X"],["2026-02-12","X","X"],["2026-02-13","X","E"],["2026-02-16","X",""],["2026-02-17","X","X"],["2026-02-18","(x)","X"],["2026-02-19","A","A"],["2026-02-20","X","E"],["2026-02-23","X",""],["2026-02-24","X","X"],["2026-02-25","X","X"],["2026-02-26","X","X"],["2026-02-27","X","X"]],"notes":null,"signedAt":"2026-02-28"},{"m":2,"id":"PK20","nach":"Srour","vor":"Abeer","workdays":20,"status":"PAID","ticketType":"ONLINE","price":63,"dist":98.65,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-02-02","U","U"],["2026-02-03","X","X"],["2026-02-04","X","X"],["2026-02-05","X","A"],["2026-02-06","K","K"],["2026-02-09","X",""],["2026-02-10","X","X"],["2026-02-11","X","X"],["2026-02-12","X","X"],["2026-02-13","E","E"],["2026-02-16","X",""],["2026-02-17","E","E"],["2026-02-18","E","E"],["2026-02-19","E","E"],["2026-02-20","E","E"],["2026-02-23","X",""],["2026-02-24","K","K"],["2026-02-25","E","E"],["2026-02-26","E","E"],["2026-02-27","E","E"]],"notes":null,"signedAt":"2026-02-28"},{"m":2,"id":"PK23","nach":"Chmilenko","vor":"Maryna","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":34,"dist":22.0,"plate":null,"sozial":true,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"}],"att":[["2026-02-02","U","U"],["2026-02-03","X","X"],["2026-02-04","U","U"],["2026-02-05","U","U"],["2026-02-06","X","E"],["2026-02-09","X",""],["2026-02-10","X","X"],["2026-02-11","X","E"],["2026-02-12","E","E"],["2026-02-13","E","E"],["2026-02-16","X",""],["2026-02-17","X","X"],["2026-02-18","X","X"],["2026-02-19","(x)","X"],["2026-02-20","(x)","E"],["2026-02-23","X",""],["2026-02-24","U","U"],["2026-02-25","(x)","X"],["2026-02-26","(x)","X"],["2026-02-27","X","X"]],"notes":null,"signedAt":"2026-02-28"},{"m":3,"id":"BL07","nach":"Al-Raheem","vor":"Wahhab","workdays":22,"status":"PAID","ticketType":"ONLINE","price":63,"dist":3.4,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-03-31"},{"m":3,"id":"BL13","nach":"Eger","vor":"Sylwia","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"PKW","price":0,"dist":4.7,"plate":"EF SP 90","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-03-31"},{"m":3,"id":"BL15","nach":"Fischer","vor":"Tatjana","workdays":22,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":101.0,"plate":"MgN – KA 26","sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":3,"id":"BL22","nach":"Kayser","vor":"Evgenia","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"PKW","price":0,"dist":23.4,"plate":"SÖM J 9999","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-03-31"},{"m":3,"id":"BL23","nach":"Kenjo","vor":"Amal","workdays":22,"status":"IN_REVIEW","ticketType":"ONLINE","price":63,"dist":0,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":3,"id":"BL27","nach":"Pahle","vor":"Agnes","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"PKW","price":0,"dist":32.6,"plate":"L-HP 21 38","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-03-31"},{"m":3,"id":"BL28","nach":"Palij","vor":"Natalja","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"PKW","price":0,"dist":28.3,"plate":"SÖM NP 848","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-03-31"},{"m":3,"id":"BL29","nach":"Qaddad","vor":"Aya","workdays":22,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":45.06,"plate":"IK MA828","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":3,"id":"BL31","nach":"Ritter","vor":"Marina","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"PKW","price":0,"dist":61.51,"plate":"SDH - R 2317","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-03-31"},{"m":3,"id":"BL32","nach":"Shagalhakh","vor":"Saleh","workdays":22,"status":"PAID","ticketType":"ONLINE","price":63,"dist":60.62,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-03-31"},{"m":3,"id":"BL33","nach":"Staneva","vor":"Ginka","workdays":22,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":43.14,"plate":"IL-GT 184","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":3,"id":"PK01","nach":"Keller","vor":"Lina","workdays":22,"status":"PAID","ticketType":"ABO","price":63,"dist":4.7,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-03-02","X","X"],["2026-03-03","X","X"],["2026-03-04","X","A"],["2026-03-05","E","E"],["2026-03-06","E","E"],["2026-03-09","X","X"],["2026-03-10","X","X"],["2026-03-11","X","X"],["2026-03-12","X","X"],["2026-03-13","(x)","X"],["2026-03-16","E","E"],["2026-03-17","(x)","X"],["2026-03-18","X","X"],["2026-03-19","E","E"],["2026-03-20","E","E"],["2026-03-23","E","E"],["2026-03-24","X","X"],["2026-03-25","X","X"],["2026-03-26","X","X"],["2026-03-27","X","X"],["2026-03-30","E","E"],["2026-03-31","X","X"]],"notes":{"2026-03-16":"19. und 20. Zuckerfest"},"signedAt":"2026-03-31"},{"m":3,"id":"PK03","nach":"Alchadaida","vor":"Najwa","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"ONLINE","price":63,"dist":23.52,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-03-02","X","X"],["2026-03-03","X","A"],["2026-03-04","E","E"],["2026-03-05","E","E"],["2026-03-06","E","E"],["2026-03-09","E","E"],["2026-03-10","E","E"],["2026-03-11","E","E"],["2026-03-12","E","E"],["2026-03-13","E","E"],["2026-03-16","E","E"],["2026-03-17","E","E"],["2026-03-18","E","E"],["2026-03-19","E","E"],["2026-03-20","E","E"],["2026-03-23","E","E"],["2026-03-24","E","E"],["2026-03-25","E","E"],["2026-03-26","E","E"],["2026-03-27","E","E"],["2026-03-30","X","X"],["2026-03-31","X","X"]],"notes":{"2026-03-23":"Krank sh. Abgemeldet"},"signedAt":"2026-03-31"},{"m":3,"id":"PK06","nach":"Bayir","vor":"Galip","workdays":22,"status":"PAID","ticketType":"ABO","price":63,"dist":6.9,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-03-02","X","X"],["2026-03-03","X","X"],["2026-03-04","X","X"],["2026-03-05","(x)","X"],["2026-03-06","X","X"],["2026-03-09","X","X"],["2026-03-10","X","X"],["2026-03-11","X","X"],["2026-03-12","E","E"],["2026-03-13","X","X"],["2026-03-16","X","X"],["2026-03-17","X","X"],["2026-03-18","X","X"],["2026-03-19","E","E"],["2026-03-20","E","E"],["2026-03-23","X","X"],["2026-03-24","X","X"],["2026-03-25","X","X"],["2026-03-26","X","X"],["2026-03-27","X","X"],["2026-03-30","X","X"],["2026-03-31","X","X"]],"notes":null,"signedAt":"2026-03-31"},{"m":3,"id":"PK08","nach":"Daniel","vor":"Seba","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":63,"dist":4.2,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-03-02","X","X"],["2026-03-03","X","X"],["2026-03-04","X","X"],["2026-03-05","(x)","X"],["2026-03-06","E","E"],["2026-03-09","E","E"],["2026-03-10","E","E"],["2026-03-11","E","E"],["2026-03-12","E","E"],["2026-03-13","E","E"],["2026-03-16","E","E"],["2026-03-17","E","E"],["2026-03-18","E","E"],["2026-03-19","E","E"],["2026-03-20","E","E"],["2026-03-23","E","E"],["2026-03-24","E","E"],["2026-03-25","E","E"],["2026-03-26","X","X"],["2026-03-27","X","X"],["2026-03-30","A","A"],["2026-03-31","X","X"]],"notes":null,"signedAt":"2026-03-31"},{"m":3,"id":"PK09","nach":"Hasaneen Mahmoud","vor":"Maha","workdays":22,"status":"AWAITING_CORRECTION","ticketType":"ONLINE","price":63,"dist":20.31,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-03-02","E","E"],["2026-03-03","E","E"],["2026-03-04","E","E"],["2026-03-05","E","E"],["2026-03-06","E","E"],["2026-03-09","E","E"],["2026-03-10","E","E"],["2026-03-11","E","E"],["2026-03-12","E","E"],["2026-03-13","E","E"],["2026-03-16","E","E"],["2026-03-17","E","E"],["2026-03-18","E","E"],["2026-03-19","E","E"],["2026-03-20","E","E"],["2026-03-23","E","E"],["2026-03-24","E","E"],["2026-03-25","E","E"],["2026-03-26","E","E"],["2026-03-27","E","E"],["2026-03-30","E","E"],["2026-03-31","E","E"]],"notes":{"2026-03-02":"Einschließlich bis 11.03. krankgeschrieben"},"signedAt":null},{"m":3,"id":"PK10","nach":"Hurzhyi","vor":"Roman","workdays":22,"status":"PAID","ticketType":"ONLINE","price":63,"dist":58.63,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-03-02","E","E"],["2026-03-03","E","E"],["2026-03-04","E","E"],["2026-03-05","E","E"],["2026-03-06","E","E"],["2026-03-09","E","E"],["2026-03-10","E","E"],["2026-03-11","E","E"],["2026-03-12","E","E"],["2026-03-13","E","E"],["2026-03-16","X","X"],["2026-03-17","X","X"],["2026-03-18","X","X"],["2026-03-19","E","E"],["2026-03-20","E","E"],["2026-03-23","X","X"],["2026-03-24","A","A"],["2026-03-25","X","X"],["2026-03-26","X","X"],["2026-03-27","X","X"],["2026-03-30","X","X"],["2026-03-31","X","X"]],"notes":{"2026-03-02":"E bis einschließlich 13.03."},"signedAt":"2026-03-31"},{"m":3,"id":"PK11","nach":"Ibrahimi","vor":"Farid Ahmad","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":63,"dist":4.6,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-03-02","X","X"],["2026-03-03","(x)","A"],["2026-03-04","X","X"],["2026-03-05","(x)","X"],["2026-03-06","E","E"],["2026-03-09","X","X"],["2026-03-10","X","X"],["2026-03-11","X","X"],["2026-03-12","X","X"],["2026-03-13","X","X"],["2026-03-16","X","X"],["2026-03-17","(x)","X"],["2026-03-18","E","E"],["2026-03-19","E","E"],["2026-03-20","E","E"],["2026-03-23","X","X"],["2026-03-24","X","A"],["2026-03-25","X","E"],["2026-03-26","X","X"],["2026-03-27","X","E"],["2026-03-30","E","E"],["2026-03-31","E","E"]],"notes":{"2026-03-16":"Schmerzen in den Beinen"},"signedAt":"2026-03-31"},{"m":3,"id":"PK15","nach":"Patricha","vor":"Polina","workdays":22,"status":"PAID","ticketType":"ABO","price":34,"dist":21.8,"plate":null,"sozial":true,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-03-02","X","X"],["2026-03-03","X","A"],["2026-03-04","A","A"],["2026-03-05","U","U"],["2026-03-06","U","U"],["2026-03-09","X","X"],["2026-03-10","X","X"],["2026-03-11","X","X"],["2026-03-12","(x)","X"],["2026-03-13","(x)","X"],["2026-03-16","X","X"],["2026-03-17","(x)","X"],["2026-03-18","X","X"],["2026-03-19","E","E"],["2026-03-20","E","E"],["2026-03-23","(x)","X"],["2026-03-24","E","E"],["2026-03-25","X","X"],["2026-03-26","X","X"],["2026-03-27","(x)","X"],["2026-03-30","X","X"],["2026-03-31","X","X"]],"notes":{"2026-03-02":"Mi abgemeldet (krank)","2026-03-23":"24.3 Krankschreibung abgemeldet"},"signedAt":"2026-03-31"},{"m":3,"id":"PK19","nach":"Fischer","vor":"Kaan","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":63,"dist":5.2,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-03-02","X","X"],["2026-03-03","X","X"],["2026-03-04","X","X"],["2026-03-05","X","X"],["2026-03-06","X","A"],["2026-03-09","X","X"],["2026-03-10","X","X"],["2026-03-11","X","X"],["2026-03-12","X","E"],["2026-03-13","(x)","X"],["2026-03-16","X","X"],["2026-03-17","(x)","X"],["2026-03-18","X","X"],["2026-03-19","E","E"],["2026-03-20","E","E"],["2026-03-23","X","X"],["2026-03-24","(x)","A"],["2026-03-25","X","X"],["2026-03-26","X","X"],["2026-03-27","X","X"],["2026-03-30","X","X"],["2026-03-31","X","X"]],"notes":null,"signedAt":"2026-03-31"},{"m":3,"id":"PK20","nach":"Srour","vor":"Abeer","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"ONLINE","price":63,"dist":98.65,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-03-02","(x)","X"],["2026-03-03","X","X"],["2026-03-04","E","E"],["2026-03-05","(x)","X"],["2026-03-06","X","X"],["2026-03-09","X","X"],["2026-03-10","X","X"],["2026-03-11","X","X"],["2026-03-12","(x)","X"],["2026-03-13","(x)","X"],["2026-03-16","X","X"],["2026-03-17","X","X"],["2026-03-18","X","X"],["2026-03-19","E","E"],["2026-03-20","E","E"],["2026-03-23","E","E"],["2026-03-24","E","E"],["2026-03-25","X","X"],["2026-03-26","X","X"],["2026-03-27","X","X"],["2026-03-30","X","X"],["2026-03-31","X","X"]],"notes":null,"signedAt":"2026-03-31"},{"m":3,"id":"PK23","nach":"Chmilenko","vor":"Maryna","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":34,"dist":22.0,"plate":null,"sozial":true,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"}],"att":[["2026-03-02","X","A"],["2026-03-03","X","A"],["2026-03-04","X","X"],["2026-03-05","X","X"],["2026-03-06","X","X"],["2026-03-09","X","X"],["2026-03-10","X","X"],["2026-03-11","X","X"],["2026-03-12","(x)","X"],["2026-03-13","A","A"],["2026-03-16","X","X"],["2026-03-17","(x)","X"],["2026-03-18","(x)","X"],["2026-03-19","E","E"],["2026-03-20","E","E"],["2026-03-23","E","E"],["2026-03-24","X","A"],["2026-03-25","U","U"],["2026-03-26","X","X"],["2026-03-27","X","X"]],"notes":null,"signedAt":"2026-03-31"},{"m":4,"id":"BL07","nach":"Al-Raheem","vor":"Wahhab","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"ONLINE","price":63,"dist":3.4,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"BL13","nach":"Eger","vor":"Sylwia","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"PKW","price":0,"dist":4.7,"plate":"EF SP 90","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"BL15","nach":"Fischer","vor":"Tatjana","workdays":20,"status":"IN_REVIEW","ticketType":"PKW","price":0,"dist":101.0,"plate":"MgN – KA 26","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":4,"id":"BL22","nach":"Kayser","vor":"Evgenia","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"PKW","price":0,"dist":23.4,"plate":"SÖM J 9999","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"BL23","nach":"Kenjo","vor":"Amal","workdays":20,"status":"IN_REVIEW","ticketType":"ONLINE","price":63,"dist":0,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":4,"id":"BL27","nach":"Pahle","vor":"Agnes","workdays":20,"status":"IN_REVIEW","ticketType":"PKW","price":0,"dist":32.6,"plate":"L-HP 21 38","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":4,"id":"BL28","nach":"Palij","vor":"Natalja","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"PKW","price":0,"dist":28.3,"plate":"SÖM NP 848","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"BL29","nach":"Qaddad","vor":"Aya","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"PKW","price":0,"dist":45.06,"plate":"IK MA828","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"BL31","nach":"Ritter","vor":"Marina","workdays":20,"status":"IN_REVIEW","ticketType":"PKW","price":0,"dist":61.51,"plate":"SDH - R 2317","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":4,"id":"BL32","nach":"Shagalhakh","vor":"Saleh","workdays":20,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":60.62,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":4,"id":"BL33","nach":"Staneva","vor":"Ginka","workdays":20,"status":"IN_REVIEW","ticketType":"PKW","price":0,"dist":43.14,"plate":"IL-GT 184","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":4,"id":"PK01","nach":"Keller","vor":"Lina","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":63,"dist":4.7,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-04-06","",""],["2026-04-07","",""],["2026-04-08","",""],["2026-04-09","",""],["2026-04-10","",""],["2026-04-13","X","X"],["2026-04-14","X","X"],["2026-04-15","U","U"],["2026-04-16","X","X"],["2026-04-17","X","X"],["2026-04-20","X","X"],["2026-04-21","X","X"],["2026-04-22","X","X"],["2026-04-23","X","X"],["2026-04-24","E","E"],["2026-04-27","E","E"],["2026-04-28","E","E"],["2026-04-29","X","X"],["2026-04-30","X","X"]],"notes":{"2026-04-06":"(Ostern): 06.04.2026 Feiertag\n \nKursferien: 07.04.-10.04.2026","2026-04-20":"20.04.-24.04.2026 Dolmetschtraining"},"signedAt":"2026-04-30"},{"m":4,"id":"PK03","nach":"Alchadaida","vor":"Najwa","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"ONLINE","price":63,"dist":23.52,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-04-06","",""],["2026-04-07","",""],["2026-04-08","",""],["2026-04-09","",""],["2026-04-10","",""],["2026-04-13","A","A"],["2026-04-14","X","X"],["2026-04-15","X","X"],["2026-04-16","A","A"],["2026-04-17","X","X"],["2026-04-20","X","X"],["2026-04-21","X","X"],["2026-04-22","X","X"],["2026-04-23","X","X"],["2026-04-24","X","X"],["2026-04-27","X","X"],["2026-04-28","X","X"],["2026-04-29","X","X"],["2026-04-30","E","E"]],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"PK06","nach":"Bayir","vor":"Galip","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":63,"dist":6.9,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-04-06","",""],["2026-04-07","",""],["2026-04-08","",""],["2026-04-09","",""],["2026-04-10","",""],["2026-04-13","X","X"],["2026-04-14","X","X"],["2026-04-15","X","X"],["2026-04-16","X","X"],["2026-04-17","X","X"],["2026-04-20","X","X"],["2026-04-21","X","X"],["2026-04-22","X","X"],["2026-04-23","E","E"],["2026-04-24","X","X"],["2026-04-27","X","X"],["2026-04-28","X","X"],["2026-04-29","E","E"],["2026-04-30","X","X"]],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"PK08","nach":"Daniel","vor":"Seba","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":63,"dist":4.2,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-04-06","",""],["2026-04-07","",""],["2026-04-08","",""],["2026-04-09","",""],["2026-04-10","",""],["2026-04-13","(x)","(x)"],["2026-04-14","(x)","X"],["2026-04-15","A","A"],["2026-04-16","X","X"],["2026-04-17","X","X"],["2026-04-20","(x)","X"],["2026-04-21","X","X"],["2026-04-22","E","E"],["2026-04-23","E","E"],["2026-04-24","(x)","X"],["2026-04-27","X","X"],["2026-04-28","X","X"],["2026-04-29","X","X"],["2026-04-30","X","X"]],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"PK09","nach":"Hasaneen Mahmoud","vor":"Maha","workdays":20,"status":"READY_FOR_APPROVAL","ticketType":"ONLINE","price":63,"dist":20.31,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-04-06","",""],["2026-04-07","",""],["2026-04-08","",""],["2026-04-09","",""],["2026-04-10","",""],["2026-04-13","E","E"],["2026-04-14","E","E"],["2026-04-15","E","E"],["2026-04-16","E","E"],["2026-04-17","E","E"],["2026-04-20","E","E"],["2026-04-21","X","X"],["2026-04-22","E","E"],["2026-04-23","X","X"],["2026-04-24","X","X"],["2026-04-27","E","E"],["2026-04-28","E","E"],["2026-04-29","E","E"],["2026-04-30","E","E"]],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"PK10","nach":"Hurzhyi","vor":"Roman","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"ONLINE","price":63,"dist":58.63,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-04-06","",""],["2026-04-07","",""],["2026-04-08","",""],["2026-04-09","",""],["2026-04-10","",""],["2026-04-13","X","X"],["2026-04-14","X","X"],["2026-04-15","U","U"],["2026-04-16","X","X"],["2026-04-17","E","E"],["2026-04-20","X","X"],["2026-04-21","X","X"],["2026-04-22","X","X"],["2026-04-23","X","X"],["2026-04-24","X","X"],["2026-04-27","X","X"],["2026-04-28","X","X"],["2026-04-29","X","X"],["2026-04-30","X","X"]],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"PK11","nach":"Ibrahimi","vor":"Farid Ahmad","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":63,"dist":4.6,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-04-06","",""],["2026-04-07","",""],["2026-04-08","",""],["2026-04-09","",""],["2026-04-10","",""],["2026-04-13","X","X"],["2026-04-14","X","X"],["2026-04-15","X","X"],["2026-04-16","X","X"],["2026-04-17","X","X"],["2026-04-20","X","X"],["2026-04-21","X","X"],["2026-04-22","X","X"],["2026-04-23","X","X"],["2026-04-24","X","X"],["2026-04-27","X","X"],["2026-04-28","X","X"],["2026-04-29","X","X"],["2026-04-30","X","X"]],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"PK15","nach":"Patricha","vor":"Polina","workdays":20,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":34,"dist":21.8,"plate":null,"sozial":true,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-04-06","",""],["2026-04-07","",""],["2026-04-08","",""],["2026-04-09","",""],["2026-04-10","",""],["2026-04-13","(x)","X"],["2026-04-14","X","X"],["2026-04-15","X","X"],["2026-04-16","X","(x)"],["2026-04-17","X","X"],["2026-04-20","X","X"],["2026-04-21","X","X"],["2026-04-22","X","X"],["2026-04-23","X","X"],["2026-04-24","X","X"],["2026-04-27","X","X"],["2026-04-28","X","X"],["2026-04-29","X","X"],["2026-04-30","X","X"]],"notes":null,"signedAt":"2026-04-30"},{"m":4,"id":"PK19","nach":"Fischer","vor":"Kaan","workdays":20,"status":"IN_REVIEW","ticketType":"ABO","price":63,"dist":5.2,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-04-06","",""],["2026-04-07","",""],["2026-04-08","",""],["2026-04-09","",""],["2026-04-10","",""],["2026-04-13","A","A"],["2026-04-14","A","A"],["2026-04-15","X","X"],["2026-04-16","E","E"],["2026-04-17","X","X"],["2026-04-20","X","X"],["2026-04-21","X","X"],["2026-04-22","E","E"],["2026-04-23","X","X"],["2026-04-24","X","X"],["2026-04-27","A","A"],["2026-04-28","X","X"],["2026-04-29","X","X"],["2026-04-30","E","E"]],"notes":null,"signedAt":null},{"m":4,"id":"PK20","nach":"Srour","vor":"Abeer","workdays":20,"status":"AWAITING_CORRECTION","ticketType":"ONLINE","price":63,"dist":98.65,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"}],"att":[["2026-04-06","",""],["2026-04-07","",""],["2026-04-08","",""],["2026-04-09","",""],["2026-04-10","",""],["2026-04-13","X","X"],["2026-04-14","X","X"],["2026-04-15","X","X"],["2026-04-16","X","X"],["2026-04-17","U","U"],["2026-04-20","E","E"],["2026-04-21","X","X"],["2026-04-22","X","X"],["2026-04-23","X","X"],["2026-04-24","E","E"],["2026-04-27","E","E"],["2026-04-28","E","E"],["2026-04-29","E","E"],["2026-04-30","E","E"]],"notes":null,"signedAt":null},{"m":4,"id":"PK23","nach":"Chmilenko","vor":"Maryna","workdays":20,"status":"AWAITING_CORRECTION","ticketType":"ABO","price":34,"dist":22.0,"plate":null,"sozial":true,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"}],"att":[["2026-04-06","",""],["2026-04-07","",""],["2026-04-08","",""],["2026-04-09","",""],["2026-04-10","",""],["2026-04-13","A","A"],["2026-04-14","A","A"],["2026-04-15","E","E"],["2026-04-16","E","E"],["2026-04-17","E","E"],["2026-04-20","E","E"],["2026-04-21","E","E"],["2026-04-22","E","E"],["2026-04-23","E","E"],["2026-04-24","E","E"],["2026-04-27","X","X"],["2026-04-28","E","E"],["2026-04-29","E","E"],["2026-04-30","E","E"]],"notes":null,"signedAt":null},{"m":5,"id":"BL07","nach":"Al-Raheem","vor":"Wahhab","workdays":18,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":3.4,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"BL13","nach":"Eger","vor":"Sylwia","workdays":18,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":4.7,"plate":"EF SP 90","sozial":false,"hasPraktikum":true,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"BL15","nach":"Fischer","vor":"Tatjana","workdays":18,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":101.0,"plate":"MgN – KA 26","sozial":false,"hasPraktikum":true,"docs":[{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"BL22","nach":"Kayser","vor":"Evgenia","workdays":18,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":23.4,"plate":"SÖM J 9999","sozial":false,"hasPraktikum":true,"docs":[{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"BL23","nach":"Kenjo","vor":"Amal","workdays":18,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":0,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"BL27","nach":"Pahle","vor":"Agnes","workdays":18,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":32.6,"plate":"L-HP 21 38","sozial":false,"hasPraktikum":true,"docs":[{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"BL28","nach":"Palij","vor":"Natalja","workdays":18,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":28.3,"plate":"SÖM NP 848","sozial":false,"hasPraktikum":true,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"BL29","nach":"Qaddad","vor":"Aya","workdays":18,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":45.06,"plate":"IK MA828","sozial":false,"hasPraktikum":true,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"BL30","nach":"Rahimi","vor":"Karim","workdays":18,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":0,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"BL31","nach":"Ritter","vor":"Marina","workdays":18,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":61.51,"plate":"SDH - R 2317","sozial":false,"hasPraktikum":true,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"BL32","nach":"Shagalhakh","vor":"Saleh","workdays":18,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":60.62,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"BL33","nach":"Staneva","vor":"Ginka","workdays":18,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":43.14,"plate":"IL-GT 184","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":5,"id":"PK01","nach":"Keller","vor":"Lina","workdays":18,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":63,"dist":4.7,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-05-04","X","X"],["2026-05-05","X","X"],["2026-05-06","X","X"],["2026-05-07","X","X"],["2026-05-08","X","X"],["2026-05-11","X","X"],["2026-05-12","X","X"],["2026-05-13","X","X"],["2026-05-14","",""],["2026-05-15","X","X"],["2026-05-18","X","X"],["2026-05-19","X","X"],["2026-05-20","X","X"],["2026-05-21","X","X"],["2026-05-22","X","X"],["2026-05-25","",""],["2026-05-26","X","X"],["2026-05-27","X","X"],["2026-05-28","X","X"],["2026-05-29","X","X"]],"notes":{"2026-05-04":"2. Praktikum (04.05. – 12.06.2026)","2026-05-11":"2. Praktikum (04.05. – 12.06.2026)","2026-05-18":"2. Praktikum (04.05. – 12.06.2026)","2026-05-25":"2. Praktikum (04.05. – 12.06.2026)"},"signedAt":"2026-05-31"},{"m":5,"id":"PK03","nach":"Alchadaida","vor":"Najwa","workdays":18,"status":"AWAITING_CORRECTION","ticketType":"ONLINE","price":63,"dist":23.52,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-05-04","X","X"],["2026-05-05","X","X"],["2026-05-06","X","X"],["2026-05-07","X","X"],["2026-05-08","X","X"],["2026-05-11","X","X"],["2026-05-12","X","X"],["2026-05-13","X","X"],["2026-05-14","",""],["2026-05-15","X","X"],["2026-05-18","X","X"],["2026-05-19","X","X"],["2026-05-20","X","X"],["2026-05-21","X","X"],["2026-05-22","X","X"],["2026-05-25","",""],["2026-05-26","X","X"],["2026-05-27","X","X"],["2026-05-28","X","X"],["2026-05-29","X","X"]],"notes":null,"signedAt":null},{"m":5,"id":"PK06","nach":"Bayir","vor":"Galip","workdays":18,"status":"AWAITING_CORRECTION","ticketType":"ABO","price":63,"dist":6.9,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-05-04","X","X"],["2026-05-05","X","X"],["2026-05-06","X","X"],["2026-05-07","X","X"],["2026-05-08","X","X"],["2026-05-11","X","X"],["2026-05-12","X","X"],["2026-05-13","X","X"],["2026-05-14","",""],["2026-05-15","X","X"],["2026-05-18","X","X"],["2026-05-19","X","X"],["2026-05-20","X","X"],["2026-05-21","X","X"],["2026-05-22","X","X"],["2026-05-25","",""],["2026-05-26","X","X"],["2026-05-27","X","X"],["2026-05-28","X","X"],["2026-05-29","X","X"]],"notes":null,"signedAt":null},{"m":5,"id":"PK08","nach":"Daniel","vor":"Seba","workdays":18,"status":"AWAITING_CORRECTION","ticketType":"ABO","price":63,"dist":4.2,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-05-04","X","X"],["2026-05-05","X","X"],["2026-05-06","X","X"],["2026-05-07","X","X"],["2026-05-08","X","X"],["2026-05-11","X","X"],["2026-05-12","X","X"],["2026-05-13","X","X"],["2026-05-14","",""],["2026-05-15","X","X"],["2026-05-18","X","X"],["2026-05-19","X","X"],["2026-05-20","X","X"],["2026-05-21","X","X"],["2026-05-22","X","X"],["2026-05-25","",""],["2026-05-26","X","X"],["2026-05-27","X","X"],["2026-05-28","X","X"],["2026-05-29","X","X"]],"notes":null,"signedAt":null},{"m":5,"id":"PK09","nach":"Hasaneen Mahmoud","vor":"Maha","workdays":18,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":20.31,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[],"att":[["2026-05-04","A","A"],["2026-05-05","A","A"],["2026-05-06","A","A"],["2026-05-07","A","A"],["2026-05-08","A","A"],["2026-05-11","A","A"],["2026-05-12","A","A"],["2026-05-13","A","A"],["2026-05-14","",""],["2026-05-15","A","A"],["2026-05-18","A","A"],["2026-05-19","A","A"],["2026-05-20","A","A"],["2026-05-21","A","A"],["2026-05-22","A","A"],["2026-05-25","",""],["2026-05-26","A","A"],["2026-05-27","A","A"],["2026-05-28","A","A"],["2026-05-29","A","A"]],"notes":null,"signedAt":null},{"m":5,"id":"PK10","nach":"Hurzhyi","vor":"Roman","workdays":18,"status":"PAID","ticketType":"ONLINE","price":63,"dist":58.63,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-05-04","X","X"],["2026-05-05","X","X"],["2026-05-06","X","X"],["2026-05-07","X","X"],["2026-05-08","X","X"],["2026-05-11","X","X"],["2026-05-12","X","X"],["2026-05-13","X","X"],["2026-05-14","",""],["2026-05-15","X","X"],["2026-05-18","X","X"],["2026-05-19","X","X"],["2026-05-20","X","X"],["2026-05-21","X","X"],["2026-05-22","X","X"],["2026-05-25","",""],["2026-05-26","X","X"],["2026-05-27","X","X"],["2026-05-28","X","X"],["2026-05-29","X","X"]],"notes":null,"signedAt":"2026-05-31"},{"m":5,"id":"PK11","nach":"Ibrahimi","vor":"Farid Ahmad","workdays":18,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":63,"dist":4.6,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-05-04","X","X"],["2026-05-05","X","X"],["2026-05-06","X","X"],["2026-05-07","X","X"],["2026-05-08","X","X"],["2026-05-11","X","X"],["2026-05-12","X","X"],["2026-05-13","X","X"],["2026-05-14","",""],["2026-05-15","X","X"],["2026-05-18","X","X"],["2026-05-19","X","X"],["2026-05-20","X","X"],["2026-05-21","X","X"],["2026-05-22","X","X"],["2026-05-25","",""],["2026-05-26","X","X"],["2026-05-27","X","X"],["2026-05-28","X","X"],["2026-05-29","X","X"]],"notes":null,"signedAt":"2026-05-31"},{"m":5,"id":"PK15","nach":"Patricha","vor":"Polina","workdays":18,"status":"IN_REVIEW","ticketType":"ABO","price":34,"dist":21.8,"plate":null,"sozial":true,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-05-04","X","X"],["2026-05-05","X","X"],["2026-05-06","X","X"],["2026-05-07","X","X"],["2026-05-08","X","X"],["2026-05-11","X","X"],["2026-05-12","X","X"],["2026-05-13","X","X"],["2026-05-14","",""],["2026-05-15","X","X"],["2026-05-18","X","X"],["2026-05-19","X","X"],["2026-05-20","X","X"],["2026-05-21","X","X"],["2026-05-22","X","X"],["2026-05-25","",""],["2026-05-26","X","X"],["2026-05-27","X","X"],["2026-05-28","X","X"],["2026-05-29","X","X"]],"notes":null,"signedAt":null},{"m":5,"id":"PK19","nach":"Fischer","vor":"Kaan","workdays":18,"status":"IN_REVIEW","ticketType":"ABO","price":63,"dist":5.2,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-05-04","X","X"],["2026-05-05","X","X"],["2026-05-06","X","X"],["2026-05-07","X","X"],["2026-05-08","X","X"],["2026-05-11","X","X"],["2026-05-12","X","X"],["2026-05-13","X","X"],["2026-05-14","",""],["2026-05-15","X","X"],["2026-05-18","X","X"],["2026-05-19","X","X"],["2026-05-20","X","X"],["2026-05-21","X","X"],["2026-05-22","X","X"],["2026-05-25","",""],["2026-05-26","X","X"],["2026-05-27","X","X"],["2026-05-28","X","X"],["2026-05-29","X","X"]],"notes":null,"signedAt":null},{"m":5,"id":"PK20","nach":"Srour","vor":"Abeer","workdays":18,"status":"AWAITING_CORRECTION","ticketType":"ONLINE","price":63,"dist":98.65,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-05-04","X","X"],["2026-05-05","X","X"],["2026-05-06","X","X"],["2026-05-07","X","X"],["2026-05-08","X","X"],["2026-05-11","X","X"],["2026-05-12","X","X"],["2026-05-13","X","X"],["2026-05-14","",""],["2026-05-15","X","X"],["2026-05-18","X","X"],["2026-05-19","X","X"],["2026-05-20","X","X"],["2026-05-21","X","X"],["2026-05-22","X","X"],["2026-05-25","",""],["2026-05-26","X","X"],["2026-05-27","X","X"],["2026-05-28","X","X"],["2026-05-29","X","X"]],"notes":null,"signedAt":null},{"m":5,"id":"PK23","nach":"Chmilenko","vor":"Maryna","workdays":18,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":34,"dist":22.0,"plate":null,"sozial":true,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-05-04","X","X"],["2026-05-05","X","X"],["2026-05-06","X","X"],["2026-05-07","X","X"],["2026-05-08","X","X"],["2026-05-11","X","X"],["2026-05-12","X","X"],["2026-05-13","X","X"],["2026-05-14","",""],["2026-05-15","X","X"],["2026-05-18","X","X"],["2026-05-19","X","X"],["2026-05-20","X","X"],["2026-05-21","X","X"],["2026-05-22","X","X"],["2026-05-25","",""],["2026-05-26","X","X"],["2026-05-27","X","X"],["2026-05-28","X","X"],["2026-05-29","X","X"]],"notes":null,"signedAt":"2026-05-31"},{"m":5,"id":"PK24","nach":"Bockenauer","vor":"Maryam","workdays":18,"status":"SENT_TO_ACCOUNTING","ticketType":"ONLINE","price":63,"dist":1.4,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"}],"att":[["2026-05-04","X","X"],["2026-05-05","X","X"],["2026-05-06","X","X"],["2026-05-07","X","X"],["2026-05-08","X","X"],["2026-05-11","X","X"],["2026-05-12","X","X"],["2026-05-13","X","X"],["2026-05-14","",""],["2026-05-15","X","X"],["2026-05-18","X","X"],["2026-05-19","X","X"],["2026-05-20","X","X"],["2026-05-21","X","X"],["2026-05-22","X","X"],["2026-05-25","",""],["2026-05-26","X","X"],["2026-05-27","X","X"],["2026-05-28","X","X"],["2026-05-29","X","X"]],"notes":null,"signedAt":"2026-05-31"},{"m":6,"id":"BL07","nach":"Al-Raheem","vor":"Wahhab","workdays":22,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":3.4,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"BL13","nach":"Eger","vor":"Sylwia","workdays":22,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":4.7,"plate":"EF SP 90","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"BL15","nach":"Fischer","vor":"Tatjana","workdays":22,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":101.0,"plate":"MgN – KA 26","sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"BL22","nach":"Kayser","vor":"Evgenia","workdays":22,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":23.4,"plate":"SÖM J 9999","sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"BL23","nach":"Kenjo","vor":"Amal","workdays":22,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":0,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"BL27","nach":"Pahle","vor":"Agnes","workdays":22,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":32.6,"plate":"L-HP 21 38","sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"BL28","nach":"Palij","vor":"Natalja","workdays":22,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":28.3,"plate":"SÖM NP 848","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"BL29","nach":"Qaddad","vor":"Aya","workdays":22,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":45.06,"plate":"IK MA828","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"BL30","nach":"Rahimi","vor":"Karim","workdays":22,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":0,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"BL31","nach":"Ritter","vor":"Marina","workdays":22,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":61.51,"plate":"SDH - R 2317","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"BL32","nach":"Shagalhakh","vor":"Saleh","workdays":22,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":60.62,"plate":null,"sozial":false,"hasPraktikum":false,"docs":[],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"BL33","nach":"Staneva","vor":"Ginka","workdays":22,"status":"NOT_SUBMITTED","ticketType":"PKW","price":0,"dist":43.14,"plate":"IL-GT 184","sozial":false,"hasPraktikum":false,"docs":[{"kind":"LICENSE_PLATE","fileName":"kennzeichen.jpg","state":"VERIFIED"},{"kind":"GENERAL_INFO","fileName":"angaben.pdf","state":"VERIFIED"}],"att":[],"notes":null,"signedAt":null},{"m":6,"id":"PK01","nach":"Keller","vor":"Lina","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":63,"dist":4.7,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-06-01","X","X"],["2026-06-02","X","X"],["2026-06-03","X","X"],["2026-06-04","X","X"],["2026-06-05","X","X"],["2026-06-08","X","X"],["2026-06-09","X","X"],["2026-06-10","X","X"],["2026-06-11","X","X"],["2026-06-12","X","X"],["2026-06-15","K","K"],["2026-06-16","X",""],["2026-06-17","X",""],["2026-06-18","",""],["2026-06-19","E",""],["2026-06-22","X","X"],["2026-06-23","X","X"],["2026-06-24","(x)",""],["2026-06-25","E","E"],["2026-06-26","E","E"],["2026-06-28","X","K"],["2026-06-29","U","U"]],"notes":{"2026-06-01":"2. Praktikum (04.05. – 12.06.2026)","2026-06-08":"2. Praktikum (04.05. – 12.06.2026)","2026-06-15":"16.06 Nachmittag Dozent ausgefallen\n18.06 Teamtag IBS\n19.06 Nachmittag Dozent ausgefallen","2026-06-22":"24.06 Nachmittag Dozent ausgefallen"},"signedAt":"2026-06-30"},{"m":6,"id":"PK03","nach":"Alchadaida","vor":"Najwa","workdays":22,"status":"AWAITING_CORRECTION","ticketType":"ONLINE","price":63,"dist":23.52,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-06-01","X","X"],["2026-06-02","X","X"],["2026-06-03","X","X"],["2026-06-04","X","X"],["2026-06-05","X","X"],["2026-06-08","X","X"],["2026-06-09","X","X"],["2026-06-10","X","X"],["2026-06-11","X","X"],["2026-06-12","X","X"],["2026-06-15","X","X"],["2026-06-16","X",""],["2026-06-17","X",""],["2026-06-18","",""],["2026-06-19","E",""],["2026-06-22","X","X"],["2026-06-23","X","X"],["2026-06-24","X",""],["2026-06-25","E","E"],["2026-06-26","E","E"],["2026-06-28","X","K"],["2026-06-29","U","U"]],"notes":null,"signedAt":null},{"m":6,"id":"PK06","nach":"Bayir","vor":"Galip","workdays":22,"status":"AWAITING_CORRECTION","ticketType":"ABO","price":63,"dist":6.9,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-06-01","X","X"],["2026-06-02","X","X"],["2026-06-03","X","X"],["2026-06-04","X","X"],["2026-06-05","X","X"],["2026-06-08","X","X"],["2026-06-09","X","X"],["2026-06-10","X","X"],["2026-06-11","X","X"],["2026-06-12","X","X"],["2026-06-15","X","X"],["2026-06-16","X",""],["2026-06-17","X",""],["2026-06-18","",""],["2026-06-19","X",""],["2026-06-22","X","X"],["2026-06-23","X","X"],["2026-06-24","X",""],["2026-06-25","X","X"],["2026-06-26","K","K"],["2026-06-28","X","X"],["2026-06-29","X","X"]],"notes":null,"signedAt":null},{"m":6,"id":"PK08","nach":"Daniel","vor":"Seba","workdays":22,"status":"AWAITING_CORRECTION","ticketType":"ABO","price":63,"dist":4.2,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-06-01","X","X"],["2026-06-02","X","X"],["2026-06-03","X","X"],["2026-06-04","X","X"],["2026-06-05","X","X"],["2026-06-08","X","X"],["2026-06-09","X","X"],["2026-06-10","X","X"],["2026-06-11","X","X"],["2026-06-12","X","X"],["2026-06-15","x","x"],["2026-06-16","E",""],["2026-06-17","X",""],["2026-06-18","",""],["2026-06-19","E",""],["2026-06-22","X","X"],["2026-06-23","E","E"],["2026-06-24","E",""],["2026-06-25","E","E"],["2026-06-26","E","E"],["2026-06-28","X","K"],["2026-06-29","X","E"]],"notes":null,"signedAt":null},{"m":6,"id":"PK09","nach":"Hasaneen Mahmoud","vor":"Maha","workdays":22,"status":"NOT_SUBMITTED","ticketType":"ONLINE","price":63,"dist":20.31,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[],"att":[["2026-06-01","A","A"],["2026-06-02","A","A"],["2026-06-03","A","A"],["2026-06-04","A","A"],["2026-06-05","A","A"],["2026-06-08","A","A"],["2026-06-09","A","A"],["2026-06-10","A","A"],["2026-06-11","A","A"],["2026-06-12","A","A"],["2026-06-15","A","A"],["2026-06-16","A",""],["2026-06-17","A",""],["2026-06-18","",""],["2026-06-19","A",""],["2026-06-22","A","A"],["2026-06-23","A","A"],["2026-06-24","A",""],["2026-06-25","A","A"],["2026-06-26","A","A"],["2026-06-28","U","U"],["2026-06-29","U","U"]],"notes":null,"signedAt":null},{"m":6,"id":"PK10","nach":"Hurzhyi","vor":"Roman","workdays":22,"status":"AWAITING_CORRECTION","ticketType":"ONLINE","price":63,"dist":58.63,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"INVOICE","fileName":"rechnung.pdf","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-06-01","X","X"],["2026-06-02","X","X"],["2026-06-03","X","X"],["2026-06-04","X","X"],["2026-06-05","X","X"],["2026-06-08","X","X"],["2026-06-09","X","X"],["2026-06-10","X","X"],["2026-06-11","X","X"],["2026-06-12","X","X"],["2026-06-15","K","K"],["2026-06-16","X",""],["2026-06-17","X",""],["2026-06-18","",""],["2026-06-19","U",""],["2026-06-22","X","X"],["2026-06-23","(x)","X"],["2026-06-24","K",""],["2026-06-25","(x)","(x)"],["2026-06-26","E","E"],["2026-06-28","X","X"],["2026-06-29","E","E"]],"notes":null,"signedAt":null},{"m":6,"id":"PK11","nach":"Ibrahimi","vor":"Farid Ahmad","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":63,"dist":4.6,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-06-01","X","X"],["2026-06-02","X","X"],["2026-06-03","X","X"],["2026-06-04","X","X"],["2026-06-05","X","X"],["2026-06-08","X","X"],["2026-06-09","X","X"],["2026-06-10","X","X"],["2026-06-11","X","X"],["2026-06-12","X","X"],["2026-06-15","E","E"],["2026-06-16","E",""],["2026-06-17","E",""],["2026-06-18","",""],["2026-06-19","E",""],["2026-06-22","X","X"],["2026-06-23","X","X"],["2026-06-24","X",""],["2026-06-25","E","E"],["2026-06-26","X","X"],["2026-06-28","(x)","K"],["2026-06-29","X","X"]],"notes":null,"signedAt":"2026-06-30"},{"m":6,"id":"PK15","nach":"Patricha","vor":"Polina","workdays":22,"status":"AWAITING_CORRECTION","ticketType":"ABO","price":34,"dist":21.8,"plate":null,"sozial":true,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-06-01","X","X"],["2026-06-02","X","X"],["2026-06-03","X","X"],["2026-06-04","X","X"],["2026-06-05","X","X"],["2026-06-08","X","X"],["2026-06-09","X","X"],["2026-06-10","X","X"],["2026-06-11","X","X"],["2026-06-12","X","X"],["2026-06-15","(x)","X"],["2026-06-16","(x)",""],["2026-06-17","X",""],["2026-06-18","",""],["2026-06-19","U",""],["2026-06-22","X","X"],["2026-06-23","K","K"],["2026-06-24","X",""],["2026-06-25","E","E"],["2026-06-26","X","X"],["2026-06-28","X","X"],["2026-06-29","(x)","X"]],"notes":null,"signedAt":null},{"m":6,"id":"PK19","nach":"Fischer","vor":"Kaan","workdays":22,"status":"READY_FOR_APPROVAL","ticketType":"ABO","price":63,"dist":5.2,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PAYMENT_PROOF","fileName":"kontoauszug.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-06-01","X","X"],["2026-06-02","X","X"],["2026-06-03","X","X"],["2026-06-04","X","X"],["2026-06-05","X","X"],["2026-06-08","X","X"],["2026-06-09","X","X"],["2026-06-10","X","X"],["2026-06-11","X","X"],["2026-06-12","X","X"],["2026-06-15","A","A"],["2026-06-16","A",""],["2026-06-17","A",""],["2026-06-18","",""],["2026-06-19","A",""],["2026-06-22","U","U"],["2026-06-23","X","X"],["2026-06-24","U",""],["2026-06-25","U","U"],["2026-06-26","U","U"],["2026-06-28","X","U"],["2026-06-29","U","U"]],"notes":null,"signedAt":"2026-06-30"},{"m":6,"id":"PK20","nach":"Srour","vor":"Abeer","workdays":22,"status":"AWAITING_CORRECTION","ticketType":"ONLINE","price":63,"dist":98.65,"plate":null,"sozial":false,"hasPraktikum":true,"docs":[{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-06-01","X","X"],["2026-06-02","X","X"],["2026-06-03","X","X"],["2026-06-04","X","X"],["2026-06-05","X","X"],["2026-06-08","X","X"],["2026-06-09","X","X"],["2026-06-10","X","X"],["2026-06-11","X","X"],["2026-06-12","X","X"],["2026-06-15","K","K"],["2026-06-16","(x)",""],["2026-06-17","(x)",""],["2026-06-18","",""],["2026-06-19","U",""],["2026-06-22","U","U"],["2026-06-23","X","X"],["2026-06-24","E",""],["2026-06-25","E","E"],["2026-06-26","E","E"],["2026-06-28","X","X"],["2026-06-29","E","E"]],"notes":null,"signedAt":null},{"m":6,"id":"PK23","nach":"Chmilenko","vor":"Maryna","workdays":22,"status":"SENT_TO_ACCOUNTING","ticketType":"ABO","price":34,"dist":22.0,"plate":null,"sozial":true,"hasPraktikum":true,"docs":[{"kind":"TICKET_PHOTO","fileName":"ticket.jpg","state":"VERIFIED"},{"kind":"PRAKTIKUM_CONTRACT","fileName":"praktikumsvertrag.pdf","state":"VERIFIED"}],"att":[["2026-06-01","X","X"],["2026-06-02","X","X"],["2026-06-03","X","X"],["2026-06-04","X","X"],["2026-06-05","X","X"],["2026-06-08","X","X"],["2026-06-09","X","X"],["2026-06-10","X","X"],["2026-06-11","X","X"],["2026-06-12","X","X"],["2026-06-15","E","E"],["2026-06-16","E",""],["2026-06-17","E",""],["2026-06-18","",""],["2026-06-19","E",""],["2026-06-22","E","E"],["2026-06-23","E","E"],["2026-06-24","",""],["2026-06-25","X","X"],["2026-06-26","E","E"],["2026-06-28","(x)","X"],["2026-06-29","X","E"]],"notes":null,"signedAt":"2026-06-30"}];
+export const RAW_SEED: RawSeedRecord[] = [
+  {
+    "m": 1,
+    "id": "BL01",
+    "nach": "Kovač",
+    "vor": "Milan",
+    "workdays": 20,
+    "status": "PAID",
+    "ticketType": "ONLINE",
+    "price": 49,
+    "dist": 85.2,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 1,
+    "id": "BL02",
+    "nach": "Weber",
+    "vor": "Sylvia",
+    "workdays": 20,
+    "status": "PAID",
+    "ticketType": "PKW",
+    "price": 49,
+    "dist": 31.4,
+    "plate": "AP-SW 142",
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 1,
+    "id": "BL03",
+    "nach": "Nowak",
+    "vor": "Tomasz",
+    "workdays": 20,
+    "status": "PAID",
+    "ticketType": "PKW",
+    "price": 49,
+    "dist": 46.8,
+    "plate": "J-TN 887",
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 1,
+    "id": "PK01",
+    "nach": "Demir",
+    "vor": "Aesha",
+    "workdays": 20,
+    "status": "PAID",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 4.2,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-01-01",
+        "",
+        ""
+      ],
+      [
+        "2026-01-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-07",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-08",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-14",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-15",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-21",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-22",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-28",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-29",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-30",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 1,
+    "id": "PK02",
+    "nach": "Fischer",
+    "vor": "Katrin",
+    "workdays": 20,
+    "status": "PAID",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 22.6,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-01-01",
+        "",
+        ""
+      ],
+      [
+        "2026-01-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-07",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-08",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-14",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-15",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-21",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-22",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-28",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-29",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-30",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 1,
+    "id": "PK03",
+    "nach": "Haddad",
+    "vor": "Nour",
+    "workdays": 20,
+    "status": "PAID",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 2.6,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-01-01",
+        "",
+        ""
+      ],
+      [
+        "2026-01-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-07",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-08",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-14",
+        "U",
+        "U"
+      ],
+      [
+        "2026-01-15",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-21",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-22",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-28",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-29",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-30",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 1,
+    "id": "PK04",
+    "nach": "Amini",
+    "vor": "Yusuf",
+    "workdays": 20,
+    "status": "PAID",
+    "ticketType": "ONLINE",
+    "price": 49,
+    "dist": 6.8,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-01-01",
+        "",
+        ""
+      ],
+      [
+        "2026-01-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-07",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-08",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-14",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-15",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-21",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-22",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-28",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-29",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-30",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 1,
+    "id": "PK05",
+    "nach": "Petrova",
+    "vor": "Irina",
+    "workdays": 20,
+    "status": "PAID",
+    "ticketType": "ONLINE",
+    "price": 49,
+    "dist": 45.9,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-01-01",
+        "",
+        ""
+      ],
+      [
+        "2026-01-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-07",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-08",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-14",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-15",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-20",
+        "A",
+        "A"
+      ],
+      [
+        "2026-01-21",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-22",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-28",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-29",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-30",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 1,
+    "id": "PK06",
+    "nach": "Lindner",
+    "vor": "Jonas",
+    "workdays": 20,
+    "status": "PAID",
+    "ticketType": "ONLINE",
+    "price": 34,
+    "dist": 22.1,
+    "plate": null,
+    "sozial": true,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-01-01",
+        "",
+        ""
+      ],
+      [
+        "2026-01-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-07",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-08",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-14",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-15",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-21",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-22",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-28",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-29",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-30",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 1,
+    "id": "BL04",
+    "nach": "Sarić",
+    "vor": "Amila",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 85.2,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 1,
+    "id": "BL05",
+    "nach": "Öztürk",
+    "vor": "Emre",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 46.8,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 1,
+    "id": "PK07",
+    "nach": "Bauer",
+    "vor": "Melanie",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 5.1,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-01-01",
+        "",
+        ""
+      ],
+      [
+        "2026-01-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-07",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-08",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-14",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-15",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-21",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-22",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-28",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-29",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-30",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 1,
+    "id": "PK08",
+    "nach": "Ndiaye",
+    "vor": "Fatou",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 3.9,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-01-01",
+        "",
+        ""
+      ],
+      [
+        "2026-01-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-07",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-08",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-14",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-15",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-21",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-22",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-28",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-29",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-30",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 1,
+    "id": "PK09",
+    "nach": "Krüger",
+    "vor": "Stefan",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 7.4,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-01-01",
+        "",
+        ""
+      ],
+      [
+        "2026-01-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-07",
+        "(x)",
+        "(x)"
+      ],
+      [
+        "2026-01-08",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-14",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-15",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-21",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-22",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-28",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-29",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-30",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 1,
+    "id": "PK10",
+    "nach": "Rahimi",
+    "vor": "Zahra",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 22.1,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-01-01",
+        "",
+        ""
+      ],
+      [
+        "2026-01-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-07",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-08",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-12",
+        "U",
+        "U"
+      ],
+      [
+        "2026-01-13",
+        "U",
+        "U"
+      ],
+      [
+        "2026-01-14",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-15",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-21",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-22",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-28",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-29",
+        "X",
+        "X"
+      ],
+      [
+        "2026-01-30",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "BL01",
+    "nach": "Kovač",
+    "vor": "Milan",
+    "workdays": 20,
+    "status": "SENT_TO_ACCOUNTING",
+    "ticketType": "ONLINE",
+    "price": 49,
+    "dist": 85.2,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 2,
+    "id": "BL02",
+    "nach": "Weber",
+    "vor": "Sylvia",
+    "workdays": 20,
+    "status": "IN_REVIEW",
+    "ticketType": "PKW",
+    "price": 49,
+    "dist": 31.4,
+    "plate": "AP-SW 142",
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "BL03",
+    "nach": "Nowak",
+    "vor": "Tomasz",
+    "workdays": 20,
+    "status": "IN_REVIEW",
+    "ticketType": "PKW",
+    "price": 49,
+    "dist": 46.8,
+    "plate": "J-TN 887",
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "PK01",
+    "nach": "Demir",
+    "vor": "Aesha",
+    "workdays": 20,
+    "status": "AWAITING_CORRECTION",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 4.2,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "MISSING"
+      }
+    ],
+    "att": [
+      [
+        "2026-02-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-10",
+        "K",
+        "K"
+      ],
+      [
+        "2026-02-11",
+        "E",
+        "E"
+      ],
+      [
+        "2026-02-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-27",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "PK02",
+    "nach": "Fischer",
+    "vor": "Katrin",
+    "workdays": 20,
+    "status": "SENT_TO_ACCOUNTING",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 22.6,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-02-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-27",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 2,
+    "id": "PK03",
+    "nach": "Haddad",
+    "vor": "Nour",
+    "workdays": 20,
+    "status": "IN_REVIEW",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 2.6,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-02-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-27",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "PK04",
+    "nach": "Amini",
+    "vor": "Yusuf",
+    "workdays": 20,
+    "status": "IN_REVIEW",
+    "ticketType": "ONLINE",
+    "price": 49,
+    "dist": 6.8,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-02-02",
+        "E",
+        "E"
+      ],
+      [
+        "2026-02-03",
+        "E",
+        "E"
+      ],
+      [
+        "2026-02-04",
+        "E",
+        "E"
+      ],
+      [
+        "2026-02-05",
+        "E",
+        "E"
+      ],
+      [
+        "2026-02-06",
+        "E",
+        "E"
+      ],
+      [
+        "2026-02-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-27",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "PK05",
+    "nach": "Petrova",
+    "vor": "Irina",
+    "workdays": 20,
+    "status": "AWAITING_CORRECTION",
+    "ticketType": "ONLINE",
+    "price": 49,
+    "dist": 45.9,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "MISSING"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-02-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-27",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "PK06",
+    "nach": "Lindner",
+    "vor": "Jonas",
+    "workdays": 20,
+    "status": "PAID",
+    "ticketType": "ONLINE",
+    "price": 34,
+    "dist": 22.1,
+    "plate": null,
+    "sozial": true,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-02-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-27",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": "laut Excel"
+  },
+  {
+    "m": 2,
+    "id": "BL04",
+    "nach": "Sarić",
+    "vor": "Amila",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 85.2,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "BL05",
+    "nach": "Öztürk",
+    "vor": "Emre",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 46.8,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "PK07",
+    "nach": "Bauer",
+    "vor": "Melanie",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 5.1,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-02-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-16",
+        "U",
+        "U"
+      ],
+      [
+        "2026-02-17",
+        "U",
+        "U"
+      ],
+      [
+        "2026-02-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-27",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "PK08",
+    "nach": "Ndiaye",
+    "vor": "Fatou",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 3.9,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-02-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-27",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "PK09",
+    "nach": "Krüger",
+    "vor": "Stefan",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 7.4,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-02-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-27",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 2,
+    "id": "PK10",
+    "nach": "Rahimi",
+    "vor": "Zahra",
+    "workdays": 20,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 22.1,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-02-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-24",
+        "A",
+        "A"
+      ],
+      [
+        "2026-02-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-02-27",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "BL01",
+    "nach": "Kovač",
+    "vor": "Milan",
+    "workdays": 22,
+    "status": "IN_REVIEW",
+    "ticketType": "ONLINE",
+    "price": 49,
+    "dist": 85.2,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "BL02",
+    "nach": "Weber",
+    "vor": "Sylvia",
+    "workdays": 22,
+    "status": "AWAITING_CORRECTION",
+    "ticketType": "PKW",
+    "price": 49,
+    "dist": 31.4,
+    "plate": "AP-SW 142",
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "BL03",
+    "nach": "Nowak",
+    "vor": "Tomasz",
+    "workdays": 22,
+    "status": "IN_REVIEW",
+    "ticketType": "PKW",
+    "price": 49,
+    "dist": 46.8,
+    "plate": "J-TN 887",
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "PK01",
+    "nach": "Demir",
+    "vor": "Aesha",
+    "workdays": 22,
+    "status": "IN_REVIEW",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 4.2,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-03-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-19",
+        "E",
+        "E"
+      ],
+      [
+        "2026-03-20",
+        "E",
+        "E"
+      ],
+      [
+        "2026-03-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-30",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-31",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": {
+      "2026-03-16": "19. und 20. Feiertag"
+    },
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "PK02",
+    "nach": "Fischer",
+    "vor": "Katrin",
+    "workdays": 22,
+    "status": "IN_REVIEW",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 22.6,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-03-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-30",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-31",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "PK03",
+    "nach": "Haddad",
+    "vor": "Nour",
+    "workdays": 22,
+    "status": "AWAITING_CORRECTION",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 2.6,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "MISSING"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-03-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-30",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-31",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "PK04",
+    "nach": "Amini",
+    "vor": "Yusuf",
+    "workdays": 22,
+    "status": "AWAITING_CORRECTION",
+    "ticketType": "ONLINE",
+    "price": 49,
+    "dist": 6.8,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": true,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "MISSING"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "MISSING"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "MISSING"
+      },
+      {
+        "kind": "PRAKTIKUM_CONTRACT",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-03-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-30",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-31",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": {
+      "2026-03-16": "Praktikum 16.03.–31.03.2026"
+    },
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "PK05",
+    "nach": "Petrova",
+    "vor": "Irina",
+    "workdays": 22,
+    "status": "IN_REVIEW",
+    "ticketType": "ONLINE",
+    "price": 49,
+    "dist": 45.9,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-03-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-30",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-31",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "PK06",
+    "nach": "Lindner",
+    "vor": "Jonas",
+    "workdays": 22,
+    "status": "IN_REVIEW",
+    "ticketType": "ONLINE",
+    "price": 34,
+    "dist": 22.1,
+    "plate": null,
+    "sozial": true,
+    "hasPraktikum": false,
+    "docs": [
+      {
+        "kind": "TICKET_PHOTO",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "INVOICE",
+        "fileName": "",
+        "state": "VERIFIED"
+      },
+      {
+        "kind": "PAYMENT_PROOF",
+        "fileName": "",
+        "state": "VERIFIED"
+      }
+    ],
+    "att": [
+      [
+        "2026-03-02",
+        "",
+        ""
+      ],
+      [
+        "2026-03-03",
+        "",
+        ""
+      ],
+      [
+        "2026-03-04",
+        "",
+        ""
+      ],
+      [
+        "2026-03-05",
+        "",
+        ""
+      ],
+      [
+        "2026-03-06",
+        "",
+        ""
+      ],
+      [
+        "2026-03-09",
+        "",
+        ""
+      ],
+      [
+        "2026-03-10",
+        "",
+        ""
+      ],
+      [
+        "2026-03-11",
+        "",
+        ""
+      ],
+      [
+        "2026-03-12",
+        "",
+        ""
+      ],
+      [
+        "2026-03-13",
+        "",
+        ""
+      ],
+      [
+        "2026-03-16",
+        "A",
+        "A"
+      ],
+      [
+        "2026-03-17",
+        "A",
+        "A"
+      ],
+      [
+        "2026-03-18",
+        "A",
+        "A"
+      ],
+      [
+        "2026-03-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-30",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-31",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": {
+      "2026-03-16": "Wiedereinstieg 16.03."
+    },
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "BL04",
+    "nach": "Sarić",
+    "vor": "Amila",
+    "workdays": 22,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 85.2,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "BL05",
+    "nach": "Öztürk",
+    "vor": "Emre",
+    "workdays": 22,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 46.8,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "PK07",
+    "nach": "Bauer",
+    "vor": "Melanie",
+    "workdays": 22,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 5.1,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-03-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-30",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-31",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "PK08",
+    "nach": "Ndiaye",
+    "vor": "Fatou",
+    "workdays": 22,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 3.9,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-03-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-30",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-31",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "PK09",
+    "nach": "Krüger",
+    "vor": "Stefan",
+    "workdays": 22,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 7.4,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-03-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-04",
+        "K",
+        "K"
+      ],
+      [
+        "2026-03-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-30",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-31",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  },
+  {
+    "m": 3,
+    "id": "PK10",
+    "nach": "Rahimi",
+    "vor": "Zahra",
+    "workdays": 22,
+    "status": "NOT_SUBMITTED",
+    "ticketType": "ABO",
+    "price": 49,
+    "dist": 22.1,
+    "plate": null,
+    "sozial": false,
+    "hasPraktikum": false,
+    "docs": [],
+    "att": [
+      [
+        "2026-03-02",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-03",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-04",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-05",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-06",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-09",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-10",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-11",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-12",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-13",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-16",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-17",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-18",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-19",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-20",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-23",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-24",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-25",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-26",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-27",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-30",
+        "X",
+        "X"
+      ],
+      [
+        "2026-03-31",
+        "X",
+        "X"
+      ]
+    ],
+    "notes": null,
+    "signedAt": null
+  }
+];
 
-/** Stammdaten aus dem Tab 'Alle_TN_Daten' (Dummy-Daten). */
-export const RAW_MASTERS = [{"tnId":"BL07","nachname":"","vorname":"Wahhab","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Erfurt Stadtverkehr","entfernungKm":3.4,"vmtZone":"City zone ERFURT (10)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"17.11.2025","cloud":""},{"tnId":"BL13","nachname":"","vorname":"Sylwia","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Erfurt Stadtverkehr","entfernungKm":4.7,"vmtZone":"","verkehrsmittel":"PKW","kennzeichen":"EF SP 90","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"17.11.2025","cloud":""},{"tnId":"BL14","nachname":"El-Khechen","vorname":"sahraa","berechnung":"nicht relevant weniger als 3km","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL15","nachname":"","vorname":"Tatjana","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Sülzfeld Meiningen - Erfurt","entfernungKm":101.0,"vmtZone":"","verkehrsmittel":"PKW","kennzeichen":"MgN – KA 26","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"10 2 26","cloud":""},{"tnId":"BL22","nachname":"","vorname":"Evgenia","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Sömmerda - Erfurt","entfernungKm":23.4,"vmtZone":"","verkehrsmittel":"PKW","kennzeichen":"SÖM J 9999","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL23","nachname":"","vorname":"Amal","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Gotha – Erfurt","entfernungKm":null,"vmtZone":"","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL27","nachname":"","vorname":"Agnes","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Kölleda – Erfurt","entfernungKm":32.6,"vmtZone":"","verkehrsmittel":"PKW","kennzeichen":"L-HP 21 38","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL28","nachname":"","vorname":"Natalja","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Sömmerda - Erfurt","entfernungKm":28.3,"vmtZone":"","verkehrsmittel":"PKW","kennzeichen":"SÖM NP 848","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"17.11.2025","cloud":""},{"tnId":"BL29","nachname":"","vorname":"Aya","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Ilmenau - Erfurt","entfernungKm":45.06,"vmtZone":"","verkehrsmittel":"PKW","kennzeichen":"IK MA828","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"17.11.2025","cloud":""},{"tnId":"BL30","nachname":"Rahimi","vorname":"Karim","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL31","nachname":"","vorname":"Marina","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Sondershausen - Erfurt","entfernungKm":61.51,"vmtZone":"","verkehrsmittel":"PKW","kennzeichen":"SDH - R 2317","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"17.11.2025","cloud":""},{"tnId":"BL32","nachname":"","vorname":"Saleh","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Wutha-Farnrod - Erfurt","entfernungKm":60.62,"vmtZone":"Außerhalb VMT","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Online","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"17.11.2025","cloud":""},{"tnId":"BL33","nachname":"","vorname":"Ginka","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Ilmenau - Erfurt","entfernungKm":43.14,"vmtZone":"","verkehrsmittel":"PKW","kennzeichen":"IL-GT 184","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"17.11.2025","cloud":""},{"tnId":"PK01","nachname":"","vorname":"Lina","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Erfurt Stadtverkehr","entfernungKm":4.7,"vmtZone":"City zone ERFURT (10)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Abo-karte","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"1 12 2025","cloud":""},{"tnId":"PK02","nachname":"Alalin","vorname":"Zeyneb","berechnung":"nicht relevant abgesagt","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Erfurt Stadtverkehr","entfernungKm":3.4,"vmtZone":"City zone ERFURT (10)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Abo-karte","aboNummer":"","kontoinhaber":"Ammar Alshaman","iban":"","bank":"Sparkasse Mittelthüringen","bic":"HELADEF1WEM","bemerkungen":"","lastUpdate":"1 12 2025","cloud":""},{"tnId":"PK03","nachname":"","vorname":"Najwa","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Werimar - Erfurt","entfernungKm":23.52,"vmtZone":"City WEIMAR (20)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Online","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"3.11.2025","cloud":""},{"tnId":"PK06","nachname":"","vorname":"Galip","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Erfurt Stadtverkehr","entfernungKm":6.9,"vmtZone":"City zone ERFURT (10)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Abo-karte","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"1 12 2025","cloud":""},{"tnId":"PK08","nachname":"","vorname":"Seba","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Erfurt Stadtverkehr","entfernungKm":4.2,"vmtZone":"City zone ERFURT (10)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Abo-karte","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"1 12 2025","cloud":""},{"tnId":"PK09","nachname":"","vorname":"Maha","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Bad Berka - Erfurt","entfernungKm":20.31,"vmtZone":"Regio zone (515)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Online","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"3.11.2025","cloud":""},{"tnId":"PK10","nachname":"","vorname":"Roman","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Mühlhausen - Erfurt","entfernungKm":58.63,"vmtZone":"Außerhalb VMT","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Online","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"17.11.2025","cloud":""},{"tnId":"PK11","nachname":"","vorname":"Farid Ahmad","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Erfurt Stadtverkehr","entfernungKm":4.6,"vmtZone":"City zone ERFURT (10)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Abo-karte","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"1 12 2025","cloud":""},{"tnId":"PK15","nachname":"","vorname":"Polina","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Weimar - Erfurt","entfernungKm":21.8,"vmtZone":"City WEIMAR (20)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Abo-karte","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"1 12 2025","cloud":""},{"tnId":"PK18","nachname":"Salhani","vorname":"Enaam","berechnung":"nicht relevant abgesagt","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Weimar - Erfurt","entfernungKm":27.94,"vmtZone":"City WEIMAR (20)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Abo-karte","aboNummer":"","kontoinhaber":"Khaled Altawil","iban":"","bank":"ING-DiBa","bic":"INGDDEFFXXX","bemerkungen":"","lastUpdate":"17.11.2025","cloud":""},{"tnId":"PK19","nachname":"","vorname":"Kaan","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Erfurt Stadtverkehr","entfernungKm":5.2,"vmtZone":"City zone ERFURT (10)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Abo-karte","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"1 12 2025","cloud":""},{"tnId":"PK20","nachname":"","vorname":"Abeer","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Ronneburg - Erfurt","entfernungKm":98.65,"vmtZone":"Außerhalb VMT","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Online","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"1 12 2025","cloud":""},{"tnId":"PK23","nachname":"","vorname":"Maryna","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"Weimar - Erfurt","entfernungKm":22.0,"vmtZone":"City WEIMAR (20)","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Abo-karte","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"1 12 2025","cloud":""},{"tnId":"PK24","nachname":"","vorname":"Maryam","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":1.4,"vmtZone":"","verkehrsmittel":"ÖPNV","kennzeichen":"","ticket":"Deutschlandticket","ticketart":"Abo-karte","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"17 06 2026","cloud":""},{"tnId":"BL01","nachname":"Ajak","vorname":"Hamza","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL02","nachname":"Al-Abdullah","vorname":"Abdullah","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL03","nachname":"Aljoubbeh","vorname":"Hania","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL04","nachname":"Alkhalil","vorname":"Salma","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL05","nachname":"Alkhateeb","vorname":"Usaima","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL06","nachname":"Almaadan","vorname":"Sanaa","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL08","nachname":"Alshatti","vorname":"Ibrahim","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL09","nachname":"Apraez Toro","vorname":"Nancy","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL10","nachname":"Asahd","vorname":"Rodya","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL11","nachname":"Bakr","vorname":"Hay Ali","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL12","nachname":"Belarbi","vorname":"Abir Ait","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL16","nachname":"Fischer","vorname":"Oxana","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL17","nachname":"Freidhoff","vorname":"Sophia","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL18","nachname":"Fustuk","vorname":"Alaa","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL19","nachname":"Hagos","vorname":"Eden Guesh","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL20","nachname":"Hazrati","vorname":"Ruqaiya","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL21","nachname":"Karam","vorname":"Bassam","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL24","nachname":"","vorname":"Rehab","berechnung":"Berechnungsrelevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":3.1,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL25","nachname":"Mohammad Ahmad","vorname":"Malla","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL26","nachname":"Nyczka","vorname":"Klaudia","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL34","nachname":"Yavarian","vorname":"Shabnam","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"BL35","nachname":"Zillax","vorname":"Patrick","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"PK04","nachname":"Al-Masalmah","vorname":"Sabah","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"PK05","nachname":"Altaani","vorname":"Dana","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"PK07","nachname":"Dadasoglu","vorname":"Elif","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"PK12","nachname":"Mahmood","vorname":"Shaho Khalid","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"PK13","nachname":"Naddaf","vorname":"Enas","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"PK14","nachname":"Nicholas","vorname":"Marrine","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"PK16","nachname":"Sabbagh","vorname":"Aida","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"PK17","nachname":"Sacirovic","vorname":"Melisa","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"PK21","nachname":"Stasiak","vorname":"Viktoria","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""},{"tnId":"PK22","nachname":"Tascioglu","vorname":"Elif","berechnung":"nicht relevant","email":"","strasse":"","hausnr":"","plz":"","ort":"","fahrtroute":"","entfernungKm":null,"vmtZone":"","verkehrsmittel":"","kennzeichen":"","ticket":"","ticketart":"","aboNummer":"","kontoinhaber":"","iban":"","bank":"","bic":"","bemerkungen":"","lastUpdate":"","cloud":""}] as const;
+/** Stammdaten aus dem Tab 'Alle_TN_Daten' (Testdaten). */
+export const RAW_MASTERS = [
+  {
+    "tnId": "BL01",
+    "nachname": "Kovač",
+    "vorname": "Milan",
+    "strasse": "Heinrichstraße",
+    "hausnr": "42",
+    "plz": "07545",
+    "ort": "Gera",
+    "fahrtroute": "Gera – Erfurt, Wallstraße 18",
+    "entfernungKm": 85.2,
+    "kennzeichen": "",
+    "kontoinhaber": "Milan Kovač",
+    "iban": "DE37830500000004417092",
+    "bank": "Sparkasse Gera-Greiz",
+    "bic": "HELADEF1GER",
+    "email": "milan.kovac@example.invalid",
+    "verkehrsmittel": "ÖPNV",
+    "ticket": "Deutschlandticket",
+    "ticketart": "Online",
+    "aboNummer": "",
+    "vmtZone": "VMT Gesamtnetz",
+    "bemerkungen": "",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Berechnungsrelevant",
+    "cloud": "https://cloud.ibs-intern.invalid/tn/bl01"
+  },
+  {
+    "tnId": "BL02",
+    "nachname": "Weber",
+    "vorname": "Sylvia",
+    "strasse": "Bahnhofstraße",
+    "hausnr": "7",
+    "plz": "99510",
+    "ort": "Apolda",
+    "fahrtroute": "Apolda – Erfurt, Wallstraße 18",
+    "entfernungKm": 31.4,
+    "kennzeichen": "AP-SW 142",
+    "kontoinhaber": "Sylvia Weber",
+    "iban": "DE25820510000003308451",
+    "bank": "Sparkasse Mittelthüringen",
+    "bic": "HELADEF1WEM",
+    "email": "sylvia.weber@example.invalid",
+    "verkehrsmittel": "PKW",
+    "ticket": "eigener PKW",
+    "ticketart": "PKW",
+    "aboNummer": "",
+    "vmtZone": "",
+    "bemerkungen": "",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Berechnungsrelevant",
+    "cloud": "https://cloud.ibs-intern.invalid/tn/bl02"
+  },
+  {
+    "tnId": "BL03",
+    "nachname": "Nowak",
+    "vorname": "Tomasz",
+    "strasse": "Camburger Straße",
+    "hausnr": "18",
+    "plz": "07743",
+    "ort": "Jena",
+    "fahrtroute": "Jena – Erfurt, Wallstraße 18",
+    "entfernungKm": 46.8,
+    "kennzeichen": "J-TN 887",
+    "kontoinhaber": "Tomasz Nowak",
+    "iban": "DE84830530300005529164",
+    "bank": "Sparkasse Jena-Saale-Holzland",
+    "bic": "HELADEF1JEN",
+    "email": "tomasz.nowak@example.invalid",
+    "verkehrsmittel": "PKW",
+    "ticket": "eigener PKW",
+    "ticketart": "PKW",
+    "aboNummer": "",
+    "vmtZone": "",
+    "bemerkungen": "",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Berechnungsrelevant",
+    "cloud": "https://cloud.ibs-intern.invalid/tn/bl03"
+  },
+  {
+    "tnId": "PK01",
+    "nachname": "Demir",
+    "vorname": "Aesha",
+    "strasse": "Johannesstraße",
+    "hausnr": "112",
+    "plz": "99084",
+    "ort": "Erfurt",
+    "fahrtroute": "Erfurt Stadtverkehr",
+    "entfernungKm": 4.2,
+    "kennzeichen": "",
+    "kontoinhaber": "Aesha Demir",
+    "iban": "DE68820510000002214778",
+    "bank": "Sparkasse Mittelthüringen",
+    "bic": "HELADEF1WEM",
+    "email": "aesha.demir@example.invalid",
+    "verkehrsmittel": "ÖPNV",
+    "ticket": "VMT Abo-Karte",
+    "ticketart": "Abo_Karte",
+    "aboNummer": "VMT-PK01-2026",
+    "vmtZone": "City zone ERFURT (10)",
+    "bemerkungen": "",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Berechnungsrelevant",
+    "cloud": "https://cloud.ibs-intern.invalid/tn/pk01"
+  },
+  {
+    "tnId": "PK02",
+    "nachname": "Fischer",
+    "vorname": "Katrin",
+    "strasse": "Steubenstraße",
+    "hausnr": "29",
+    "plz": "99423",
+    "ort": "Weimar",
+    "fahrtroute": "Weimar – Erfurt, Wallstraße 18",
+    "entfernungKm": 22.6,
+    "kennzeichen": "",
+    "kontoinhaber": "Katrin Fischer",
+    "iban": "DE67820641880006612390",
+    "bank": "VR Bank Weimar",
+    "bic": "GENODEF1WE1",
+    "email": "katrin.fischer@example.invalid",
+    "verkehrsmittel": "ÖPNV",
+    "ticket": "VMT Abo-Karte",
+    "ticketart": "Abo_Karte",
+    "aboNummer": "VMT-PK02-2026",
+    "vmtZone": "Zone 20/10",
+    "bemerkungen": "",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Berechnungsrelevant",
+    "cloud": "https://cloud.ibs-intern.invalid/tn/pk02"
+  },
+  {
+    "tnId": "PK03",
+    "nachname": "Haddad",
+    "vorname": "Nour",
+    "strasse": "Pergamentergasse",
+    "hausnr": "5",
+    "plz": "99084",
+    "ort": "Erfurt",
+    "fahrtroute": "Erfurt Stadtverkehr",
+    "entfernungKm": 2.6,
+    "kennzeichen": "",
+    "kontoinhaber": "Nour Haddad",
+    "iban": "DE26820700240001173845",
+    "bank": "Deutsche Bank Erfurt",
+    "bic": "DEUTDE8EXXX",
+    "email": "nour.haddad@example.invalid",
+    "verkehrsmittel": "ÖPNV",
+    "ticket": "VMT Abo-Karte",
+    "ticketart": "Abo_Karte",
+    "aboNummer": "VMT-PK03-2026",
+    "vmtZone": "City zone ERFURT (10)",
+    "bemerkungen": "",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Berechnungsrelevant",
+    "cloud": "https://cloud.ibs-intern.invalid/tn/pk03"
+  },
+  {
+    "tnId": "PK04",
+    "nachname": "Amini",
+    "vorname": "Yusuf",
+    "strasse": "Magdeburger Allee",
+    "hausnr": "87",
+    "plz": "99089",
+    "ort": "Erfurt",
+    "fahrtroute": "Erfurt Stadtverkehr",
+    "entfernungKm": 6.8,
+    "kennzeichen": "",
+    "kontoinhaber": "Yusuf Amini",
+    "iban": "DE15820510000007745120",
+    "bank": "Sparkasse Mittelthüringen",
+    "bic": "HELADEF1WEM",
+    "email": "yusuf.amini@example.invalid",
+    "verkehrsmittel": "ÖPNV",
+    "ticket": "Deutschlandticket",
+    "ticketart": "Online",
+    "aboNummer": "",
+    "vmtZone": "City zone ERFURT (10)",
+    "bemerkungen": "",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Berechnungsrelevant",
+    "cloud": "https://cloud.ibs-intern.invalid/tn/pk04"
+  },
+  {
+    "tnId": "PK05",
+    "nachname": "Petrova",
+    "vorname": "Irina",
+    "strasse": "Wöllnitzer Straße",
+    "hausnr": "14",
+    "plz": "07749",
+    "ort": "Jena",
+    "fahrtroute": "Jena – Erfurt, Wallstraße 18",
+    "entfernungKm": 45.9,
+    "kennzeichen": "",
+    "kontoinhaber": "Irina Petrova",
+    "iban": "DE25830530300008836471",
+    "bank": "Sparkasse Jena-Saale-Holzland",
+    "bic": "HELADEF1JEN",
+    "email": "irina.petrova@example.invalid",
+    "verkehrsmittel": "ÖPNV",
+    "ticket": "Deutschlandticket",
+    "ticketart": "Online",
+    "aboNummer": "",
+    "vmtZone": "VMT Gesamtnetz",
+    "bemerkungen": "",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Berechnungsrelevant",
+    "cloud": "https://cloud.ibs-intern.invalid/tn/pk05"
+  },
+  {
+    "tnId": "PK06",
+    "nachname": "Lindner",
+    "vorname": "Jonas",
+    "strasse": "Ettersburger Straße",
+    "hausnr": "63",
+    "plz": "99425",
+    "ort": "Weimar",
+    "fahrtroute": "Weimar – Erfurt, Wallstraße 18",
+    "entfernungKm": 22.1,
+    "kennzeichen": "",
+    "kontoinhaber": "Jonas Lindner",
+    "iban": "DE78820641880009924063",
+    "bank": "VR Bank Weimar",
+    "bic": "GENODEF1WE1",
+    "email": "jonas.lindner@example.invalid",
+    "verkehrsmittel": "ÖPNV",
+    "ticket": "Sozial-Deutschlandticket",
+    "ticketart": "Online",
+    "aboNummer": "",
+    "vmtZone": "Zone 20/10",
+    "bemerkungen": "",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Berechnungsrelevant",
+    "cloud": "https://cloud.ibs-intern.invalid/tn/pk06"
+  },
+  {
+    "tnId": "BL04",
+    "nachname": "Sarić",
+    "vorname": "Amila",
+    "strasse": "Reichsstraße",
+    "hausnr": "3",
+    "plz": "07548",
+    "ort": "Gera",
+    "fahrtroute": "Gera – Erfurt, Wallstraße 18",
+    "entfernungKm": 85.2,
+    "kennzeichen": "",
+    "kontoinhaber": "",
+    "iban": "",
+    "bank": "",
+    "bic": "",
+    "email": "amila.saric@example.invalid",
+    "verkehrsmittel": "",
+    "ticket": "",
+    "ticketart": "unbekannt ?",
+    "aboNummer": "",
+    "vmtZone": "",
+    "bemerkungen": "nur Anwesenheitsliste — keine Fahrtkostenerstattung",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Nicht_relevant",
+    "cloud": ""
+  },
+  {
+    "tnId": "BL05",
+    "nachname": "Öztürk",
+    "vorname": "Emre",
+    "strasse": "Winzerlaer Straße",
+    "hausnr": "21",
+    "plz": "07745",
+    "ort": "Jena",
+    "fahrtroute": "Jena – Erfurt, Wallstraße 18",
+    "entfernungKm": 46.8,
+    "kennzeichen": "",
+    "kontoinhaber": "",
+    "iban": "",
+    "bank": "",
+    "bic": "",
+    "email": "emre.oeztuerk@example.invalid",
+    "verkehrsmittel": "",
+    "ticket": "",
+    "ticketart": "unbekannt ?",
+    "aboNummer": "",
+    "vmtZone": "",
+    "bemerkungen": "nur Anwesenheitsliste — keine Fahrtkostenerstattung",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Nicht_relevant",
+    "cloud": ""
+  },
+  {
+    "tnId": "PK07",
+    "nachname": "Bauer",
+    "vorname": "Melanie",
+    "strasse": "Nordhäuser Straße",
+    "hausnr": "55",
+    "plz": "99086",
+    "ort": "Erfurt",
+    "fahrtroute": "Erfurt Stadtverkehr",
+    "entfernungKm": 5.1,
+    "kennzeichen": "",
+    "kontoinhaber": "",
+    "iban": "",
+    "bank": "",
+    "bic": "",
+    "email": "melanie.bauer@example.invalid",
+    "verkehrsmittel": "",
+    "ticket": "",
+    "ticketart": "unbekannt ?",
+    "aboNummer": "",
+    "vmtZone": "",
+    "bemerkungen": "nur Anwesenheitsliste — keine Fahrtkostenerstattung",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Nicht_relevant",
+    "cloud": ""
+  },
+  {
+    "tnId": "PK08",
+    "nachname": "Ndiaye",
+    "vorname": "Fatou",
+    "strasse": "Leipziger Straße",
+    "hausnr": "9",
+    "plz": "99085",
+    "ort": "Erfurt",
+    "fahrtroute": "Erfurt Stadtverkehr",
+    "entfernungKm": 3.9,
+    "kennzeichen": "",
+    "kontoinhaber": "",
+    "iban": "",
+    "bank": "",
+    "bic": "",
+    "email": "fatou.ndiaye@example.invalid",
+    "verkehrsmittel": "",
+    "ticket": "",
+    "ticketart": "unbekannt ?",
+    "aboNummer": "",
+    "vmtZone": "",
+    "bemerkungen": "nur Anwesenheitsliste — keine Fahrtkostenerstattung",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Nicht_relevant",
+    "cloud": ""
+  },
+  {
+    "tnId": "PK09",
+    "nachname": "Krüger",
+    "vorname": "Stefan",
+    "strasse": "Bonemilchstraße",
+    "hausnr": "17",
+    "plz": "99094",
+    "ort": "Erfurt",
+    "fahrtroute": "Erfurt Stadtverkehr",
+    "entfernungKm": 7.4,
+    "kennzeichen": "",
+    "kontoinhaber": "",
+    "iban": "",
+    "bank": "",
+    "bic": "",
+    "email": "stefan.krueger@example.invalid",
+    "verkehrsmittel": "",
+    "ticket": "",
+    "ticketart": "unbekannt ?",
+    "aboNummer": "",
+    "vmtZone": "",
+    "bemerkungen": "nur Anwesenheitsliste — keine Fahrtkostenerstattung",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Nicht_relevant",
+    "cloud": ""
+  },
+  {
+    "tnId": "PK10",
+    "nachname": "Rahimi",
+    "vorname": "Zahra",
+    "strasse": "Berkaer Straße",
+    "hausnr": "31",
+    "plz": "99427",
+    "ort": "Weimar",
+    "fahrtroute": "Weimar – Erfurt, Wallstraße 18",
+    "entfernungKm": 22.1,
+    "kennzeichen": "",
+    "kontoinhaber": "",
+    "iban": "",
+    "bank": "",
+    "bic": "",
+    "email": "zahra.rahimi@example.invalid",
+    "verkehrsmittel": "",
+    "ticket": "",
+    "ticketart": "unbekannt ?",
+    "aboNummer": "",
+    "vmtZone": "",
+    "bemerkungen": "nur Anwesenheitsliste — keine Fahrtkostenerstattung",
+    "lastUpdate": "15.03.2026",
+    "berechnung": "Nicht_relevant",
+    "cloud": ""
+  }
+] as const;

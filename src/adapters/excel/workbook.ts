@@ -10,7 +10,7 @@ import {
   resolveSchema,
   UEBERSICHT_COLUMNS,
   type ResolvedSchema,
-} from './schema';
+} from './schema.ts';
 import {
   courseTypeFromId,
   docStateToExcel,
@@ -23,7 +23,7 @@ import {
   parseZustand,
   statusToZustand,
   type RowIssue,
-} from './values';
+} from './values.ts';
 import type { MonthRecord, SubmittedDocument } from '../../domain/types';
 
 export interface ExcelValidationReport {

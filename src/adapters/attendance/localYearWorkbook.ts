@@ -16,10 +16,10 @@ import {
   readParticipantsFromYearSheet,
   parseYearSheetBlocks,
   type MalformedRow,
-} from './yearSheetLayout';
-import { readOverallMonth, crossCheckMonth, type CrossCheckRow } from './overallTab';
-import { discoverYearTabs, findOverallTab, pickYearTab, type YearTab } from './yearTabs';
-import { countMonthPresence } from '../../domain/attendance';
+} from './yearSheetLayout.ts';
+import { readOverallMonth, crossCheckMonth, type CrossCheckRow } from './overallTab.ts';
+import { discoverYearTabs, findOverallTab, pickYearTab, type YearTab } from './yearTabs.ts';
+import { countMonthPresence } from '../../domain/attendance.ts';
 import type { DayMarks } from '../../domain/types';
 
 export interface YearMonthRead {

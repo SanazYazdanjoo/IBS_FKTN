@@ -45,6 +45,10 @@ const ALLOWED_HOSTS = new Set([
   // Vite's bundler (rolldown) embeds its own troubleshooting-doc link in a build
   // warning about exceljs's direct `eval` call — a comment in the tool, not a request.
   'rolldown.rs',
+  // Demo master data's "Cloud" field (Testdaten_Alle_TN_Daten.xlsx) — a placeholder
+  // reference using the RFC 2606 reserved, never-resolving .invalid TLD. Inert seed
+  // text, not a live request.
+  'cloud.ibs-intern.invalid',
 ]);
 
 function hostnamesIn(text: string): string[] {

@@ -115,3 +115,50 @@ has no backend and no network transmission by design (see the project's
 non-goals). Promising the schedule in the dashboard copy, while the actual
 automation is absent, is itself worth a reviewer's attention — that's part
 of why it's called out here rather than silently left inconsistent.
+
+## 2026-08-02 — Incident: the demo seed contained real participant data
+
+`src/adapters/mock/seedData.ts` (`RAW_SEED`, `RAW_MASTERS`) had, since it was
+first introduced, been generated from a real Excel export of an actual
+course cohort — names, license plates, commute routes and distances, and (in
+a handful of records) bank account holder/bank/BIC. The README and this
+file's own docstring called it synthetic; that claim was false. This is a
+DSGVO Art. 4/5 problem, and it directly contradicted NFR-01 and the
+review-build hardening's data-isolation claims.
+
+**What was found (full inventory kept out of this file — file/field
+locations only, no values):** real names in `RAW_SEED`/`RAW_MASTERS`
+(100% of records), real license plates and Fahrtroute/Entfernung values, a
+real participant's first name leaked into a code comment in
+`src/adapters/mock/seed.ts` (outside the seed data itself, so undetected by
+the then-existing guard), and real staff first names stored in cleartext in
+`src/domain/__tests__/no-real-names.test.ts` — the file whose entire purpose
+was to ban real names from the repo.
+
+**What was done:** `seedData.ts` is now generated exclusively from two
+committed, reviewed demo workbooks (`public/demo/Testdaten_Alle_TN_Daten.xlsx`,
+`public/demo/Testdaten_Anwesenheitsliste.xlsx`) via `npm run seed:build`
+(`scripts/build-seed.ts`) — see the "Demo data" section of `README.md`.
+`no-real-names.test.ts` was rewritten from a cleartext blocklist to a
+positive check: every name in the generated seed must trace back to one of
+the two workbooks. The real participant's first name was removed from the
+`seed.ts` comment.
+
+**What was NOT done, on purpose:** git history was **not** rewritten. Every
+commit from the seed's introduction onward (`0113c53` through the commit
+before this one) still contains the real data in `seedData.ts`'s history,
+and the real staff names that were in `no-real-names.test.ts` are similarly
+still recoverable from history. Rewriting history (`git filter-repo`)
+changes every commit SHA after the rewrite point, requires a force-push, and
+does not retroactively scrub any clone or fork already taken from this repo
+— consequences serious enough that they need an explicit decision by
+whoever owns this repository, not a default action taken as part of a data
+cleanup. Until that decision is made, treat the git history of this
+repository (not just its current working tree) as containing real personal
+data, and restrict access accordingly.
+
+**Also out of scope for this pass:** `public/assets/documentation.svg` (a
+UML/process diagram asset with a few short tokens that coincidentally
+overlap the old real roster — not conclusively investigated) and any
+already-built artefacts (`dist-review/`, exported zips) from before this
+change, which may still embed the old seed and should not be redistributed.

@@ -55,12 +55,20 @@ export function docStateToExcel(state: DocumentState | 'NOT_APPLICABLE'): string
 /**
  * Zustand ↔ Pipeline-Status. Unbekannte Werte bleiben erhalten und werden gemeldet.
  *
- * The two `legacy` entries below are read-only compatibility for older
- * workbooks that still carry real staff first names in this cell
- * ("Frage (von Tine/Kristin)", "In_bearbeitung (Sanaz)"). New files are
- * written with the neutral role-based forms further down; both read the
- * same way, so opening an old workbook never breaks the pipeline status.
+ * The `LEGACY_ZUSTAND_LITERALS` entries below are read-only compatibility
+ * for older workbooks that still carry real staff first names in this
+ * cell. New files are written with the neutral role-based forms further
+ * down; both read the same way, so opening an old workbook never breaks
+ * the pipeline status. Exported (not just inlined) so the repo-wide
+ * real-name guard (no-real-names.test.ts) can allowlist exactly these
+ * strings, in exactly this file, without ever typing the names themselves
+ * into the test.
  */
+export const LEGACY_ZUSTAND_LITERALS: Record<string, ProcessStatus | 'QUESTION'> = {
+  'in_bearbeitung (sanaz)': 'IN_REVIEW',
+  'frage (von tine/kristin)': 'QUESTION',
+};
+
 const ZUSTAND_TO_STATUS: Record<string, ProcessStatus | 'NOT_RELEVANT' | 'QUESTION'> = {
   'nicht_relevant': 'NOT_RELEVANT',
   'fehlende_nachweisen': 'AWAITING_CORRECTION',
@@ -68,8 +76,7 @@ const ZUSTAND_TO_STATUS: Record<string, ProcessStatus | 'NOT_RELEVANT' | 'QUESTI
   'buchhaltung': 'SENT_TO_ACCOUNTING',
   'fertig (bezahlt)': 'PAID',
   // legacy (real names, read-only — do not write these forms)
-  'in_bearbeitung (sanaz)': 'IN_REVIEW',
-  'frage (von tine/kristin)': 'QUESTION',
+  ...LEGACY_ZUSTAND_LITERALS,
   // current (neutral, role-based — canonical for reading and writing)
   'in_bearbeitung (verwaltung)': 'IN_REVIEW',
   'frage (von verwaltung/leitung)': 'QUESTION',

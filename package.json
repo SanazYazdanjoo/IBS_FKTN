@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "log:decode": "node --experimental-strip-types scripts/log-decode.ts",
     "log:report": "node --experimental-strip-types scripts/log-report.ts",
+    "seed:build": "node --experimental-transform-types scripts/build-seed.ts",
     "build:review": "node scripts/build-review.mjs"
   },
   "dependencies": {

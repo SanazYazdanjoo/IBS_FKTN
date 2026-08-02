@@ -40,7 +40,7 @@ describe('Jahresblätter erkennen', () => {
 });
 
 describe('Demo-Arbeitsmappe', () => {
-  const buf = readFileSync('public/demo/Anwesenheitsliste_Demo.xlsx');
+  const buf = readFileSync('public/demo/Testdaten_Anwesenheitsliste.xlsx');
 
   it('entdeckt alle Jahre ohne Konfiguration, auch das leere Folgejahr', async () => {
     const wbk = await LocalYearWorkbook.fromBuffer(
@@ -51,14 +51,14 @@ describe('Demo-Arbeitsmappe', () => {
     expect(wbk.overallTabName).toBe('Overall');
   });
 
-  it('stimmt überein — außer dort, wo die defekte TN-ID Tage verdeckt', async () => {
+  it('stimmt überein — außer wo die Testdaten selbst eine Abweichung enthalten', async () => {
     const wbk = await LocalYearWorkbook.fromBuffer(
       buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer,
       'demo.xlsx',
     );
-    // Die Demodatei enthaelt absichtlich eine kaputte TN-ID in der letzten
-    // Maerzwoche (wie die echte Liste in Zeile 199). Dort MUSS der Abgleich
-    // anschlagen — genau dafuer ist er da. Ueberall sonst muss er schweigen.
+    // Testdaten_Anwesenheitsliste.xlsx weicht in genau einem Fall zwischen
+    // Tagesblatt und Overall-Blatt ab. Dort MUSS der Abgleich anschlagen —
+    // genau dafuer ist er da. Ueberall sonst muss er schweigen.
     const mismatches: string[] = [];
     for (const year of wbk.years) {
       for (let m = 1; m <= 12; m += 1) {
@@ -67,7 +67,7 @@ describe('Demo-Arbeitsmappe', () => {
         }
       }
     }
-    expect(mismatches).toEqual(['2025-3 PK23', '2026-3 PK23']);
+    expect(mismatches).toEqual(['2026-2 PK09']);
   });
 
   it('liest alle Jahre in einem Durchgang', async () => {

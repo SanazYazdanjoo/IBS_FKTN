@@ -5,7 +5,7 @@
  */
 import ExcelJS from 'exceljs';
 import type { AttendanceCode, DayMarks } from '../../domain/types';
-import { TN_ID_PATTERN } from './schema';
+import { TN_ID_PATTERN } from './schema.ts';
 
 export const GERMAN_MONTHS = [
   'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',

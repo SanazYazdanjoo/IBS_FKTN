@@ -506,9 +506,9 @@ function YearListPanel() {
   async function loadDemo() {
     setErr(''); setInfo(null); setBusy(true);
     try {
-      const res = await fetch(`${import.meta.env.BASE_URL}demo/Anwesenheitsliste_Demo.xlsx`);
+      const res = await fetch(`${import.meta.env.BASE_URL}demo/Testdaten_Anwesenheitsliste.xlsx`);
       if (!res.ok) throw new Error(`Demodatei nicht gefunden (${res.status}).`);
-      await load(await res.arrayBuffer(), 'Anwesenheitsliste_Demo.xlsx');
+      await load(await res.arrayBuffer(), 'Testdaten_Anwesenheitsliste.xlsx');
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
     } finally {
