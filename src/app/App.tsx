@@ -114,36 +114,63 @@ function SidebarLink({ item }: { item: NavItem }) {
   );
 }
 
-function Sidebar() {
+const SIDEBAR_COLLAPSED_KEY = 'sidebar-collapsed';
+
+function Sidebar({
+  collapsed,
+  onToggle,
+}: {
+  collapsed: boolean;
+  onToggle: () => void;
+}) {
   const { user, dataSource } = useSession();
   const items = NAV_ITEMS.filter((l) => l.roles.includes(user.role));
   const main = items.filter((l) => !l.footer);
   const footer = items.filter((l) => l.footer);
 
   return (
-    <aside className="hidden w-56 shrink-0 border-r border-line bg-surface md:flex md:flex-col">
-      <nav className="flex-1 space-y-1 p-3">
-        {main.map((l) => (
-          <SidebarLink key={l.to} item={l} />
-        ))}
-      </nav>
-      {footer.length > 0 && (
-        <nav className="space-y-1 border-t border-line p-3">
-          {footer.map((l) => (
-            <SidebarLink key={l.to} item={l} />
-          ))}
-        </nav>
-      )}
-      <div className="border-t border-line p-3 text-xs text-ink-dim">
-        Datenquelle:{' '}
-        {dataSource.kind === 'MOCK' ? (
-          'Demo'
-        ) : (
-          <span className="font-semibold text-ink">
-            {dataSource.fileName} · {dataSource.month}/{dataSource.year}
-          </span>
-        )}
+    <aside
+      className={`hidden shrink-0 border-r border-line bg-surface transition-[width] duration-200 md:flex md:flex-col ${
+        collapsed ? 'w-12' : 'w-56'
+      }`}
+    >
+      <div className={`flex items-center p-3 ${collapsed ? 'justify-center' : 'justify-end'}`}>
+        <button
+          type="button"
+          onClick={onToggle}
+          title={collapsed ? 'Navigation einblenden' : 'Navigation ausblenden'}
+          aria-label={collapsed ? 'Navigation einblenden' : 'Navigation ausblenden'}
+          className="rounded-lg p-1.5 text-ink-dim hover:bg-muted hover:text-ink"
+        >
+          {collapsed ? '»' : '«'}
+        </button>
       </div>
+      {!collapsed && (
+        <>
+          <nav className="flex-1 space-y-1 p-3 pt-0">
+            {main.map((l) => (
+              <SidebarLink key={l.to} item={l} />
+            ))}
+          </nav>
+          {footer.length > 0 && (
+            <nav className="space-y-1 border-t border-line p-3">
+              {footer.map((l) => (
+                <SidebarLink key={l.to} item={l} />
+              ))}
+            </nav>
+          )}
+          <div className="border-t border-line p-3 text-xs text-ink-dim">
+            Datenquelle:{' '}
+            {dataSource.kind === 'MOCK' ? (
+              'Demo'
+            ) : (
+              <span className="font-semibold text-ink">
+                {dataSource.fileName} · {dataSource.month}/{dataSource.year}
+              </span>
+            )}
+          </div>
+        </>
+      )}
     </aside>
   );
 }
@@ -265,6 +292,16 @@ function Shell() {
   const location = useLocation();
   const screen = screenForPath(location.pathname);
   useScreenLog(screen);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () => localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1',
+  );
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, next ? '1' : '0');
+      return next;
+    });
+  };
   return (
     <div className="min-h-screen bg-bg">
       {REVIEW_BUILD && <ReviewBanner />}
@@ -272,7 +309,7 @@ function Shell() {
       {REVIEW_BUILD && <FeedbackButton />}
       <Header />
       <div className="flex">
-        <Sidebar />
+        <Sidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
         <main className="min-w-0 flex-1 p-4 md:p-6">
           {/* Keyed by route: ein Fehler in einer Ansicht setzt sich beim Navigieren zurück. */}
           <ErrorBoundary key={location.pathname} screenName={SCREEN_DICT[screen]?.name}>
