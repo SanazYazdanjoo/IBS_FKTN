@@ -50,65 +50,67 @@ export default function MonthContextBox() {
 
   return (
     <Card>
-      <div className="grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-end">
-        {/* Monatsauswahl */}
-        <label className="flex flex-col gap-1">
-          <span className="text-xs uppercase tracking-wider text-ink-dim">
-            Monat wählen
-          </span>
-          <select
-            value={showAllMonths ? ALL : month}
-            onChange={(e) => onSelect(e.target.value)}
-            className="rounded-lg border border-line bg-surface px-3 py-2 text-base font-bold"
-          >
-            <option value={ALL}>Alle Monate 2026 · Übersicht</option>
-            {MONTHS.map((m) => (
-              <option key={m.ym} value={m.ym}>
-                {m.label} 2026
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-wrap items-start gap-8">
+          {/* Monatsauswahl */}
+          <label className="flex flex-col gap-1">
+            <span className="text-xs uppercase tracking-wider text-ink-dim">
+              Monat wählen
+            </span>
+            <select
+              value={showAllMonths ? ALL : month}
+              onChange={(e) => onSelect(e.target.value)}
+              className="rounded-lg border border-line bg-surface px-3 py-2 text-base font-bold"
+            >
+              <option value={ALL}>Alle Monate 2026 · Übersicht</option>
+              {MONTHS.map((m) => (
+                <option key={m.ym} value={m.ym}>
+                  {m.label} 2026
+                </option>
+              ))}
+            </select>
+          </label>
 
-        {/* Kennzahlen zum Monat — nur bei konkreter Auswahl sinnvoll */}
-        {showAllMonths ? (
-          <div className="flex items-center text-sm text-ink-dim">
-            Gesamtübersicht aktiv — Statistiken über alle Monate unten. Für Arbeitstage,
-            Feiertage und Hinweise einen einzelnen Monat wählen.
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 gap-4 text-sm">
-            <div>
-              <div className="text-xs uppercase tracking-wider text-ink-dim">
-                Arbeitstage
+          {/* Kennzahlen zum Monat — nur bei konkreter Auswahl sinnvoll */}
+          {showAllMonths ? (
+            <p className="max-w-md text-sm text-ink-dim md:pt-5">
+              Gesamtübersicht aktiv — Statistiken über alle Monate unten. Für Arbeitstage,
+              Feiertage und Hinweise einen einzelnen Monat wählen.
+            </p>
+          ) : (
+            <>
+              <div className="flex flex-col gap-1">
+                <span className="text-xs uppercase tracking-wider text-ink-dim">
+                  Arbeitstage
+                </span>
+                <span className="text-2xl font-bold">
+                  {workdays ?? <span className="text-ink-dim">—</span>}
+                </span>
               </div>
-              <div className="mt-0.5 text-2xl font-bold">
-                {workdays ?? <span className="text-ink-dim">—</span>}
-              </div>
-            </div>
 
-            <div>
-              <div className="text-xs uppercase tracking-wider text-ink-dim">
-                Feiertage Thüringen
+              <div className="flex flex-col gap-1">
+                <span className="text-xs uppercase tracking-wider text-ink-dim">
+                  Feiertage Thüringen
+                </span>
+                <span className="text-2xl font-bold text-ink-dim">—</span>
+                <span className="text-[10px] text-ink-dim">wird noch angebunden</span>
               </div>
-              <div className="mt-0.5 text-2xl font-bold text-ink-dim">—</div>
-              <div className="text-[10px] text-ink-dim">wird noch angebunden</div>
-            </div>
 
-            <div>
-              <div className="text-xs uppercase tracking-wider text-ink-dim">
-                Hinweise
+              <div className="flex flex-col gap-1">
+                <span className="text-xs uppercase tracking-wider text-ink-dim">
+                  Hinweise
+                </span>
+                <span className="text-sm italic text-ink-dim">—</span>
+                <span className="text-[10px] text-ink-dim">wird noch redaktionell gepflegt</span>
               </div>
-              <div className="mt-0.5 text-sm italic text-ink-dim">—</div>
-              <div className="text-[10px] text-ink-dim">wird noch redaktionell gepflegt</div>
-            </div>
-          </div>
-        )}
+            </>
+          )}
+        </div>
 
         {/* Aktion → Anwesenheitsliste (öffnet den zuletzt gewählten Monat direkt) */}
         <Link
           to="/dozent"
-          className="inline-flex items-center gap-1 self-end rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white transition hover:bg-primary-600"
+          className="inline-flex items-center gap-1 self-start rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white transition hover:bg-primary-600 md:self-center"
         >
           Zur Anwesenheitsliste
           <span aria-hidden>→</span>

@@ -16,9 +16,8 @@
  *
  * Formel-Detail bietet dazu eine frei erweiterbare Options-Vergleichstabelle:
  * A (fix) steht immer als Zeile da, zusätzliche B-Zeilen (je eine wählbare
- * VMT-Tarifzone oder ein manueller Preis) lassen sich beliebig hinzufügen und
- * entfernen — die günstigste Zeile wird markiert, eine gewählte B-Option kann
- * per Klick als offizieller VMT-Einzelfahrpreis übernommen werden.
+ * VMT-Tarifzone) lassen sich beliebig hinzufügen und entfernen — die
+ * günstigste Zeile wird markiert.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -39,16 +38,15 @@ import {
 } from '../../app/ui';
 import { collectComparisonCases, type ComparisonCase } from '../../domain/vergleichsrechnung';
 import { parseGermanDecimal, toFareLookup, type VmtFareRecord } from '../../domain/vmtFares';
-import { VMT_TARIFF_GROUPS, VMT_TARIFF_STAND, findTariffZone } from '../../domain/vmtTariff';
+import { VMT_TARIFF_GROUPS, findTariffZone } from '../../domain/vmtTariff';
 import { formatEuro, roundEuro } from '../../domain/reimbursement';
 import { monthLabel } from '../../adapters/mock/seed';
-import { logChange } from '../../app/auditLog';
 import type { MonthRecord } from '../../domain/types';
 
 export default function Vergleichsrechnung() {
   const { user, storage, storageVersion, month, showAllMonths } = useSession();
   const { rules } = useRules();
-  const { fares, setFarePrice } = useVmtFares();
+  const { fares } = useVmtFares();
   const [records, setRecords] = useState<MonthRecord[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const canEdit = user.role === 'ADMIN';
@@ -71,20 +69,6 @@ export default function Vergleichsrechnung() {
   const scrollToCase = (participantId: string) => {
     setSelectedId(participantId);
     detailRefs.current[participantId]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  const saveFare = (participantId: string, priceEur: number, tariffZoneId?: string) => {
-    const previous = fares[participantId.toUpperCase()]?.priceEur;
-    setFarePrice(participantId, priceEur, tariffZoneId);
-    const source = tariffZoneId
-      ? ` (${findTariffZone(tariffZoneId)?.label ?? tariffZoneId}, VMT-Tarif Stand ${VMT_TARIFF_STAND})`
-      : ' (manuell erfasst)';
-    logChange(
-      user.name,
-      `VMT-Einzelfahrpreis geändert: ${participantId.toUpperCase()} · ${
-        previous !== undefined ? `${formatEuro(previous)} → ` : ''
-      }${formatEuro(priceEur)}${source}`,
-    );
   };
 
   return (
@@ -130,7 +114,6 @@ export default function Vergleichsrechnung() {
                 thresholdDays={rules.comparisonThresholdDays}
                 fareEntry={fares[c.participantId.toUpperCase()]}
                 canEdit={canEdit}
-                onSaveFare={(price, zoneId) => saveFare(c.participantId, price, zoneId)}
                 highlighted={c.participantId === selectedId}
               />
             </div>
@@ -246,14 +229,12 @@ function DetailPanel({
   thresholdDays,
   fareEntry,
   canEdit,
-  onSaveFare,
   highlighted,
 }: {
   comparisonCase: ComparisonCase;
   thresholdDays: number;
   fareEntry: VmtFareRecord | undefined;
   canEdit: boolean;
-  onSaveFare: (priceEur: number, tariffZoneId?: string) => void;
   highlighted?: boolean;
 }) {
   const { record, view } = comparisonCase;
@@ -279,7 +260,6 @@ function DetailPanel({
             reimbursableDays={view.attendance.reimbursableDays}
             fareEntry={fareEntry}
             canEdit={canEdit}
-            onSaveFare={onSaveFare}
           />
         )}
       </div>
@@ -318,8 +298,7 @@ interface FareOptionRow {
  * Tarifzone oder trägt einen manuellen Preis ein; „+ Option hinzufügen"
  * legt weitere Zeilen an, „Entfernen" nimmt sie wieder raus. Die günstigste
  * Zeile (A oder eine B-Option) wird markiert, damit die beste Wahl auf
- * einen Blick klar ist. „Als Preis übernehmen" macht eine B-Option zum
- * offiziellen VMT-Einzelfahrpreis des TN (fließt sofort in die Engine ein).
+ * einen Blick klar ist.
  */
 function OptionsComparison({
   proRataEur,
@@ -327,14 +306,12 @@ function OptionsComparison({
   reimbursableDays,
   fareEntry,
   canEdit,
-  onSaveFare,
 }: {
   proRataEur: number;
   proRataFormula: string;
   reimbursableDays: number;
   fareEntry: VmtFareRecord | undefined;
   canEdit: boolean;
-  onSaveFare: (priceEur: number, tariffZoneId?: string) => void;
 }) {
   const nextRowId = useRef(1);
   const [rows, setRows] = useState<FareOptionRow[]>(() => [
@@ -377,7 +354,7 @@ function OptionsComparison({
           </tr>
         </thead>
         <tbody>
-          <tr className={`border-b border-line/60 ${proRataEur === minAmount ? 'font-semibold' : 'text-ink-dim'}`}>
+          <tr className={`border-b border-line/60 ${proRataEur === minAmount ? 'font-semibold' : ''}`}>
             <td className="py-2 pr-3">
               <span className="mr-2 inline-block w-3 text-primary" title="Günstigste Option">
                 {proRataEur === minAmount && (
@@ -397,7 +374,7 @@ function OptionsComparison({
             return (
               <tr
                 key={row.id}
-                className={`border-b border-line/60 last:border-0 align-top ${wins ? 'font-semibold' : 'text-ink-dim'}`}
+                className={`border-b border-line/60 last:border-0 align-top ${wins ? 'font-semibold' : ''}`}
               >
                 <td className="py-2 pr-3">
                   <div className="flex flex-wrap items-center gap-2">
@@ -417,23 +394,13 @@ function OptionsComparison({
                 </td>
                 <td className="py-2 pr-3">
                   {canEdit && (
-                    <div className="flex flex-wrap items-center gap-2">
-                      <SecondaryButton
-                        onClick={() => onSaveFare(row.priceEur as number, row.tariffZoneId)}
-                        disabled={row.priceEur === null}
-                        logId="vergleich-row-apply"
-                        className="px-3 py-1 text-xs"
-                      >
-                        Als Preis übernehmen
-                      </SecondaryButton>
-                      <DangerButton
-                        onClick={() => removeRow(row.id)}
-                        logId="vergleich-row-remove"
-                        className="px-3 py-1 text-xs"
-                      >
-                        Entfernen
-                      </DangerButton>
-                    </div>
+                    <DangerButton
+                      onClick={() => removeRow(row.id)}
+                      logId="vergleich-row-remove"
+                      className="px-3 py-1 text-xs"
+                    >
+                      Entfernen
+                    </DangerButton>
                   )}
                 </td>
               </tr>
@@ -492,17 +459,6 @@ function FareOptionEditor({
           </optgroup>
         ))}
       </select>
-      <input
-        type="text"
-        inputMode="decimal"
-        value={row.raw}
-        disabled={!canEdit}
-        data-log-id="vergleich-row-price-input"
-        onChange={(e) => onChange({ raw: e.target.value, tariffZoneId: undefined })}
-        placeholder="z. B. 2,40"
-        className="w-24 rounded-lg border border-line bg-surface px-2 py-1 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
-      />
-      <span className="text-xs text-ink-dim">€</span>
     </div>
   );
 }
