@@ -84,12 +84,12 @@ describe('Demo-Arbeitsmappe', () => {
       .every((d) => d.morning === '' && d.afternoon === '')).toBe(true);
   });
 
-  it('meldet die absichtlich defekte TN-ID der Demodatei', async () => {
+  it('meldet BL-Zeilen nicht mehr als defekte TN-ID (BL ist ein gültiges Kürzel wie PK)', async () => {
     const wbk = await LocalYearWorkbook.fromBuffer(
       buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer,
       'demo.xlsx',
     );
     const { warnings } = wbk.readMonth(2026, 3);
-    expect(warnings.length).toBeGreaterThan(0);
+    expect(warnings).toEqual([]);
   });
 });

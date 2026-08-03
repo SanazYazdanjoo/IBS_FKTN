@@ -48,7 +48,7 @@ export function readOverallMonth(
 
   for (let r = 1; r < grid.length; r += 1) {
     const tnId = cell(grid, r, COL_TN_ID).toUpperCase();
-    if (!/^PK\d+$/.test(tnId)) continue;
+    if (!/^(PK|BL)\d+$/.test(tnId)) continue;
     if (cell(grid, r, COL_YEAR) !== String(year)) continue;
 
     const raw = cell(grid, r, col);

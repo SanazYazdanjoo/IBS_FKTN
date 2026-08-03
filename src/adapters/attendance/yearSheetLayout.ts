@@ -127,7 +127,7 @@ export function parseYearSheetBlocks(
     for (let tr = r + 2; tr < grid.length; tr += 1) {
       if (isDayHeaderRow(grid, tr)) break; // nächster Block
       const id = cell(grid, tr, COL_TN_ID).toUpperCase();
-      if (/^PK\d+$/.test(id)) {
+      if (/^(PK|BL)\d+$/.test(id)) {
         tnRows.set(id, tr);
         continue;
       }
