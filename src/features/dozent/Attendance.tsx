@@ -151,41 +151,6 @@ export default function DozentAttendance() {
   };
 
 
-  /**
-   * AU (Arbeitsunfähigkeitsbescheinigung) für einen Tag umschalten — FR-08.
-   * Nur im Demo-Speicher; die Excel-Anwesenheitsliste kennt dieses Feld
-   * bislang nicht, daher im Excel-Modus deaktiviert (siehe UI unten).
-   */
-  const toggleAu = async (record: MonthRecord, dateIso: string) => {
-    if (excelMode) return;
-    setError('');
-    try {
-      const attendance = record.attendance.map((d) =>
-        d.date === dateIso ? { ...d, auReceived: !d.auReceived } : d,
-      );
-      await storage.saveMonthRecord(user, { ...record, attendance });
-      const nowReceived = attendance.find((d) => d.date === dateIso)?.auReceived;
-      logChange(
-        user.name,
-        `AU ${nowReceived ? 'erfasst' : 'entfernt'}: ${record.participantId} · ${dateIso}`,
-      );
-      setRecords((prev) =>
-        prev.map((r) =>
-          r.participantId === record.participantId
-            ? {
-                ...r,
-                attendance: r.attendance.map((d) =>
-                  d.date === dateIso ? { ...d, auReceived: !d.auReceived } : d,
-                ),
-              }
-            : r,
-        ),
-      );
-    } catch (e) {
-      setError((e as Error).message);
-    }
-  };
-
   /** Anmerkung einer Woche speichern — Excel-Modus schreibt in die echte Liste (mit Backup). */
   const saveNote = async (record: MonthRecord, weekStartIso: string, text: string) => {
     setError('');
@@ -418,7 +383,7 @@ export default function DozentAttendance() {
                 <th className="border border-ink/15 bg-ink/5 px-2 py-1">Nachname</th>
                 <th className="border border-ink/15 bg-ink/5 px-2 py-1">Vorname</th>
                 {dates.map((d) => (
-                  <th key={d} colSpan={3} className="border border-ink/15 bg-ink/5 px-2 py-1 text-center whitespace-nowrap">
+                  <th key={d} colSpan={2} className="border border-ink/15 bg-ink/5 px-2 py-1 text-center whitespace-nowrap">
                     {dayHeader(d)}
                   </th>
                 ))}
@@ -434,7 +399,6 @@ export default function DozentAttendance() {
                 {dates.flatMap((d) => [
                   <th key={d + 'v'} className="border border-ink/15 px-2 py-0.5">V</th>,
                   <th key={d + 'n'} className="border border-ink/15 px-2 py-0.5">N</th>,
-                  <th key={d + 'au'} className="border border-ink/15 px-2 py-0.5" title="AU (Arbeitsunfähigkeitsbescheinigung) erhalten">AU</th>,
                 ])}
                 <th className="border border-ink/15" />
                 <th className="border border-ink/15" />
@@ -480,18 +444,6 @@ export default function DozentAttendance() {
                           />
                         </td>
                       ));
-                      cells.push(
-                        <td key={day.date + 'au'} className="border border-ink/15 p-0 text-center">
-                          <input
-                            type="checkbox"
-                            checked={day.auReceived ?? false}
-                            disabled={saving || locked || excelMode}
-                            title={`AU erhalten — ${vor} ${nach} · ${dayHeader(day.date)}`}
-                            aria-label={`AU erhalten — ${vor} ${nach} · ${dayHeader(day.date)}`}
-                            onChange={() => void toggleAu(r, day.date)}
-                          />
-                        </td>,
-                      );
                       return cells;
                     })}
                     <td className="border border-ink/15 p-0 text-xs max-w-[16rem]">
