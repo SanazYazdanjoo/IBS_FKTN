@@ -12,7 +12,7 @@
  * Ansichten zu beeinflussen. „Formular ansehen" setzt den globalen Monat
  * mit, damit das gerenderte Formular zur Auswahl passt.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
@@ -58,6 +58,18 @@ export default function TnDetail() {
   const [selectedYm, setSelectedYm] = useState<string>(MONTH);
   const [loading, setLoading] = useState(true);
   const [showExceptionForm, setShowExceptionForm] = useState(false);
+  const [justSelected, setJustSelected] = useState(false);
+  const detailsRef = useRef<HTMLDivElement>(null);
+
+  const selectMonth = (ym: string) => {
+    setSelectedYm(ym);
+    setJustSelected(true);
+    window.setTimeout(
+      () => detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+      0,
+    );
+    window.setTimeout(() => setJustSelected(false), 1200);
+  };
 
   useEffect(() => {
     if (!participantId) {
@@ -278,13 +290,13 @@ export default function TnDetail() {
               return (
                 <tr
                   key={m.ym}
-                  onClick={() => setSelectedYm(m.ym)}
+                  onClick={() => selectMonth(m.ym)}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      setSelectedYm(m.ym);
+                      selectMonth(m.ym);
                     }
                   }}
                   className={rowCls}
@@ -341,10 +353,13 @@ export default function TnDetail() {
       </Card>
 
       {/* 4) Monatsdetails: nur wenn Datensatz existiert */}
+      <div ref={detailsRef} className="scroll-mt-6">
       {record && view ? (
         <section
           aria-label={`Details für ${monthLabel(selectedYm)} 2026`}
-          className="space-y-4 rounded-3xl border-2 border-primary/40 bg-primary/5 p-4"
+          className={`space-y-4 rounded-3xl border-2 bg-primary/5 p-4 transition-all duration-500 ${
+            justSelected ? 'border-primary ring-4 ring-primary/40' : 'border-primary/40'
+          }`}
         >
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="font-display text-2xl font-bold">{monthLabel(selectedYm)} 2026</h2>
@@ -632,6 +647,7 @@ export default function TnDetail() {
           </p>
         </Card>
       )}
+      </div>
     </div>
   );
 }
