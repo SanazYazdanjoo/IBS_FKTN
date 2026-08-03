@@ -167,7 +167,6 @@ export default function YearOverview({ embedded = false, onOpenMonth }: YearView
       <div className="flex flex-wrap items-end justify-between gap-3">
         {!embedded && (
           <div>
-            <Eyebrow>Anwesenheit</Eyebrow>
             <h1 className="text-2xl font-semibold text-[var(--text-display)]">Übersicht</h1>
           </div>
         )}

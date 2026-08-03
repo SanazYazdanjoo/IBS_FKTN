@@ -90,7 +90,6 @@ export default function Vergleichsrechnung() {
   return (
     <div className="space-y-6">
       <div>
-        <Eyebrow>Fahrtkostenerstattung · Admin</Eyebrow>
         <h1 className="font-display text-2xl font-semibold text-[var(--text-display)]">
           Vergleichsrechnung
         </h1>

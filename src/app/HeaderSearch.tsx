@@ -68,8 +68,8 @@ export default function HeaderSearch() {
                   navigate(`/admin/tn/${r.participantId}`);
                 }}
               >
-                <span>{r.participantName}</span>
                 <span className="text-xs text-ink-dim">{r.participantId}</span>
+                <span>{r.participantName}</span>
               </button>
             </li>
           ))}

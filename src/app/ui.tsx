@@ -507,7 +507,7 @@ export function TnName({
   chip = true,
   link = true,
   className = '',
-  chipPosition = 'after',
+  chipPosition = 'before',
 }: {
   id: string;
   name: string;
@@ -515,7 +515,7 @@ export function TnName({
   /** Auf false setzen, wenn bereits auf der TN-Seite (Link auf sich selbst). */
   link?: boolean;
   className?: string;
-  /** 'before' zeigt die TN-ID links vom Namen statt rechts. */
+  /** 'after' zeigt die TN-ID rechts vom Namen statt links. */
   chipPosition?: 'before' | 'after';
 }) {
   const type = courseTypeOf(id);

@@ -14,7 +14,6 @@ import { useState } from 'react';
 import MonthContextBox from '../../app/MonthContextBox';
 import AdminDashboard from './Dashboard';
 import AdminPipeline from './Pipeline';
-import { Eyebrow } from '../../app/ui';
 
 type Layout = 'tabelle' | 'pipeline';
 
@@ -33,7 +32,6 @@ export default function Uebersicht({
   return (
     <div className="space-y-4">
       <div>
-        <Eyebrow>Fahrtkostenerstattung</Eyebrow>
         <h1 className="text-2xl font-semibold text-[var(--text-display)]">Übersicht</h1>
       </div>
 

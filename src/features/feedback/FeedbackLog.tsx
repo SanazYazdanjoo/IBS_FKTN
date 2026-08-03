@@ -1,6 +1,6 @@
 /** Review screen: lists every captured feedback entry and end-of-session questionnaire, exportable. */
 import { useState } from 'react';
-import { Card, Eyebrow, PrimaryButton, SecondaryButton } from '../../app/ui';
+import { Card, PrimaryButton, SecondaryButton } from '../../app/ui';
 import {
   exportFeedbackJson,
   exportFeedbackMarkdown,
@@ -16,7 +16,6 @@ export default function FeedbackLog() {
   return (
     <div className="space-y-4">
       <div>
-        <Eyebrow>Feedback-Protokoll</Eyebrow>
         <h1 className="text-2xl font-semibold text-[var(--text-display)]">
           {entries.length} Rückmeldung(en) · {sessions.length} Abschluss-Fragebogen
         </h1>

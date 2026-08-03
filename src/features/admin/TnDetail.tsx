@@ -163,7 +163,6 @@ export default function TnDetail() {
       {/* 1) TN-Name — groß, fett, mit ID-Badge in Kursfarbe; daneben Cloud-Link, falls hinterlegt */}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <Eyebrow>TN-Detail</Eyebrow>
           <h1 className="font-display text-4xl font-bold leading-tight">
             <TnName id={participantId} name={displayName} link={false} />
           </h1>

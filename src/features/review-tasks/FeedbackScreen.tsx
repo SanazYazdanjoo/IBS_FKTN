@@ -47,7 +47,6 @@ export default function FeedbackScreen() {
   return (
     <div className="space-y-4">
       <div>
-        <Eyebrow>Feedback</Eyebrow>
         <h1 className="text-2xl font-semibold text-[var(--text-display)]">
           Alle Aufgaben abgeschlossen — noch vier kurze Fragen
         </h1>

@@ -100,7 +100,6 @@ export default function YearCalendar({ embedded = false, onOpenMonth }: YearView
       <div className="flex flex-wrap items-end justify-between gap-3">
         {!embedded && (
           <div>
-            <Eyebrow>Kalenderjahr</Eyebrow>
             <h1 className="text-2xl font-semibold text-[var(--text-display)]">
               Feiertage &amp; Arbeitstage
             </h1>

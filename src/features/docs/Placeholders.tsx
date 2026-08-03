@@ -12,13 +12,12 @@ import type {
   PointerEvent as ReactPointerEvent,
   WheelEvent as ReactWheelEvent,
 } from 'react';
-import { Card, Eyebrow, SecondaryButton } from '../../app/ui';
+import { Card, SecondaryButton } from '../../app/ui';
 
 export function Placeholder({ title }: { title: string }) {
   return (
     <div className="space-y-4">
       <div>
-        <Eyebrow>In Arbeit</Eyebrow>
         <h1 className="text-2xl font-semibold text-[var(--text-display)]">{title}</h1>
       </div>
       <Card>
@@ -121,7 +120,6 @@ export function Documentation() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <Eyebrow>Dokumentation</Eyebrow>
           <h1 className="text-2xl font-semibold text-[var(--text-display)]">
             Prozess &amp; Aufbau
           </h1>

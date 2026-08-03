@@ -248,7 +248,6 @@ export default function DozentAttendance() {
     <div className="space-y-6">
       <div className="flex items-baseline justify-between gap-4 flex-wrap">
         <div>
-          <Eyebrow>Anwesenheitsliste</Eyebrow>
           <h1 className="text-2xl font-bold uppercase tracking-wide">
             {isMonthView ? label : (VIEWS.find(([k]) => k === view)?.[1] ?? '')}
           </h1>

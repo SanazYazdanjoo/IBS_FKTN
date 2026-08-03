@@ -7,7 +7,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
-import { Card, CourseChip, Eyebrow, StatusTag, TnName, courseTypeOf } from '../../app/ui';
+import { Card, CourseChip, StatusTag, TnName, courseTypeOf } from '../../app/ui';
 import { listMasters } from '../../adapters/masters';
 import type { MasterData } from '../../adapters/excel/workbook';
 
@@ -63,7 +63,6 @@ export default function TnData() {
   return (
     <div className="space-y-4">
       <div>
-        <Eyebrow>Stammdaten · Tab „Alle_TN_Daten"</Eyebrow>
         <h1 className="text-2xl font-bold">Alle TN-Daten</h1>
         <p className="text-sm text-ink-dim">
           {masters.length} TN ({pk} PK / {bl} BL) · Adresse, Fahrtroute, Ticketdaten

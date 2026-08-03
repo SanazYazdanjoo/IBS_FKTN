@@ -6,7 +6,7 @@
  */
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useSession } from '../../app/session';
-import { Card, Eyebrow, SecondaryButton } from '../../app/ui';
+import { Card, SecondaryButton } from '../../app/ui';
 import { clearAuditLog, getAuditLog, subscribeAuditLog } from '../../app/auditLog';
 
 function formatTimestamp(iso: string): string {
@@ -48,7 +48,6 @@ export default function AuditLogScreen() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
-          <Eyebrow>Nachvollziehbarkeit</Eyebrow>
           <h1 className="text-2xl font-bold">Änderungsprotokoll</h1>
           <p className="mt-1 text-sm text-ink-dim">
             {entries.length} Einträge · jede Änderung an Anwesenheit, Belegen, Status,
