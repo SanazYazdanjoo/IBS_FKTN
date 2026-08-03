@@ -391,10 +391,13 @@ export function courseTypeOf(id: string): 'PK' | 'BL' | null {
 export function CourseChip({
   id,
   link = true,
+  className = 'ml-1',
 }: {
   id: string;
   /** Auf false setzen, wenn der Chip bereits in einem Link oder Button steht. */
   link?: boolean;
+  /** Abstand zum Namen; 'mr-1' wenn der Chip vor dem Namen steht. */
+  className?: string;
 }) {
   const type = courseTypeOf(id);
   const fullName = useParticipantName(id);
@@ -407,7 +410,7 @@ export function CourseChip({
 
   const chip = (
     <span
-      className={`ml-1 rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white ${
+      className={`${className} rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white ${
         type === 'BL' ? 'bg-course-bl' : 'bg-course-pk'
       }`}
       title={title}
@@ -490,6 +493,7 @@ export function TnName({
   chip = true,
   link = true,
   className = '',
+  chipPosition = 'after',
 }: {
   id: string;
   name: string;
@@ -497,14 +501,17 @@ export function TnName({
   /** Auf false setzen, wenn bereits auf der TN-Seite (Link auf sich selbst). */
   link?: boolean;
   className?: string;
+  /** 'before' zeigt die TN-ID links vom Namen statt rechts. */
+  chipPosition?: 'before' | 'after';
 }) {
   const type = courseTypeOf(id);
   const color =
     type === 'BL' ? 'text-course-bl' : type === 'PK' ? 'text-course-pk' : 'text-ink';
   return (
     <span className={`font-semibold ${color} ${className}`.trim()}>
+      {chip && chipPosition === 'before' && <CourseChip id={id} link={link} className="mr-1" />}
       {name}
-      {chip && <CourseChip id={id} link={link} />}
+      {chip && chipPosition === 'after' && <CourseChip id={id} link={link} />}
     </span>
   );
 }

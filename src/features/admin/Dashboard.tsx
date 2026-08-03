@@ -26,7 +26,17 @@ import { courseTypeFromId } from '../../adapters/excel/values';
 import { monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import { logChange } from '../../app/auditLog';
 import { GERMAN_MONTHS } from '../../adapters/excel/attendanceWorkbook';
-import type { MonthRecord, ProcessStatus } from '../../domain/types';
+import type { MonthRecord, ProcessStatus, ProofKind } from '../../domain/types';
+
+const PROOF_LABELS: Record<ProofKind, string> = {
+  TICKET_PHOTO: 'Ticket',
+  PAYMENT_PROOF: 'Kontoauszug',
+  INVOICE: 'Rechnung',
+  LICENSE_PLATE: 'Kennzeichen',
+  GENERAL_INFO: 'Allgemeine Info',
+  PRAKTIKUM_CONTRACT: 'Praktikumsvertrag',
+  DISTANCE_PROOF: 'Entfernungsnachweis',
+};
 
 const STATUS_FILTERS: ProcessStatus[] = [
   'NOT_SUBMITTED',
@@ -177,32 +187,74 @@ function DashboardMonthView() {
           </thead>
           <tbody>
             {rows.map(({ record, attendance, result, amountMismatch }) => {
-              const docsOk = record.documents.filter(
-                (d) => d.state === 'VERIFIED' || d.state === 'UPLOADED',
-              ).length;
-              const docsTotal = Math.max(record.documents.length, docsOk);
               return (
                 <tr key={record.participantId} className="border-b border-line last:border-0">
                   <td className="py-2 pr-3">
                     <Link to={`/admin/tn/${record.participantId}`} className="hover:underline">
-                      <TnName id={record.participantId} name={record.participantName} />
+                      <TnName
+                        id={record.participantId}
+                        name={record.participantName}
+                        chipPosition="before"
+                      />
                     </Link>
                     {record.hasPraktikum && (
                       <span className="ml-1 text-xs text-ink-dim">Praktikum</span>
                     )}
                   </td>
                   <td className="py-2 pr-3">
-                    {docsTotal > 0 ? (
-                      `${docsOk}/${docsTotal} ✓`
+                    {record.documents.length > 0 ? (
+                      <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+                        {record.documents.map((d) => {
+                          const label = PROOF_LABELS[d.kind] ?? d.kind;
+                          const ok = d.state === 'VERIFIED' || d.state === 'UPLOADED';
+                          return (
+                            <span
+                              key={d.kind}
+                              className={ok ? 'text-win-ink' : 'text-problem-ink font-semibold'}
+                              title={
+                                d.state === 'ILLEGIBLE'
+                                  ? 'unleserlich'
+                                  : d.state === 'MISSING'
+                                    ? 'fehlt'
+                                    : undefined
+                              }
+                            >
+                              {label}
+                              {ok ? ' ✓' : d.state === 'ILLEGIBLE' ? ' ✗' : ''}
+                            </span>
+                          );
+                        })}
+                      </div>
                     ) : (
                       <span className="text-problem-ink font-semibold">fehlt</span>
                     )}
                   </td>
                   <td className="py-2 pr-3">
-                    {attendance.reimbursableDays}/{record.workdaysInMonth} ✓
+                    {attendance.reimbursableDays > 0 ? (
+                      <>
+                        {attendance.reimbursableDays}/{record.workdaysInMonth} ✓
+                      </>
+                    ) : (
+                      <span className="text-ink-dim" title="Anwesenheit noch nicht erfasst">
+                        ?/{record.workdaysInMonth}
+                      </span>
+                    )}
                   </td>
                   <td className="py-2 pr-3">
-                    {result.eligible ? formatEuro(result.amountEur) : '—'}
+                    {result.eligible ? (
+                      result.amountEur > 0 ? (
+                        formatEuro(result.amountEur)
+                      ) : (
+                        <span
+                          className="text-ink-dim italic"
+                          title="Wird berechnet, sobald Anwesenheit & Belege vollständig sind"
+                        >
+                          noch offen
+                        </span>
+                      )
+                    ) : (
+                      '—'
+                    )}
                     {amountMismatch && (
                       <span
                         className="ml-1 cursor-help text-danger"
