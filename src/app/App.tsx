@@ -18,14 +18,13 @@ import Uebersicht from '../features/admin/Uebersicht';
 import YearOverview from '../features/admin/YearOverview';
 import YearCalendar from '../features/admin/YearCalendar';
 import CalendarOverlay from './CalendarOverlay';
-import { AutoReminderEmails, Documentation } from '../features/docs/Placeholders';
+import { AutoReminderEmails, Documentation, Placeholder } from '../features/docs/Placeholders';
 import Vergleichsrechnung from '../features/admin/Vergleichsrechnung';
 import TnData from '../features/admin/TnData';
 import AuditLogScreen from '../features/admin/AuditLog';
 import TnDetail from '../features/admin/TnDetail';
 import FormularScreen from '../features/admin/Formular';
 import DozentAttendance from '../features/dozent/Attendance';
-import ManagerQueue from '../features/manager/Queue';
 import SignatureSettings from '../features/settings/SignatureSettings';
 import DataSourceSettings from '../features/settings/DataSourceSettings';
 import TaskBar from '../features/review-tasks/TaskBar';
@@ -187,37 +186,14 @@ function Header() {
 }
 
 /**
- * Rollen-Auswahl statt einzelner TN-Buttons: genau eine Option je Rolle
- * (Admin, TN, Dozent, Manager) — nicht mehr pro Demo-Nutzer, damit die
- * Auswahl klar auf „welche Rolle simuliere ich gerade" abzielt.
+ * Rollen-Dropdown vorübergehend ausgeblendet — es wird nur noch Admin
+ * angezeigt, kein Rollenwechsel über die Kopfzeile.
  */
-const ROLE_ORDER = ['ADMIN', 'TN', 'DOZENT', 'MANAGER', 'ACCOUNTING'] as const;
-
 function RoleSwitcher() {
-  const { user, demoUsers, switchUser } = useSession();
-
-  // Genau ein Demo-Nutzer je Rolle (der erste Treffer in ROLE_ORDER).
-  const perRole = ROLE_ORDER.map((role) => demoUsers.find((u) => u.role === role)).filter(
-    (u): u is (typeof demoUsers)[number] => u !== undefined,
-  );
-
-  const currentRole = perRole.find((u) => u.role === user.role)?.id ?? user.id;
-
   return (
     <label className="ml-auto flex items-center gap-2 text-sm">
       <span className="text-xs uppercase tracking-label text-ink-dim">Rolle</span>
-      <RoleChip role={user.role} />
-      <select
-        value={currentRole}
-        onChange={(e) => switchUser(e.target.value)}
-        className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold"
-      >
-        {perRole.map((u) => (
-          <option key={u.id} value={u.id}>
-            {u.name}
-          </option>
-        ))}
-      </select>
+      <RoleChip role="ADMIN" />
     </label>
   );
 }
@@ -298,7 +274,7 @@ function Shell() {
               <Route path="/admin/tn/:participantId" element={<TnDetail />} />
               <Route path="/admin/tn/:participantId/formular" element={<FormularScreen />} />
               <Route path="/dozent" element={<DozentAttendance />} />
-              <Route path="/manager" element={<ManagerQueue />} />
+              <Route path="/manager" element={<Placeholder title="Freigaben" />} />
               <Route path="/settings" element={<SignatureSettings />} />
               <Route path="/settings/data" element={<DataSourceSettings />} />
               <Route path="/settings/logging" element={<LoggingSettings />} />
