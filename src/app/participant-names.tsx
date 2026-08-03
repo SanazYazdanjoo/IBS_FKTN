@@ -91,6 +91,14 @@ export function useParticipantName(id: string): string | null {
   return ctx?.names.get(id.toUpperCase()) ?? null;
 }
 
+/** Ganze ID→Name-Zuordnung, z. B. zum Nachschlagen innerhalb einer Tabellenzeile. */
+export function useParticipantNames(): Map<string, string> {
+  const ctx = useContext(ParticipantNamesContext);
+  return ctx?.names ?? EMPTY_NAMES;
+}
+
+const EMPTY_NAMES = new Map<string, string>();
+
 export function useRegisterParticipantNames() {
   const ctx = useContext(ParticipantNamesContext);
   return ctx?.register ?? (() => {});

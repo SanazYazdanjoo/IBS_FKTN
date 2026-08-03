@@ -38,6 +38,10 @@ import { getMaster } from '../../adapters/masters';
 import { logChange } from '../../app/auditLog';
 import type { ExceptionCategory, MonthRecord, ProofKind } from '../../domain/types';
 
+function attendanceDaysLabel(days: number): string {
+  return days > 0 ? String(days) : '?';
+}
+
 const PROOF_LABELS: Record<ProofKind, string> = {
   TICKET_PHOTO: 'Ticket',
   PAYMENT_PROOF: 'Kontoauszug',
@@ -485,7 +489,7 @@ export default function TnDetail() {
                   terms={[
                     {
                       name: 'Anwesenheitstage',
-                      value: String(view.attendance.reimbursableDays),
+                      value: attendanceDaysLabel(view.attendance.reimbursableDays),
                     },
                     {
                       name: 'Entfernung',
@@ -512,7 +516,7 @@ export default function TnDetail() {
                     { name: 'Arbeitstage', value: String(record.workdaysInMonth), op: '÷' },
                     {
                       name: 'Anwesenheitstage',
-                      value: String(view.attendance.reimbursableDays),
+                      value: attendanceDaysLabel(view.attendance.reimbursableDays),
                       op: '×',
                     },
                   ]}
@@ -538,7 +542,7 @@ export default function TnDetail() {
                     { name: 'Arbeitstage', value: String(record.workdaysInMonth), op: '÷' },
                     {
                       name: 'Anwesenheitstage',
-                      value: String(view.attendance.reimbursableDays),
+                      value: attendanceDaysLabel(view.attendance.reimbursableDays),
                       op: '×',
                     },
                   ]}

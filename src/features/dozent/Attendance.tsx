@@ -41,6 +41,7 @@ const LEGEND: [string, string][] = [
   ['K', 'Kulanztag (vor 9 Uhr abgemeldet per Mail); falls nur ein Tag krank oder Kind krank — kein Nachweis nötig'],
   ['A', 'abgemeldet per Mail (ohne Nachweis / kein Kulanztag — z. B. Termine sind keine Kulanztage)'],
   ['U', 'nicht abgemeldet + kein Nachweis'],
+  ['U-Ausfall', 'noch zu implementieren'],
 ];
 
 function mondayOf(iso: string): string {
@@ -53,6 +54,11 @@ function mondayOf(iso: string): string {
 function dayHeader(iso: string): string {
   const d = new Date(iso + 'T00:00:00');
   return `${WEEKDAY_LETTER[d.getDay()]} ${d.getDate()}.${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function formatDateShort(iso: string): string {
+  const d = new Date(iso + 'T00:00:00');
+  return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.`;
 }
 
 function splitName(record: MonthRecord): { nach: string; vor: string } {
@@ -210,6 +216,28 @@ export default function DozentAttendance() {
   const yearNo = Number(ym.slice(0, 4));
   const cal = monthCalendar(yearNo, monthNo);
   const holidayByDate = new Map(cal.holidays.map((h) => [h.date, h.name]));
+
+  /** Erfassungsstand je Woche — wie viele V/N-Felder (ohne Feiertage) schon
+   *  ausgefüllt sind. Gibt in den Wochenbändern auf einen Blick Orientierung,
+   *  welche Woche noch offen ist, ohne jede Zeile einzeln absuchen zu müssen. */
+  const weekStats = useMemo(() => {
+    const stats = new Map<string, { filled: number; total: number }>();
+    for (const [weekStart, dates] of weeks) {
+      let filled = 0;
+      let total = 0;
+      for (const r of listed) {
+        for (const d of dates) {
+          if (holidayByDate.has(d)) continue;
+          total += 2;
+          const day = r.attendance.find((x) => x.date === d);
+          if (day?.morning) filled++;
+          if (day?.afternoon) filled++;
+        }
+      }
+      stats.set(weekStart, { filled, total });
+    }
+    return stats;
+  }, [weeks, listed, holidayByDate]);
 
   /** Nachbarmonate für die Schritt-Navigation (◂ ▸) aus dem Wireframe. */
   const ymIndex = MONTHS.findIndex((m) => m.ym === ym);
@@ -376,34 +404,52 @@ export default function DozentAttendance() {
       )}
 
       {/* Wochenblöcke — exakt wie die Liste: Tageskopf, darunter V/N, dann TN-Zeilen. */}
-      {isMonthView && monthLayout === 'wochen' && weeks.map(([weekStart, dates]) => (
+      {isMonthView && monthLayout === 'wochen' && weeks.map(([weekStart, dates]) => {
+        const stats = weekStats.get(weekStart);
+        const complete = !stats || stats.filled === stats.total;
+        return (
         <Card key={weekStart} className="overflow-x-auto">
+          <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2 whitespace-nowrap">
+            <Eyebrow>
+              Woche {formatDateShort(dates[0])} – {formatDateShort(dates[dates.length - 1])}
+            </Eyebrow>
+            {stats && (
+              <span
+                className={`text-xs tabular-nums ${
+                  complete ? 'text-[var(--text-dim)]' : 'font-semibold text-[var(--highlight)]'
+                }`}
+                title={complete ? 'Alle Felder dieser Woche sind erfasst' : 'Diese Woche ist noch nicht vollständig erfasst'}
+              >
+                {stats.filled}/{stats.total} Felder erfasst{complete ? '' : ' · noch offen'}
+              </span>
+            )}
+          </div>
           <table className="min-w-full border-collapse text-sm">
             <thead>
               <tr className="sticky top-0 z-10 text-left text-xs">
-                <th className="border border-ink/15 bg-ink/5 px-2 py-1">TN</th>
-                <th className="border border-ink/15 bg-ink/5 px-2 py-1">Nachname</th>
-                <th className="border border-ink/15 bg-ink/5 px-2 py-1">Vorname</th>
+                <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-1">TN</th>
+                <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-1">Nachname</th>
+                <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-1">Vorname</th>
                 {dates.map((d) => (
-                  <th key={d} colSpan={2} className="border border-ink/15 bg-ink/5 px-2 py-1 text-center whitespace-nowrap">
+                  <th key={d} colSpan={2} className="border border-[var(--border)] bg-[var(--muted)] px-2 py-1 text-center whitespace-nowrap">
                     {dayHeader(d)}
                   </th>
                 ))}
-                <th className="border border-ink/15 bg-ink/5 px-2 py-1">Anmerkungen</th>
-                <th className="border border-ink/15 bg-ink/5 px-2 py-1 text-center whitespace-nowrap">
+                <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-1">Anmerkungen</th>
+                <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-1 text-center whitespace-nowrap">
                   Anwesend
                   <br />
                   (Pro Woche)
                 </th>
               </tr>
               <tr className="text-center text-[11px] text-ink-dim">
-                <th className="border border-ink/15 px-2 py-0.5" colSpan={3} />
+                <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-0.5" colSpan={3} />
                 {dates.flatMap((d) => [
-                  <th key={d + 'v'} className="border border-ink/15 px-2 py-0.5">V</th>,
-                  <th key={d + 'n'} className="border border-ink/15 px-2 py-0.5">N</th>,
+                  <th key={d + 'v'} className="border border-[var(--border)] bg-[var(--muted)] px-2 py-0.5">V</th>,
+                  <th key={d + 'n'} className="border border-[var(--border)] bg-[var(--muted)] px-2 py-0.5">N</th>,
                 ])}
-                <th className="border border-ink/15" />
-                <th className="border border-ink/15" />
+                <th className="border border-[var(--border)] bg-[var(--muted)]" />
+                <th className="border border-[var(--border)] bg-[var(--muted)]" />
               </tr>
             </thead>
             <tbody>
@@ -419,14 +465,14 @@ export default function DozentAttendance() {
                 );
                 const note = r.attendanceNotes?.[weekStart] ?? r.attendanceNotes?.[dates[0]] ?? '';
                 return (
-                  <tr key={r.participantId}>
-                    <td className="border border-ink/15 px-2 py-1 whitespace-nowrap">
+                  <tr key={r.participantId} className="even:bg-[var(--muted)]/40 hover:bg-[var(--highlight-weak)]/50">
+                    <td className="border border-[var(--border)] px-2 py-1 whitespace-nowrap">
                       <CourseChip id={r.participantId} />
                     </td>
-                    <td className="border border-ink/15 px-2 py-1">
+                    <td className="border border-[var(--border)] px-2 py-1">
                       <TnName id={r.participantId} name={nach} chip={false} />
                     </td>
-                    <td className="border border-ink/15 px-2 py-1">
+                    <td className="border border-[var(--border)] px-2 py-1">
                       <TnName id={r.participantId} name={vor} chip={false} />
                     </td>
                     {weekDays.flatMap((day) => {
@@ -436,7 +482,7 @@ export default function DozentAttendance() {
                       // dort gelegentlich Klausuren/Workshops stattfinden.
                       const locked = holiday !== undefined;
                       const cells = (['morning', 'afternoon'] as const).map((session) => (
-                        <td key={day.date + session} className="border border-ink/15 p-0">
+                        <td key={day.date + session} className="border border-[var(--border)] p-0">
                           <CodeCell
                             code={day[session]}
                             locked={locked}
@@ -452,7 +498,7 @@ export default function DozentAttendance() {
                       ));
                       return cells;
                     })}
-                    <td className="border border-ink/15 p-0 text-xs max-w-[16rem]">
+                    <td className="border border-[var(--border)] border-l-2 border-l-[var(--line)] p-0 text-xs max-w-[16rem]">
                       <textarea
                         defaultValue={note}
                         disabled={saving}
@@ -466,7 +512,7 @@ export default function DozentAttendance() {
                         className="w-full resize-none border-0 bg-transparent px-2 py-1 text-xs text-ink-dim placeholder:text-ink-dim/50 focus:bg-highlight-weak focus:text-ink focus:outline-none"
                       />
                     </td>
-                    <td className="border border-ink/15 px-2 py-1 text-center font-bold">
+                    <td className="border border-[var(--border)] px-2 py-1 text-center font-bold tabular-nums">
                       {countWeekPresence(weekDays)}
                     </td>
                   </tr>
@@ -475,7 +521,8 @@ export default function DozentAttendance() {
             </tbody>
           </table>
         </Card>
-      ))}
+        );
+      })}
 
       {listed.length === 0 && (
         <Card>

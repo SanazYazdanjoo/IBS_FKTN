@@ -12,9 +12,9 @@
  * es ein" ist damit ein Klick statt einer Suche.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSession } from '../../app/session';
-import { Card, Eyebrow, CourseChip } from '../../app/ui';
+import { Card, Eyebrow, TnName } from '../../app/ui';
 import { summarizeAttendance } from '../../domain/attendance';
 import {
   monthCalendar,
@@ -23,7 +23,7 @@ import {
   type MonthStatus,
 } from '../../domain/holidays';
 import { useRules } from '../../app/rules-context';
-import { useRegisterParticipantNames } from '../../app/participant-names';
+import { useParticipantNames, useRegisterParticipantNames } from '../../app/participant-names';
 import type { MonthRecord } from '../../domain/types';
 
 const MONTH_LABELS = [
@@ -73,6 +73,7 @@ export default function YearOverview({ embedded = false, onOpenMonth }: YearView
   const { user, storage, storageVersion, month: currentYm, setMonth, attendanceYears } = useSession();
   const { rules } = useRules();
   const registerNames = useRegisterParticipantNames();
+  const participantNames = useParticipantNames();
   const navigate = useNavigate();
 
   const currentYear = Number(currentYm.slice(0, 4));
@@ -270,7 +271,14 @@ export default function YearOverview({ embedded = false, onOpenMonth }: YearView
                       scope="row"
                       className="sticky left-0 z-10 bg-[var(--surface)] px-2 py-1 text-left font-normal"
                     >
-                      <CourseChip id={tnId} />
+                      <Link to={`/admin/tn/${tnId.toUpperCase()}`} className="hover:underline">
+                        <TnName
+                          id={tnId}
+                          name={participantNames.get(tnId.toUpperCase()) ?? tnId}
+                          chipPosition="before"
+                          link={false}
+                        />
+                      </Link>
                     </th>
                     {MONTH_LABELS.map((_, i) => {
                       const month = i + 1;
