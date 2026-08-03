@@ -46,3 +46,4 @@ export function useVmtFares(): VmtFaresContextValue {
   if (!ctx) throw new Error('useVmtFares must be used within VmtFaresProvider');
   return ctx;
 }
+

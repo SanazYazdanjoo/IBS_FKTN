@@ -65,7 +65,7 @@ describe('VMT Vergleichsrechnung (< 2 weeks — P15 automation)', () => {
     expect(r.amountEur).toBe(20.05);
   });
 
-  it('blocks (does not guess) when the VMT fare is not maintained', () => {
+it('blocks (does not guess) when the VMT fare is not maintained', () => {
     const r = calculateReimbursement(
       { ticketPriceEur: 49, workdaysInMonth: 22, reimbursableDays: 5, unexcusedDays: 0, eligibility: eligible },
       defaultRules,
@@ -74,8 +74,67 @@ describe('VMT Vergleichsrechnung (< 2 weeks — P15 automation)', () => {
     expect(r.blockers.length).toBeGreaterThan(0);
     expect(r.method).toBe('PRO_RATA'); // provisional, flagged via blockers
   });
-});
 
+  it('no attendance days → no blocker, since the comparison cannot change 0,00 €', () => {
+    const r = calculateReimbursement(
+      {
+        ticketPriceEur: 49,
+        workdaysInMonth: 20,
+        reimbursableDays: 0,
+        unexcusedDays: 0,
+        eligibility: eligible,
+      },
+      defaultRules,
+    );
+    expect(r.amountEur).toBe(0);
+    expect(r.blockers).toHaveLength(0);
+    expect(r.trace.chosenBecause).toContain('Vergleich entfällt');
+  });
+
+  it('still blocks at one attendance day — there the fare does change the result', () => {
+    const r = calculateReimbursement(
+      {
+        ticketPriceEur: 49,
+        workdaysInMonth: 20,
+        reimbursableDays: 1,
+        unexcusedDays: 0,
+        eligibility: eligible,
+      },
+      defaultRules,
+    );
+    expect(r.blockers.length).toBeGreaterThan(0);
+  });
+
+  it('no attendance days → no blocker, since the comparison cannot change 0,00 €', () => {
+    const r = calculateReimbursement(
+      {
+        ticketPriceEur: 49,
+        workdaysInMonth: 20,
+        reimbursableDays: 0,
+        unexcusedDays: 0,
+        eligibility: eligible,
+      },
+      defaultRules,
+    );
+    expect(r.amountEur).toBe(0);
+    expect(r.blockers).toHaveLength(0);
+    expect(r.trace.chosenBecause).toContain('Vergleich entfällt');
+  });
+
+  it('still blocks at one attendance day — there the fare does change the result', () => {
+    const r = calculateReimbursement(
+      {
+        ticketPriceEur: 49,
+        workdaysInMonth: 20,
+        reimbursableDays: 1,
+        unexcusedDays: 0,
+        eligibility: eligible,
+      },
+      defaultRules,
+    );
+    expect(r.blockers.length).toBeGreaterThan(0);
+  });
+});
 describe('3-km rule (Instruction §I, §VI)', () => {
   it('distance ≤ 3 km without exception → not eligible, amount 0', () => {
     const r = calculateReimbursement(

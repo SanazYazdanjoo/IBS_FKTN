@@ -127,7 +127,12 @@ export function calculateReimbursement(
   let chosenBecause: string | undefined;
 
   if (comparisonTriggered) {
-    if (input.vmtSingleFareEur === undefined) {
+    if (input.reimbursableDays === 0) {
+      // Ohne Anwesenheitstage sind A und B beide 0 € — der Vergleich kann das
+      // Ergebnis nicht ändern. Ein fehlender Fahrpreis ist hier deshalb kein
+      // Blocker: er würde eine Pflege verlangen, die nichts bewirkt.
+      chosenBecause = 'Keine Anwesenheitstage — A und B ergeben beide 0,00 €; Vergleich entfällt.';
+    } else if (input.vmtSingleFareEur === undefined) {
       blockers.push(
         'Vergleichsrechnung erforderlich (< 2 Wochen), aber kein VMT-Einzelfahrpreis hinterlegt',
       );
