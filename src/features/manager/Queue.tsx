@@ -59,7 +59,7 @@ export default function ManagerQueue() {
     <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_1.4fr]">
       <div>
         <Card>
-          <Eyebrow>Freigaben · Juli</Eyebrow>
+          <Eyebrow>Freigaben · {monthLabel(MONTH)}</Eyebrow>
           <p className="text-sm text-ink-dim">{queue.length} offen</p>
           <p className="mt-1 text-xs text-ink-dim">
             Vertretung: Thorsten ab {rules.deputyActivatesAfterDays} Tagen Abwesenheit aktiv (P16)

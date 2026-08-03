@@ -1,5 +1,14 @@
 import { useState, type ReactNode } from 'react';
-import { HashRouter, Link, Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom';
+import {
+  HashRouter,
+  Link,
+  Navigate,
+  NavLink,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import { ErrorBoundary } from './ErrorBoundary';
 import { SessionProvider, useSession } from './session';
 import { RulesProvider } from './rules-context';
@@ -18,13 +27,14 @@ import Uebersicht from '../features/admin/Uebersicht';
 import YearOverview from '../features/admin/YearOverview';
 import YearCalendar from '../features/admin/YearCalendar';
 import CalendarOverlay from './CalendarOverlay';
-import { AutoReminderEmails, Documentation, Placeholder } from '../features/docs/Placeholders';
+import { AutoReminderEmails, Documentation } from '../features/docs/Placeholders';
 import Vergleichsrechnung from '../features/admin/Vergleichsrechnung';
 import TnData from '../features/admin/TnData';
 import AuditLogScreen from '../features/admin/AuditLog';
 import TnDetail from '../features/admin/TnDetail';
 import FormularScreen from '../features/admin/Formular';
 import DozentAttendance from '../features/dozent/Attendance';
+import ManagerQueue from '../features/manager/Queue';
 import SignatureSettings from '../features/settings/SignatureSettings';
 import DataSourceSettings from '../features/settings/DataSourceSettings';
 import TaskBar from '../features/review-tasks/TaskBar';
@@ -66,7 +76,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/dozent', label: 'Anwesenheit', roles: ['DOZENT', 'ADMIN'] },
   { to: '/admin/daten', label: 'TN-Daten', roles: ['ADMIN', 'DOZENT'] },
   { to: '/vergleichsrechnung', label: 'Vergleichsrechnung', roles: ['ADMIN', 'ACCOUNTING'] },
-  { to: '/manager', label: '(WIP) Freigaben', roles: ['MANAGER', 'ADMIN'], pending: true },
+  { to: '/manager', label: 'Freigaben', roles: ['MANAGER', 'ADMIN'] },
   { to: '/reminder', label: '(WIP) Auto-Reminder Emails', roles: ['ADMIN'], pending: true },
   { to: '/settings', label: '(WIP) Einstellungen', roles: ['ADMIN'], end: true, pending: true },
   { to: '/settings/data', label: '(WIP) Datenquelle', roles: ['ADMIN'], pending: true },
@@ -221,6 +231,7 @@ const ROLE_ORDER = ['ADMIN', 'TN', 'DOZENT', 'MANAGER', 'ACCOUNTING'] as const;
 
 function RoleSwitcher() {
   const { user, demoUsers, switchUser } = useSession();
+  const navigate = useNavigate();
 
   // Genau ein Demo-Nutzer je Rolle (der erste Treffer in ROLE_ORDER).
   const perRole = ROLE_ORDER.map((role) => demoUsers.find((u) => u.role === role)).filter(
@@ -229,13 +240,23 @@ function RoleSwitcher() {
 
   const currentRole = perRole.find((u) => u.role === user.role)?.id ?? user.id;
 
+  // Ein Rollenwechsel kann auf einer Seite passieren, die es in der neuen
+  // Rolle gar nicht in der Navigation gibt (z. B. Admin-Übersicht → TN).
+  // Ohne Navigation bliebe der Inhalt stehen, obwohl die Seitenleiste sich
+  // schon geändert hat — deshalb hier immer zur neuen Rollen-Startseite.
+  const handleChange = (id: string) => {
+    switchUser(id);
+    const nextRole = perRole.find((u) => u.id === id)?.role;
+    if (nextRole) navigate(roleHome(nextRole));
+  };
+
   return (
     <label className="ml-auto flex items-center gap-2 text-sm">
       <span className="text-xs uppercase tracking-label text-ink-dim">Rolle</span>
       <RoleChip role={user.role} />
       <select
         value={currentRole}
-        onChange={(e) => switchUser(e.target.value)}
+        onChange={(e) => handleChange(e.target.value)}
         className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold"
       >
         {perRole.map((u) => (
@@ -334,7 +355,7 @@ function Shell() {
               <Route path="/admin/tn/:participantId" element={<TnDetail />} />
               <Route path="/admin/tn/:participantId/formular" element={<FormularScreen />} />
               <Route path="/dozent" element={<DozentAttendance />} />
-              <Route path="/manager" element={<Placeholder title="Freigaben" />} />
+              <Route path="/manager" element={<ManagerQueue />} />
               <Route path="/settings" element={<SignatureSettings />} />
               <Route path="/settings/data" element={<DataSourceSettings />} />
               <Route path="/settings/logging" element={<LoggingSettings />} />
