@@ -46,11 +46,11 @@ export function cellFill(code: AttendanceCode, locked: boolean, weekend = false)
   if (code === '') {
     return weekend
       ? 'bg-[var(--muted)] text-[var(--text-dim)]'
-      : 'bg-[var(--highlight-weak)] text-[var(--text-dim)]';
+      : 'bg-[var(--highlight-weak)] text-black';
   }
   // A = abgemeldet ohne Nachweis: kein klarer Fehltag, muss vom Dozenten
   // nochmal geprüft und ggf. korrigiert werden — daher gelb wie ein offenes Feld.
-  if (code === 'A') return 'bg-[var(--highlight)]/20 text-[var(--highlight)] font-semibold';
+  if (code === 'A') return 'bg-[var(--highlight)] text-black font-semibold';
   if (code === 'U') return 'bg-[var(--danger)]/15 text-[var(--danger)] font-semibold';
   return 'bg-[var(--surface)] text-[var(--text)] font-medium';
 }
@@ -151,7 +151,7 @@ export function CodeCell({
         onKeyDown={onKeyDown}
         className={`relative h-8 w-9 text-center text-xs transition hover:ring-1 hover:ring-[var(--text-dim)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] disabled:opacity-50 ${cellFill(code, false, weekend)}`}
       >
-        {code || (weekend ? '–' : '')}
+        {code || (weekend ? '–' : '?')}
         <span
           aria-hidden
           className="pointer-events-none absolute right-0.5 top-0 text-[8px] leading-none text-[var(--text-dim)]"
