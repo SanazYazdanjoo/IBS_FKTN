@@ -285,7 +285,7 @@ export default function YearOverview({ embedded = false, onOpenMonth }: YearView
                           >
                             {status && status.completeness !== 'nicht_erfasst'
                               ? `${status.presentDays}/${status.workdays}`
-                              : '–'}
+                              : '?'}
                           </button>
                         </td>
                       );

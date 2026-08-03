@@ -2,10 +2,14 @@
  * Gemeinsame Bausteine der Monatsansichten 2a und 2b.
  *
  * Zellfarben nach Abschnitt 6 der Spezifikation:
- *   grau  — Feiertag / Wochenende (gesperrt)
- *   gelb  — leer, noch einzutragen
- *   rot   — Fehltag (A oder U)
+ *   grau  — Feiertag (gesperrt) ODER Wochenende ohne Eintrag (klickbar)
+ *   gelb  — leer, noch einzutragen; ebenso A — muss nochmal geprüft werden
+ *   rot   — Fehltag U (nicht abgemeldet, kein Nachweis)
  *   weiß  — anwesend (X, (x), E, K)
+ *
+ * Wochenenden sind kein Arbeitstag und deshalb standardmäßig grau/leer,
+ * aber anders als Feiertage klickbar — Klausuren oder Workshops finden
+ * gelegentlich an einem Samstag/Sonntag statt und müssen erfassbar sein.
  *
  * Eingabe nach Abschnitt 4: kleiner Pfeil oben rechts weist auf die
  * Auswahlliste hin, Klick öffnet sie, Enter bestätigt. Statt der früheren
@@ -37,18 +41,27 @@ const COUNTS_AS: Record<string, string> = {
 };
 
 /** Zellfüllung nach Abschnitt 6. */
-export function cellFill(code: AttendanceCode, locked: boolean): string {
+export function cellFill(code: AttendanceCode, locked: boolean, weekend = false): string {
   if (locked) return 'bg-[var(--muted)] text-[var(--text-dim)]';
-  if (code === '') return 'bg-[var(--highlight-weak)] text-[var(--text-dim)]';
-  if (code === 'A' || code === 'U') return 'bg-[var(--danger)]/15 text-[var(--danger)] font-semibold';
+  if (code === '') {
+    return weekend
+      ? 'bg-[var(--muted)] text-[var(--text-dim)]'
+      : 'bg-[var(--highlight-weak)] text-[var(--text-dim)]';
+  }
+  // A = abgemeldet ohne Nachweis: kein klarer Fehltag, muss vom Dozenten
+  // nochmal geprüft und ggf. korrigiert werden — daher gelb wie ein offenes Feld.
+  if (code === 'A') return 'bg-[var(--highlight)]/20 text-[var(--highlight)] font-semibold';
+  if (code === 'U') return 'bg-[var(--danger)]/15 text-[var(--danger)] font-semibold';
   return 'bg-[var(--surface)] text-[var(--text)] font-medium';
 }
 
 interface CodeCellProps {
   code: AttendanceCode;
-  /** Feiertag oder Wochenende — kein Arbeitstag, keine Eingabe. */
+  /** Feiertag — kein Arbeitstag, keine Eingabe möglich. */
   locked?: boolean;
   lockedReason?: string;
+  /** Samstag/Sonntag ohne Eintrag: grau wie gesperrt, aber klickbar (z. B. Klausur/Workshop). */
+  weekend?: boolean;
   disabled?: boolean;
   label: string;
   onChange: (code: AttendanceCode) => void;
@@ -58,6 +71,7 @@ export function CodeCell({
   code,
   locked = false,
   lockedReason,
+  weekend = false,
   disabled = false,
   label,
   onChange,
@@ -129,13 +143,15 @@ export function CodeCell({
         disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={`${label} — aktuell ${code || 'leer'}`}
-        title={`${label} — ${code ? CODE_MEANING[code] ?? code : 'noch nicht erfasst'}`}
+        aria-label={`${label} — aktuell ${code || (weekend ? 'kein Eintrag (Wochenende)' : 'leer')}`}
+        title={`${label} — ${
+          code ? CODE_MEANING[code] ?? code : weekend ? 'Wochenende, bei Bedarf eintragen' : 'noch nicht erfasst'
+        }`}
         onClick={() => setOpen((v) => !v)}
         onKeyDown={onKeyDown}
-        className={`relative h-8 w-9 text-center text-xs transition hover:ring-1 hover:ring-[var(--text-dim)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] disabled:opacity-50 ${cellFill(code, false)}`}
+        className={`relative h-8 w-9 text-center text-xs transition hover:ring-1 hover:ring-[var(--text-dim)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] disabled:opacity-50 ${cellFill(code, false, weekend)}`}
       >
-        {code || ''}
+        {code || (weekend ? '–' : '')}
         <span
           aria-hidden
           className="pointer-events-none absolute right-0.5 top-0 text-[8px] leading-none text-[var(--text-dim)]"

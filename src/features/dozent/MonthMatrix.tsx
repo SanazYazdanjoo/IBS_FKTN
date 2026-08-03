@@ -60,12 +60,16 @@ export default function MonthMatrix({
     return Array.from({ length: count }, (_, i) => {
       const date = iso(year, month, i + 1);
       const holiday = holidayByDate.get(date);
+      const weekend = isWeekend(date);
       return {
         date,
         dayNo: i + 1,
         weekday: WEEKDAY_LETTER[new Date(`${date}T00:00:00Z`).getUTCDay()],
-        locked: isWeekend(date) || holiday !== undefined,
-        reason: holiday ?? (isWeekend(date) ? 'Wochenende' : undefined),
+        // Feiertage sind gesperrt; Wochenenden bleiben klickbar, da dort
+        // gelegentlich Klausuren/Workshops stattfinden und erfasst werden müssen.
+        locked: holiday !== undefined,
+        weekend,
+        reason: holiday ?? (weekend ? 'Wochenende' : undefined),
       };
     });
   }, [year, month, holidayByDate]);
@@ -166,10 +170,11 @@ export default function MonthMatrix({
                         code={day[session]}
                         locked={d.locked}
                         lockedReason={d.reason}
+                        weekend={d.weekend}
                         disabled={saving}
                         label={`${vor} ${nach} · ${d.dayNo}.${month}. ${
                           session === 'morning' ? 'Vormittag' : 'Nachmittag'
-                        }`}
+                        }${d.weekend ? ' · Wochenende' : ''}`}
                         onChange={(code) => onSetMark(r, d.date, session, code)}
                       />
                     </td>

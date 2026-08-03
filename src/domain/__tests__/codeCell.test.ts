@@ -11,8 +11,15 @@ describe('Zellfarben (Spezifikation Abschnitt 6)', () => {
     expect(cellFill('', false)).toContain('--highlight-weak');
   });
 
-  it('rot für Fehltage A und U', () => {
-    expect(cellFill('A', false)).toContain('--danger');
+  it('grau für Wochenende ohne Eintrag, aber nicht gesperrt', () => {
+    expect(cellFill('', false, true)).toContain('--muted');
+  });
+
+  it('gelb für A — muss nochmal geprüft werden', () => {
+    expect(cellFill('A', false)).toContain('--highlight)');
+  });
+
+  it('rot für Fehltag U', () => {
     expect(cellFill('U', false)).toContain('--danger');
   });
 

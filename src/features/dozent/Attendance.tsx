@@ -319,6 +319,8 @@ export default function DozentAttendance() {
           <p className="text-xs text-ink-dim">
             E / K / X / (x) können als „anwesend" abgerechnet werden.
             <br />A / U gelten als Fehltag und müssen bei der Erstattung rausgerechnet werden.
+            <br />Felder mit <b className="text-ink">A</b> sind gelb hinterlegt — sie sollten vom
+            Dozenten/der Dozentin nochmal geprüft werden, da sich der Eintrag oft noch ändert.
           </p>
         </Card>
 
@@ -429,17 +431,21 @@ export default function DozentAttendance() {
                     </td>
                     {weekDays.flatMap((day) => {
                       const holiday = holidayByDate.get(day.date);
-                      const locked = isWeekend(day.date) || holiday !== undefined;
+                      const weekend = isWeekend(day.date);
+                      // Feiertage sind gesperrt; Wochenenden bleiben klickbar, da
+                      // dort gelegentlich Klausuren/Workshops stattfinden.
+                      const locked = holiday !== undefined;
                       const cells = (['morning', 'afternoon'] as const).map((session) => (
                         <td key={day.date + session} className="border border-ink/15 p-0">
                           <CodeCell
                             code={day[session]}
                             locked={locked}
-                            lockedReason={holiday ?? (isWeekend(day.date) ? 'Wochenende' : undefined)}
+                            lockedReason={holiday ?? (weekend ? 'Wochenende' : undefined)}
+                            weekend={weekend}
                             disabled={saving}
                             label={`${vor} ${nach} · ${dayHeader(day.date)} · ${
                               session === 'morning' ? 'Vormittag' : 'Nachmittag'
-                            }`}
+                            }${weekend ? ' · Wochenende' : ''}`}
                             onChange={(code) => void setMark(r, day.date, session, code)}
                           />
                         </td>
