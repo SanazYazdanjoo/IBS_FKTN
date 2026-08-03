@@ -275,6 +275,14 @@ function DetailPanel({
       </div>
 
       <div className="space-y-4">
+         {proRata && vmt && (
+          <ComparisonVerdict
+            proRataEur={proRata.amountEur}
+            vmtEur={vmt.amountEur}
+            method={view.result.method === 'VMT_SINGLE_FARES' ? 'VMT_SINGLE_FARES' : 'PRO_RATA'}
+          />
+        )}
+        
         {proRata && (
           <FormulaBox
             label="A · Anteiliges Abo"
