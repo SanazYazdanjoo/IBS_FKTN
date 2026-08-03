@@ -4,27 +4,31 @@
  * (`rules.comparisonThresholdDays`) und die deshalb A (anteiliges Abo) gegen
  * B (VMT-Einzelfahrten) vergleichen müssen (Instruction §I). Die Engine
  * entscheidet bereits (min(A, B)) — diese Ansicht macht die Entscheidung nur
- * sichtbar (FormulaBox-Trace wie in TnDetail.tsx) und pflegt die
- * VMT-Einzelfahrpreis-Tabelle, aus der B stammt.
+ * sichtbar.
  *
  * Aufbau: Kontextbox (Monat) oben, Arbeitsliste darunter, Formel-Detail zum
- * gewählten Fall, Fahrpreis-Tabelle zuletzt. Der TN-Name in der Arbeitsliste
- * verlinkt wie überall sonst (Dashboard) auf TN-Detail; ein eigener Button
- * „Formel ansehen" wählt den Fall für das Formel-Detail auf dieser Seite,
- * damit sich beide Interaktionen nicht gegenseitig verdecken.
+ * gewählten Fall. Der TN-Name in der Arbeitsliste verlinkt wie überall sonst
+ * (Dashboard) auf TN-Detail; ein eigener Button „Formel ansehen" wählt den
+ * Fall für das Formel-Detail auf dieser Seite, damit sich beide
+ * Interaktionen nicht gegenseitig verdecken.
+ *
+ * Formel-Detail bietet dazu eine frei erweiterbare Options-Vergleichstabelle:
+ * A (fix) steht immer als Zeile da, zusätzliche B-Zeilen (je eine wählbare
+ * VMT-Tarifzone oder ein manueller Preis) lassen sich beliebig hinzufügen und
+ * entfernen — die günstigste Zeile wird markiert, eine gewählte B-Option kann
+ * per Klick als offizieller VMT-Einzelfahrpreis übernommen werden.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import MonthContextBox from '../../app/MonthContextBox';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
 import { useVmtFares } from '../../app/vmt-fares-context';
-import { useFieldLog } from '../../logging/react.tsx';
 import {
   Callout,
   Card,
+  DangerButton,
   Eyebrow,
-  FormulaBox,
   SecondaryButton,
   StatusTag,
   TnName,
@@ -34,11 +38,9 @@ import {
 import { collectComparisonCases, type ComparisonCase } from '../../domain/vergleichsrechnung';
 import { parseGermanDecimal, toFareLookup, type VmtFareRecord } from '../../domain/vmtFares';
 import { VMT_TARIFF_GROUPS, VMT_TARIFF_STAND, findTariffZone } from '../../domain/vmtTariff';
-import { formatEuro } from '../../domain/reimbursement';
-import { getMaster } from '../../adapters/masters';
+import { formatEuro, roundEuro } from '../../domain/reimbursement';
 import { monthLabel } from '../../adapters/mock/seed';
 import { logChange } from '../../app/auditLog';
-import type { StorageAdapter } from '../../adapters/types';
 import type { MonthRecord } from '../../domain/types';
 
 export default function Vergleichsrechnung() {
@@ -64,12 +66,6 @@ export default function Vergleichsrechnung() {
   );
 
   const selected = cases.find((c) => c.participantId === selectedId) ?? cases[0] ?? null;
-
-  const relevantFareIds = useMemo(() => {
-    const ids = new Set(Object.keys(fares));
-    cases.forEach((c) => ids.add(c.participantId));
-    return [...ids].sort();
-  }, [cases, fares]);
 
   const saveFare = (participantId: string, priceEur: number, tariffZoneId?: string) => {
     const previous = fares[participantId.toUpperCase()]?.priceEur;
@@ -126,14 +122,6 @@ export default function Vergleichsrechnung() {
               onSaveFare={(price, zoneId) => saveFare(selected.participantId, price, zoneId)}
             />
           )}
-
-          <FareTable
-            participantIds={relevantFareIds}
-            fares={fares}
-            storage={storage}
-            canEdit={canEdit}
-            onSave={saveFare}
-          />
         </>
       )}
     </div>
@@ -261,7 +249,7 @@ function DetailPanel({
   onSaveFare: (priceEur: number, tariffZoneId?: string) => void;
 }) {
   const { record, view } = comparisonCase;
-  const { proRata, vmt, chosenBecause } = view.result.trace;
+  const { proRata, chosenBecause } = view.result.trace;
 
   return (
     <Card className="space-y-4">
@@ -275,57 +263,16 @@ function DetailPanel({
       </div>
 
       <div className="space-y-4">
-         {proRata && vmt && (
-          <ComparisonVerdict
-            proRataEur={proRata.amountEur}
-            vmtEur={vmt.amountEur}
-            method={view.result.method === 'VMT_SINGLE_FARES' ? 'VMT_SINGLE_FARES' : 'PRO_RATA'}
-          />
-        )}
-
         {proRata && (
-          <FormulaBox
-            label="A · Anteiliges Abo"
-            terms={[
-              { name: 'Ticketpreis', value: formatEuro(record.ticketPriceEur) },
-              { name: 'Arbeitstage', value: String(record.workdaysInMonth), op: '÷' },
-              {
-                name: 'Anwesenheitstage',
-                value: String(view.attendance.reimbursableDays),
-                op: '×',
-              },
-            ]}
-            result={formatEuro(proRata.amountEur)}
+          <OptionsComparison
+            key={record.participantId}
+            proRataEur={proRata.amountEur}
+            proRataFormula={proRata.formula}
+            reimbursableDays={view.attendance.reimbursableDays}
+            fareEntry={fareEntry}
+            canEdit={canEdit}
+            onSaveFare={onSaveFare}
           />
-        )}
-
-        {vmt ? (
-          <FormulaBox
-            label={`B · VMT-Einzelfahrten${
-              view.result.method === 'VMT_SINGLE_FARES' ? ' ✓ günstiger' : ''
-            }`}
-            raw={vmt.formula}
-            result={formatEuro(vmt.amountEur)}
-          />
-        ) : (
-          <div className="rounded-xl border border-line bg-surface p-3">
-            <p className="mb-2 text-xs font-semibold text-ink-dim">B · VMT-Einzelfahrten</p>
-            <Callout kind="problem">
-              Kein VMT-Einzelfahrpreis für {record.participantId} hinterlegt — die Erstattung
-              bleibt vorläufig bei A, bis ein Preis gepflegt ist.
-            </Callout>
-            {canEdit ? (
-              <div className="mt-3">
-                <FareInlineEditor
-                  participantId={record.participantId}
-                  entry={fareEntry}
-                  onSave={onSaveFare}
-                />
-              </div>
-            ) : (
-              <p className="mt-2 text-xs text-ink-dim">Preis pflegen: Admin-Rolle erforderlich.</p>
-            )}
-          </div>
         )}
 
         {chosenBecause && <p className="text-sm text-ink-dim">{chosenBecause}</p>}
@@ -351,261 +298,196 @@ function DetailPanel({
   );
 }
 
-// ── 3) VMT-Einzelfahrpreis-Tabelle (P15-Kern) ────────────────────────────
+// ── 3) Options-Vergleichstabelle (frei erweiterbar) ──────────────────────
 
-function FareTable({
-  participantIds,
-  fares,
-  storage,
-  canEdit,
-  onSave,
-}: {
-  participantIds: string[];
-  fares: Record<string, VmtFareRecord>;
-  storage: StorageAdapter;
-  canEdit: boolean;
-  onSave: (participantId: string, priceEur: number, tariffZoneId?: string) => void;
-}) {
-  return (
-    <Card className="overflow-x-auto">
-      <Eyebrow>VMT-Einzelfahrpreise · gepflegte Tabelle (P15)</Eyebrow>
-      <p className="mt-1 text-xs text-ink-dim">
-        Grundlage für B in der Vergleichsrechnung. Eine Änderung wirkt sich sofort auf alle
-        betroffenen Berechnungen aus und löst offene Blocker auf.
-      </p>
-      {participantIds.length === 0 ? (
-        <p className="mt-2 text-sm text-ink-dim">Aktuell keine Fahrpreise zu pflegen.</p>
-      ) : (
-        <table className="mt-2 min-w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-line text-xs text-ink-dim">
-              <th className="py-2 pr-3">TN</th>
-              <th className="py-2 pr-3">Zone</th>
-              <th className="py-2 pr-3">Preis</th>
-              <th className="py-2 pr-3">Stand</th>
-            </tr>
-          </thead>
-          <tbody>
-            {participantIds.map((id) => (
-              <FareRow
-                key={id}
-                participantId={id}
-                masterZone={getMaster(storage, id)?.vmtZone ?? ''}
-                entry={fares[id]}
-                canEdit={canEdit}
-                onSave={(price, zoneId) => onSave(id, price, zoneId)}
-              />
-            ))}
-          </tbody>
-        </table>
-      )}
-    </Card>
-  );
-}
-
-function FareRow({
-  participantId,
-  masterZone,
-  entry,
-  canEdit,
-  onSave,
-}: {
-  participantId: string;
-  masterZone: string;
-  entry: VmtFareRecord | undefined;
-  canEdit: boolean;
-  onSave: (priceEur: number, tariffZoneId?: string) => void;
-}) {
-  const tariffLabel = entry?.tariffZoneId ? findTariffZone(entry.tariffZoneId)?.label : undefined;
-  return (
-    <tr className="border-b border-line/60 last:border-0">
-      <td className="py-2 pr-3 font-semibold">{participantId}</td>
-      <td className="py-2 pr-3 text-ink-dim">
-        {tariffLabel ?? (masterZone || '—')}
-        {tariffLabel && (
-          <span className="ml-1 text-[10px] uppercase tracking-wider text-ink-dim">
-            · VMT-Tarif {new Date(VMT_TARIFF_STAND).toLocaleDateString('de-DE')}
-          </span>
-        )}
-      </td>
-      <td className="py-2 pr-3">
-        <FareInlineEditor
-          participantId={participantId}
-          entry={entry}
-          onSave={onSave}
-          disabled={!canEdit}
-        />
-      </td>
-      <td className="py-2 pr-3 text-xs text-ink-dim">
-        {entry ? new Date(entry.updatedAt).toLocaleDateString('de-DE') : 'nicht gepflegt'}
-      </td>
-    </tr>
-  );
+interface FareOptionRow {
+  id: number;
+  tariffZoneId?: string;
+  raw: string;
 }
 
 /**
- * Preisfeld mit Validierung (positiv, max. 2 Nachkommastellen, Komma
- * erlaubt) plus Auswahl aus dem offiziellen VMT-Tarif (Stand
- * `VMT_TARIFF_STAND`) — eine Admin wählt die zutreffende Preisstufe statt
- * einen Preis frei zu tippen und übernimmt so garantiert den korrekten,
- * geprüften Wert. Manuelles Eingeben bleibt für Sonderfälle möglich, die
- * sich keiner Preisstufe zuordnen lassen (z. B. "VMT Gesamtnetz"-Verträge);
- * jede Handeingabe verwirft die zuvor gewählte Tarifzone, damit ein
- * abweichender Preis nie fälschlich als "aus dem offiziellen Tarif" gilt.
- * Gemeinsam von Fahrpreis-Tabelle und Detail-Panel genutzt.
+ * Vergleicht A (fix, aus der Engine) gegen beliebig viele B-Optionen
+ * (VMT-Einzelfahrten). Jede B-Zeile wählt entweder eine offizielle
+ * Tarifzone oder trägt einen manuellen Preis ein; „+ Option hinzufügen"
+ * legt weitere Zeilen an, „Entfernen" nimmt sie wieder raus. Die günstigste
+ * Zeile (A oder eine B-Option) wird markiert, damit die beste Wahl auf
+ * einen Blick klar ist. „Als Preis übernehmen" macht eine B-Option zum
+ * offiziellen VMT-Einzelfahrpreis des TN (fließt sofort in die Engine ein).
  */
-function FareInlineEditor({
-  participantId,
-  entry,
-  onSave,
-  disabled = false,
+function OptionsComparison({
+  proRataEur,
+  proRataFormula,
+  reimbursableDays,
+  fareEntry,
+  canEdit,
+  onSaveFare,
 }: {
-  participantId: string;
-  entry: VmtFareRecord | undefined;
-  onSave: (priceEur: number, tariffZoneId?: string) => void;
-  disabled?: boolean;
+  proRataEur: number;
+  proRataFormula: string;
+  reimbursableDays: number;
+  fareEntry: VmtFareRecord | undefined;
+  canEdit: boolean;
+  onSaveFare: (priceEur: number, tariffZoneId?: string) => void;
 }) {
-  const fieldLog = useFieldLog('vmt_fare_price');
-  const [raw, setRaw] = useState(entry ? entry.priceEur.toFixed(2).replace('.', ',') : '');
-  const [zoneId, setZoneId] = useState<string | undefined>(entry?.tariffZoneId);
-  const [error, setError] = useState<string | null>(null);
+  const nextRowId = useRef(1);
+  const [rows, setRows] = useState<FareOptionRow[]>(() => [
+    {
+      id: nextRowId.current++,
+      tariffZoneId: fareEntry?.tariffZoneId,
+      raw: fareEntry ? fareEntry.priceEur.toFixed(2).replace('.', ',') : '',
+    },
+  ]);
 
-  useEffect(() => {
-    setRaw(entry ? entry.priceEur.toFixed(2).replace('.', ',') : '');
-    setZoneId(entry?.tariffZoneId);
-  }, [entry?.priceEur, entry?.tariffZoneId]);
+  const addRow = () =>
+    setRows((prev) => [...prev, { id: nextRowId.current++, tariffZoneId: undefined, raw: '' }]);
+  const removeRow = (id: number) => setRows((prev) => prev.filter((r) => r.id !== id));
+  const updateRow = (id: number, patch: Partial<FareOptionRow>) =>
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
 
-  const parsed = parseGermanDecimal(raw);
-  const dirty =
-    raw.trim() !== '' &&
-    parsed !== null &&
-    (parsed !== entry?.priceEur || zoneId !== entry?.tariffZoneId);
+  const computed = rows.map((row) => {
+    const priceEur = parseGermanDecimal(row.raw);
+    const amountEur = priceEur !== null ? roundEuro(reimbursableDays * 2 * priceEur) : null;
+    const formula =
+      priceEur !== null ? `${reimbursableDays} Tage × 2 × ${formatEuro(priceEur)}` : null;
+    return { ...row, priceEur, amountEur, formula };
+  });
 
-  const save = () => {
-    if (parsed === null) {
-      setError('Positiver Preis, max. 2 Nachkommastellen (z. B. 2,40).');
-      fieldLog.reportValidationFail('INVALID_PRICE');
-      return;
-    }
-    setError(null);
-    onSave(parsed, zoneId);
-  };
-
-  const fieldId = `vmt-fare-${participantId}`;
-  const selectId = `vmt-fare-zone-${participantId}`;
+  const validAmounts = [proRataEur, ...computed.map((r) => r.amountEur).filter((a): a is number => a !== null)];
+  const minAmount = Math.min(...validAmounts);
 
   return (
-    <div>
-      <label className="sr-only" htmlFor={selectId}>
-        VMT-Tarifzone für {participantId}
-      </label>
-      <label className="sr-only" htmlFor={fieldId}>
-        VMT-Einzelfahrpreis für {participantId}
-      </label>
-      <div className="flex flex-wrap items-center gap-2">
-        <select
-          id={selectId}
-          value={zoneId ?? ''}
-          disabled={disabled}
-          data-log-id="vmt-fare-zone-select"
-          onChange={(e) => {
-            const nextId = e.target.value || undefined;
-            setZoneId(nextId);
-            setError(null);
-            const zone = nextId ? findTariffZone(nextId) : undefined;
-            if (zone) setRaw(zone.einzelfahrtEur.toFixed(2).replace('.', ','));
-            fieldLog.onChange();
-          }}
-          className="rounded-lg border border-line bg-surface px-2 py-1 text-xs focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <option value="">— manuell —</option>
-          {VMT_TARIFF_GROUPS.map((group) => (
-            <optgroup key={group.label} label={group.label}>
-              {group.zones.map((z) => (
-                <option key={z.id} value={z.id}>
-                  {z.label} · {formatEuro(z.einzelfahrtEur)}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-        <input
-          id={fieldId}
-          type="text"
-          inputMode="decimal"
-          value={raw}
-          disabled={disabled}
-          data-log-id="vmt-fare-input"
-          onFocus={fieldLog.onFocus}
-          onChange={(e) => {
-            setRaw(e.target.value);
-            setZoneId(undefined);
-            if (error) fieldLog.reportCorrection();
-            setError(null);
-            fieldLog.onChange();
-          }}
-          onBlur={fieldLog.onBlur}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              save();
-            }
-          }}
-          placeholder="z. B. 2,40"
-          aria-invalid={error ? true : undefined}
-          className="w-24 rounded-lg border border-line bg-surface px-2 py-1 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
-        />
-        <span className="text-xs text-ink-dim">€</span>
-        {!disabled && (
-          <SecondaryButton
-            onClick={save}
-            disabled={!dirty}
-            logId="vmt-fare-save"
-            className="px-3 py-1 text-xs"
-          >
-            Speichern
-          </SecondaryButton>
-        )}
-      </div>
-      {error && <p className="mt-1 text-xs font-semibold text-danger">{error}</p>}
+    <div className="space-y-3">
+      <table className="min-w-full text-left text-sm">
+        <caption className="sr-only">Vergleich aller Optionen, günstigste markiert</caption>
+        <thead>
+          <tr className="border-b border-line text-xs text-ink-dim">
+            <th className="py-2 pr-3">Option</th>
+            <th className="py-2 pr-3">Formel</th>
+            <th className="py-2 pr-3 text-right">Betrag</th>
+            <th className="py-2 pr-3">
+              <span className="sr-only">Aktionen</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr className={`border-b border-line/60 ${proRataEur === minAmount ? 'font-semibold' : 'text-ink-dim'}`}>
+            <td className="py-2 pr-3">
+              A · Anteiliges Abo
+              {proRataEur === minAmount && <span className="ml-2 text-primary">✓ günstiger</span>}
+            </td>
+            <td className="py-2 pr-3 font-mono text-xs">{proRataFormula}</td>
+            <td className="py-2 pr-3 text-right">{formatEuro(proRataEur)}</td>
+            <td className="py-2 pr-3" />
+          </tr>
+          {computed.map((row) => {
+            const wins = row.amountEur !== null && row.amountEur === minAmount;
+            return (
+              <tr
+                key={row.id}
+                className={`border-b border-line/60 last:border-0 align-top ${wins ? 'font-semibold' : 'text-ink-dim'}`}
+              >
+                <td className="py-2 pr-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-ink">B · VMT-Einzelfahrten</span>
+                    {wins && <span className="text-primary">✓ günstiger</span>}
+                  </div>
+                  <div className="mt-1">
+                    <FareOptionEditor row={row} canEdit={canEdit} onChange={(patch) => updateRow(row.id, patch)} />
+                  </div>
+                </td>
+                <td className="py-2 pr-3 font-mono text-xs">{row.formula ?? '—'}</td>
+                <td className="py-2 pr-3 text-right">
+                  {row.amountEur !== null ? formatEuro(row.amountEur) : '—'}
+                </td>
+                <td className="py-2 pr-3">
+                  {canEdit && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <SecondaryButton
+                        onClick={() => onSaveFare(row.priceEur as number, row.tariffZoneId)}
+                        disabled={row.priceEur === null}
+                        logId="vergleich-row-apply"
+                        className="px-3 py-1 text-xs"
+                      >
+                        Als Preis übernehmen
+                      </SecondaryButton>
+                      <DangerButton
+                        onClick={() => removeRow(row.id)}
+                        logId="vergleich-row-remove"
+                        className="px-3 py-1 text-xs"
+                      >
+                        Entfernen
+                      </DangerButton>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      {canEdit && (
+        <SecondaryButton onClick={addRow} logId="vergleich-row-add" className="px-4 py-1.5 text-xs">
+          + Option hinzufügen
+        </SecondaryButton>
+      )}
+      {computed.length === 0 && (
+        <Callout kind="problem">
+          Keine VMT-Option eingetragen — die Erstattung bleibt vorläufig bei A, bis ein Preis
+          gepflegt ist.
+        </Callout>
+      )}
     </div>
   );
 }
 
-/**
- * Verdict-Zeile: A gegen B in einer Zeile, Gewinner markiert. Die
- * FormulaBoxen darunter zeigen weiterhin die Herleitung — hier steht nur
- * das Ergebnis des Vergleichs, damit es nicht aus einem Label gelesen
- * werden muss.
- */
-function ComparisonVerdict({
-  proRataEur,
-  vmtEur,
-  method,
+function FareOptionEditor({
+  row,
+  canEdit,
+  onChange,
 }: {
-  proRataEur: number;
-  vmtEur: number;
-  method: 'PRO_RATA' | 'VMT_SINGLE_FARES';
+  row: FareOptionRow;
+  canEdit: boolean;
+  onChange: (patch: Partial<FareOptionRow>) => void;
 }) {
-  const rows = [
-    { id: 'A', label: 'A · Anteiliges Abo', amountEur: proRataEur, wins: method === 'PRO_RATA' },
-    { id: 'B', label: 'B · VMT-Einzelfahrten', amountEur: vmtEur, wins: method === 'VMT_SINGLE_FARES' },
-  ].sort((x, y) => x.amountEur - y.amountEur);
-
   return (
-    <table className="min-w-full text-left text-sm">
-      <caption className="sr-only">Vergleich A gegen B, günstigste Variante zuerst</caption>
-      <tbody>
-        {rows.map((r) => (
-          <tr key={r.id} className={`border-b border-line/60 last:border-0 ${r.wins ? 'font-semibold' : 'text-ink-dim'}`}>
-            <td className="py-2 pr-3">
-              {r.label}
-              {r.wins && <span className="ml-2 text-primary">✓ günstiger — wird erstattet</span>}
-            </td>
-            <td className="py-2 pr-3 text-right">{formatEuro(r.amountEur)}</td>
-          </tr>
+    <div className="flex flex-wrap items-center gap-2">
+      <select
+        value={row.tariffZoneId ?? ''}
+        disabled={!canEdit}
+        data-log-id="vergleich-row-zone-select"
+        onChange={(e) => {
+          const nextId = e.target.value || undefined;
+          const zone = nextId ? findTariffZone(nextId) : undefined;
+          onChange({
+            tariffZoneId: nextId,
+            raw: zone ? zone.einzelfahrtEur.toFixed(2).replace('.', ',') : row.raw,
+          });
+        }}
+        className="rounded-lg border border-line bg-surface px-2 py-1 text-xs focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <option value="">— manuell —</option>
+        {VMT_TARIFF_GROUPS.map((group) => (
+          <optgroup key={group.label} label={group.label}>
+            {group.zones.map((z) => (
+              <option key={z.id} value={z.id}>
+                {z.label} · {formatEuro(z.einzelfahrtEur)}
+              </option>
+            ))}
+          </optgroup>
         ))}
-      </tbody>
-    </table>
+      </select>
+      <input
+        type="text"
+        inputMode="decimal"
+        value={row.raw}
+        disabled={!canEdit}
+        data-log-id="vergleich-row-price-input"
+        onChange={(e) => onChange({ raw: e.target.value, tariffZoneId: undefined })}
+        placeholder="z. B. 2,40"
+        className="w-24 rounded-lg border border-line bg-surface px-2 py-1 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
+      />
+      <span className="text-xs text-ink-dim">€</span>
+    </div>
   );
 }
