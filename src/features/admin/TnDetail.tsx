@@ -42,6 +42,11 @@ function attendanceDaysLabel(days: number): string {
   return days > 0 ? String(days) : '?';
 }
 
+/** Ist die Anwesenheit unbekannt, ist auch das Ergebnis unbekannt. */
+function resultOrUnknown(days: number, formattedAmount: string): string {
+  return days > 0 ? formattedAmount : '?';
+}
+
 const PROOF_LABELS: Record<ProofKind, string> = {
   TICKET_PHOTO: 'Ticket',
   PAYMENT_PROOF: 'Kontoauszug',
@@ -490,6 +495,8 @@ export default function TnDetail() {
                     {
                       name: 'Anwesenheitstage',
                       value: attendanceDaysLabel(view.attendance.reimbursableDays),
+                      linkTo: '/dozent',
+                      onLinkClick: () => setGlobalMonth(selectedYm),
                     },
                     {
                       name: 'Entfernung',
@@ -503,7 +510,10 @@ export default function TnDetail() {
                       op: '×',
                     },
                   ]}
-                  result={formatEuro(view.result.trace.pkw?.amountEur ?? view.result.amountEur)}
+                  result={resultOrUnknown(
+                    view.attendance.reimbursableDays,
+                    formatEuro(view.result.trace.pkw?.amountEur ?? view.result.amountEur),
+                  )}
                 />
               </div>
             ) : view.result.trace.vmt && view.result.trace.proRata ? (
@@ -518,9 +528,14 @@ export default function TnDetail() {
                       name: 'Anwesenheitstage',
                       value: attendanceDaysLabel(view.attendance.reimbursableDays),
                       op: '×',
+                      linkTo: '/dozent',
+                      onLinkClick: () => setGlobalMonth(selectedYm),
                     },
                   ]}
-                  result={formatEuro(view.result.trace.proRata.amountEur)}
+                  result={resultOrUnknown(
+                    view.attendance.reimbursableDays,
+                    formatEuro(view.result.trace.proRata.amountEur),
+                  )}
                 />
                 <FormulaBox
                   label={`B · VMT-Einzelfahrten${
@@ -544,9 +559,14 @@ export default function TnDetail() {
                       name: 'Anwesenheitstage',
                       value: attendanceDaysLabel(view.attendance.reimbursableDays),
                       op: '×',
+                      linkTo: '/dozent',
+                      onLinkClick: () => setGlobalMonth(selectedYm),
                     },
                   ]}
-                  result={formatEuro(view.result.trace.proRata.amountEur)}
+                  result={resultOrUnknown(
+                    view.attendance.reimbursableDays,
+                    formatEuro(view.result.trace.proRata.amountEur),
+                  )}
                 />
               </div>
             ) : (

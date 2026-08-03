@@ -103,7 +103,11 @@ export default function FormularScreen() {
       : `−${formatEuro(Math.max(0, record.ticketPriceEur - view.result.amountEur))}`;
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-[auto_1fr]">
+    <div className="space-y-4">
+      <Link to={`/admin/tn/${record.participantId}`} className="inline-block text-sm font-semibold text-primary underline print:hidden">
+        ← TN-Detail
+      </Link>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-[auto_1fr]">
       {/* ── Formular-Vorschau (Druckziel) — Koordinaten aus der echten Vorlage ── */}
       <div className="a4-page-shell overflow-auto rounded-2xl border border-line bg-muted p-4 shadow-sm print:m-0 print:border-0 print:bg-white print:p-0 print:shadow-none">
         <div
@@ -251,9 +255,6 @@ export default function FormularScreen() {
 
       {/* ── validation rail ── */}
       <div className="space-y-3 print:hidden">
-        <Link to={`/admin/tn/${record.participantId}`} className="text-sm font-semibold text-primary underline">
-          ← TN-Detail
-        </Link>
         <p className="text-xs uppercase tracking-wider text-ink-dim">
           {GERMAN_MONTHS[month - 1]} {year} · TN {record.participantId}
         </p>
@@ -290,6 +291,7 @@ export default function FormularScreen() {
         </SecondaryButton>
         {savedPath && <p className="text-sm font-semibold text-success">Gespeichert: {savedPath}</p>}
         {error && <p className="text-sm text-danger">{error}</p>}
+      </div>
       </div>
     </div>
   );

@@ -168,9 +168,6 @@ function DashboardMonthView() {
             </select>
           </label>
         </div>
-        <p className="mt-2 text-xs text-ink-dim">
-          Erinnerungen: automatisch am 10. + 14. ✓ (FR-01)
-        </p>
       </Card>
 
       <Card className="overflow-x-auto">

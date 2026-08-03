@@ -6,11 +6,13 @@
  * entscheidet bereits (min(A, B)) — diese Ansicht macht die Entscheidung nur
  * sichtbar.
  *
- * Aufbau: Kontextbox (Monat) oben, Arbeitsliste darunter, Formel-Detail zum
- * gewählten Fall. Der TN-Name in der Arbeitsliste verlinkt wie überall sonst
- * (Dashboard) auf TN-Detail; ein eigener Button „Formel ansehen" wählt den
- * Fall für das Formel-Detail auf dieser Seite, damit sich beide
- * Interaktionen nicht gegenseitig verdecken.
+ * Aufbau: Kontextbox (Monat) oben, Arbeitsliste darunter, darunter ein
+ * Formel-Detail je Fall (nicht nur für einen ausgewählten) — jede TN kann
+ * unabhängig von den anderen ihre Optionen vergleichen und pflegen. Der
+ * TN-Name in der Arbeitsliste verlinkt wie überall sonst (Dashboard) auf
+ * TN-Detail; ein eigener Button „Formel ansehen" scrollt zum passenden
+ * Formel-Detail weiter unten, damit sich beide Interaktionen nicht
+ * gegenseitig verdecken.
  *
  * Formel-Detail bietet dazu eine frei erweiterbare Options-Vergleichstabelle:
  * A (fix) steht immer als Zeile da, zusätzliche B-Zeilen (je eine wählbare
@@ -65,7 +67,11 @@ export default function Vergleichsrechnung() {
     [records, rules, fareLookup],
   );
 
-  const selected = cases.find((c) => c.participantId === selectedId) ?? cases[0] ?? null;
+  const detailRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const scrollToCase = (participantId: string) => {
+    setSelectedId(participantId);
+    detailRefs.current[participantId]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const saveFare = (participantId: string, priceEur: number, tariffZoneId?: string) => {
     const previous = fares[participantId.toUpperCase()]?.priceEur;
@@ -109,19 +115,27 @@ export default function Vergleichsrechnung() {
             cases={cases}
             month={month}
             thresholdDays={rules.comparisonThresholdDays}
-            selectedId={selected?.participantId ?? null}
-            onSelect={setSelectedId}
+            selectedId={selectedId}
+            onSelect={scrollToCase}
           />
 
-          {selected && (
-            <DetailPanel
-              comparisonCase={selected}
-              thresholdDays={rules.comparisonThresholdDays}
-              fareEntry={fares[selected.participantId.toUpperCase()]}
-              canEdit={canEdit}
-              onSaveFare={(price, zoneId) => saveFare(selected.participantId, price, zoneId)}
-            />
-          )}
+          {cases.map((c) => (
+            <div
+              key={c.participantId}
+              ref={(el) => {
+                detailRefs.current[c.participantId] = el;
+              }}
+            >
+              <DetailPanel
+                comparisonCase={c}
+                thresholdDays={rules.comparisonThresholdDays}
+                fareEntry={fares[c.participantId.toUpperCase()]}
+                canEdit={canEdit}
+                onSaveFare={(price, zoneId) => saveFare(c.participantId, price, zoneId)}
+                highlighted={c.participantId === selectedId}
+              />
+            </div>
+          ))}
         </>
       )}
     </div>
@@ -158,10 +172,7 @@ function Worklist({
               <th className="py-2 pr-3">TN</th>
               <th className="py-2 pr-3 text-right">Anwesend / Arbeitstage</th>
               <th className="py-2 pr-3 text-right">Ticketpreis</th>
-              <th className="py-2 pr-3 text-right">A-Betrag</th>
-              <th className="py-2 pr-3 text-right">B-Betrag</th>
               <th className="py-2 pr-3">Methode</th>
-              <th className="py-2 pr-3 text-right">Differenz</th>
               <th className="py-2 pr-3">Status</th>
               <th className="py-2 pr-3">
                 <span className="sr-only">Formel-Detail</span>
@@ -171,8 +182,8 @@ function Worklist({
           <tbody>
             {cases.map((c) => {
               const blocked = c.view.result.blockers.length > 0;
-              const { proRata, vmt } = c.view.result.trace;
-              const diff = proRata && vmt ? Math.abs(proRata.amountEur - vmt.amountEur) : null;
+              const attendanceUnknown =
+                c.record.attendance.length === 0 && c.record.attendanceDaysOverride === undefined;
               const methodLabel = blocked
                 ? '— ungelöst'
                 : c.view.result.method === 'VMT_SINGLE_FARES'
@@ -187,27 +198,22 @@ function Worklist({
                   <td className="py-2 pr-3">
                     <div className="flex flex-wrap items-center gap-2">
                       <Link to={`/admin/tn/${c.participantId}`} className="hover:underline">
-                        <TnName id={c.participantId} name={c.participantName} link={false} />
+                        <TnName
+                          id={c.participantId}
+                          name={c.participantName}
+                          link={false}
+                          chipPosition="before"
+                        />
                       </Link>
                       {blocked && <StatusTag kind="blocked">Preis fehlt</StatusTag>}
                     </div>
                   </td>
                   <td className="py-2 pr-3 text-right">
-                    {c.view.attendance.reimbursableDays}/{c.record.workdaysInMonth}
+                    {attendanceUnknown ? '?' : c.view.attendance.reimbursableDays}/
+                    {c.record.workdaysInMonth}
                   </td>
                   <td className="py-2 pr-3 text-right">{formatEuro(c.record.ticketPriceEur)}</td>
-                  <td className="py-2 pr-3 text-right">
-                    {proRata ? formatEuro(proRata.amountEur) : '—'}
-                  </td>
-                  <td className="py-2 pr-3 text-right">
-                    {vmt ? (
-                      formatEuro(vmt.amountEur)
-                    ) : (
-                      <span className="font-semibold text-problem-ink">fehlt</span>
-                    )}
-                  </td>
                   <td className="py-2 pr-3">{methodLabel}</td>
-                  <td className="py-2 pr-3 text-right">{diff !== null ? formatEuro(diff) : '—'}</td>
                   <td className={`py-2 pr-3 ${statusColorClass(c.record.status) || 'text-ink-dim'}`}>
                     {statusLabel(c.record.status)}
                   </td>
@@ -227,7 +233,8 @@ function Worklist({
         </table>
       )}
       <p className="mt-2 text-xs text-ink-dim">
-        TN anklicken → TN-Detail · „Formel ansehen" zeigt die Berechnung unten auf dieser Seite.
+        TN anklicken → TN-Detail · jede TN hat ihr eigenes Formel-Detail weiter unten; „Formel
+        ansehen" scrollt direkt dorthin.
       </p>
     </Card>
   );
@@ -241,18 +248,20 @@ function DetailPanel({
   fareEntry,
   canEdit,
   onSaveFare,
+  highlighted,
 }: {
   comparisonCase: ComparisonCase;
   thresholdDays: number;
   fareEntry: VmtFareRecord | undefined;
   canEdit: boolean;
   onSaveFare: (priceEur: number, tariffZoneId?: string) => void;
+  highlighted?: boolean;
 }) {
   const { record, view } = comparisonCase;
-  const { proRata, chosenBecause } = view.result.trace;
+  const { proRata } = view.result.trace;
 
   return (
-    <Card className="space-y-4">
+    <Card className={`space-y-4 ${highlighted ? 'ring-2 ring-primary/40' : ''}`}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <Eyebrow>
           Formel-Detail · <TnName id={record.participantId} name={record.participantName} />
@@ -274,8 +283,6 @@ function DetailPanel({
             onSaveFare={onSaveFare}
           />
         )}
-
-        {chosenBecause && <p className="text-sm text-ink-dim">{chosenBecause}</p>}
       </div>
 
       <div className="border-t border-line pt-3">
@@ -373,10 +380,16 @@ function OptionsComparison({
         <tbody>
           <tr className={`border-b border-line/60 ${proRataEur === minAmount ? 'font-semibold' : 'text-ink-dim'}`}>
             <td className="py-2 pr-3">
-              A · Anteiliges Abo
-              {proRataEur === minAmount && <span className="ml-2 text-primary">✓ günstiger</span>}
+              <span className="mr-2 inline-block w-3 text-primary" title="Günstigste Option">
+                {proRataEur === minAmount && (
+                  <>
+                    ★<span className="sr-only"> Günstigste Option</span>
+                  </>
+                )}
+              </span>
+              Anteiliges Abo
             </td>
-            <td className="py-2 pr-3 font-mono text-xs">{proRataFormula}</td>
+            <td className="py-2 pr-3">{proRataFormula}</td>
             <td className="py-2 pr-3 text-right">{formatEuro(proRataEur)}</td>
             <td className="py-2 pr-3" />
           </tr>
@@ -389,14 +402,17 @@ function OptionsComparison({
               >
                 <td className="py-2 pr-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-ink">B · VMT-Einzelfahrten</span>
-                    {wins && <span className="text-primary">✓ günstiger</span>}
-                  </div>
-                  <div className="mt-1">
+                    <span className="inline-block w-3 text-primary" title="Günstigste Option">
+                      {wins && (
+                        <>
+                          ★<span className="sr-only"> Günstigste Option</span>
+                        </>
+                      )}
+                    </span>
                     <FareOptionEditor row={row} canEdit={canEdit} onChange={(patch) => updateRow(row.id, patch)} />
                   </div>
                 </td>
-                <td className="py-2 pr-3 font-mono text-xs">{row.formula ?? '—'}</td>
+                <td className="py-2 pr-3">{row.formula ?? '—'}</td>
                 <td className="py-2 pr-3 text-right">
                   {row.amountEur !== null ? formatEuro(row.amountEur) : '—'}
                 </td>

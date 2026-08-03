@@ -450,7 +450,7 @@ export function FormulaBox({
   result,
 }: {
   label?: string;
-  terms?: { name: string; value: string; op?: string }[];
+  terms?: { name: string; value: string; op?: string; linkTo?: string; onLinkClick?: () => void }[];
   raw?: string;
   result: string;
 }) {
@@ -464,12 +464,26 @@ export function FormulaBox({
               {i > 0 && t.op && (
                 <span className="pb-0.5 font-display text-xl text-ink-dim">{t.op}</span>
               )}
-              <div className="text-center">
-                <div className="text-[10px] uppercase tracking-wider text-ink-dim">
-                  {t.name}
+              {t.linkTo ? (
+                <Link
+                  to={t.linkTo}
+                  onClick={t.onLinkClick}
+                  className="text-center rounded hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"
+                  title="Zur Anwesenheitsliste"
+                >
+                  <div className="text-[10px] uppercase tracking-wider text-ink-dim underline decoration-dotted">
+                    {t.name}
+                  </div>
+                  <div className="font-display text-lg font-bold text-primary">{t.value}</div>
+                </Link>
+              ) : (
+                <div className="text-center">
+                  <div className="text-[10px] uppercase tracking-wider text-ink-dim">
+                    {t.name}
+                  </div>
+                  <div className="font-display text-lg font-bold">{t.value}</div>
                 </div>
-                <div className="font-display text-lg font-bold">{t.value}</div>
-              </div>
+              )}
             </div>
           ))}
           <span className="pb-0.5 font-display text-xl text-ink-dim">=</span>
