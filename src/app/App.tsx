@@ -186,14 +186,37 @@ function Header() {
 }
 
 /**
- * Rollen-Dropdown vorübergehend ausgeblendet — es wird nur noch Admin
- * angezeigt, kein Rollenwechsel über die Kopfzeile.
+ * Rollen-Auswahl statt einzelner TN-Buttons: genau eine Option je Rolle
+ * (Admin, TN, Dozent, Manager) — nicht mehr pro Demo-Nutzer, damit die
+ * Auswahl klar auf „welche Rolle simuliere ich gerade" abzielt.
  */
+const ROLE_ORDER = ['ADMIN', 'TN', 'DOZENT', 'MANAGER', 'ACCOUNTING'] as const;
+
 function RoleSwitcher() {
+  const { user, demoUsers, switchUser } = useSession();
+
+  // Genau ein Demo-Nutzer je Rolle (der erste Treffer in ROLE_ORDER).
+  const perRole = ROLE_ORDER.map((role) => demoUsers.find((u) => u.role === role)).filter(
+    (u): u is (typeof demoUsers)[number] => u !== undefined,
+  );
+
+  const currentRole = perRole.find((u) => u.role === user.role)?.id ?? user.id;
+
   return (
     <label className="ml-auto flex items-center gap-2 text-sm">
       <span className="text-xs uppercase tracking-label text-ink-dim">Rolle</span>
-      <RoleChip role="ADMIN" />
+      <RoleChip role={user.role} />
+      <select
+        value={currentRole}
+        onChange={(e) => switchUser(e.target.value)}
+        className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold"
+      >
+        {perRole.map((u) => (
+          <option key={u.id} value={u.id}>
+            {u.name}
+          </option>
+        ))}
+      </select>
     </label>
   );
 }
