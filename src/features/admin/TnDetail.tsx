@@ -194,9 +194,13 @@ export default function TnDetail() {
             />
             <MasterField label="Ticket" value={[master.ticket, master.ticketart].filter(Boolean).join(' · ')} />
             <MasterField label="Abo-Nr." value={master.aboNummer} mono />
-            <MasterField label="Kontoinhaber" value={master.kontoinhaber} />
-            <MasterField label="IBAN" value={master.iban} mono />
-            <MasterField label="Bank" value={[master.bank, master.bic].filter(Boolean).join(' · ')} />
+            {user.role === 'ADMIN' && (
+              <>
+                <MasterField label="Kontoinhaber" value={master.kontoinhaber} />
+                <MasterField label="IBAN" value={master.iban} mono />
+                <MasterField label="Bank" value={[master.bank, master.bic].filter(Boolean).join(' · ')} />
+              </>
+            )}
             <MasterField label="E-Mail" value={master.email} />
             <MasterField label="Bemerkungen" value={master.bemerkungen} />
           </div>

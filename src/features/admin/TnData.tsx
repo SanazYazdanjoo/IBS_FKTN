@@ -1,12 +1,13 @@
 /**
- * Alle TN-Daten — Stammdaten-Übersicht für den Admin, 1:1 aus dem Tab
- * „Alle_TN_Daten" der Hauptdatei (im Demo-Modus aus den Dummy-Stammdaten).
- * Enthält Adresse, Fahrtroute, Ticket- und Bankdaten. Nur für ADMIN sichtbar.
+ * Alle TN-Daten — Stammdaten-Übersicht, 1:1 aus dem Tab „Alle_TN_Daten" der
+ * Hauptdatei (im Demo-Modus aus den Dummy-Stammdaten). Enthält Adresse,
+ * Fahrtroute, Ticket- und Bankdaten. Für ADMIN und DOZENT sichtbar —
+ * Bankdaten (Kontoinhaber, IBAN, Bank, BIC) bleiben Dozent:innen verborgen.
  */
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
-import { Card, CourseChip, Eyebrow, TnName, courseTypeOf } from '../../app/ui';
+import { Card, CourseChip, Eyebrow, StatusTag, TnName, courseTypeOf } from '../../app/ui';
 import { listMasters } from '../../adapters/masters';
 import type { MasterData } from '../../adapters/excel/workbook';
 
@@ -28,13 +29,16 @@ export default function TnData() {
   const [course, setCourse] = useState<CourseFilter>('ALLE');
 
   const isAdmin = user.role === 'ADMIN';
-  const masters = useMemo(() => (isAdmin ? listMasters(storage) : []), [storage, isAdmin]);
+  const isDozent = user.role === 'DOZENT';
+  const canView = isAdmin || isDozent;
+  const showBank = isAdmin;
+  const masters = useMemo(() => (canView ? listMasters(storage) : []), [storage, canView]);
 
-  if (!isAdmin) {
+  if (!canView) {
     return (
       <Card>
         <p className="text-sm text-ink-dim">
-          Diese Ansicht (Bank- und Adressdaten) ist nur für Admins zugänglich.
+          Diese Ansicht (Adress- und Bankdaten) ist nur für Admins und Dozent:innen zugänglich.
         </p>
       </Card>
     );
@@ -62,7 +66,8 @@ export default function TnData() {
         <Eyebrow>Stammdaten · Tab „Alle_TN_Daten"</Eyebrow>
         <h1 className="text-2xl font-bold">Alle TN-Daten</h1>
         <p className="text-sm text-ink-dim">
-          {masters.length} TN ({pk} PK / {bl} BL) · Adresse, Fahrtroute, Ticket- und Bankdaten
+          {masters.length} TN ({pk} PK / {bl} BL) · Adresse, Fahrtroute, Ticketdaten
+          {showBank ? ' und Bankdaten' : ''}
         </p>
       </div>
 
@@ -101,13 +106,11 @@ export default function TnData() {
                 'Verkehrsmittel',
                 'Ticket',
                 'Abo-Nr.',
-                'Kontoinhaber',
-                'IBAN',
-                'Bank',
-                'BIC',
+                ...(showBank ? ['Kontoinhaber', 'IBAN', 'Bank', 'BIC'] : []),
                 'E-Mail',
                 'Bemerkungen',
                 'Stand',
+                'Berechnungsrelevant',
               ].map((h) => (
                 <th key={h} className="whitespace-nowrap border-b border-line bg-muted/60 px-3 py-2 font-semibold">
                   {h}
@@ -142,18 +145,27 @@ export default function TnData() {
                   {m.ticketart && <span className="ml-1 text-xs text-ink-dim">· {m.ticketart}</span>}
                 </td>
                 <td className="whitespace-nowrap px-3 py-2 font-mono text-xs">{m.aboNummer || '—'}</td>
-                <td className="whitespace-nowrap px-3 py-2">{m.kontoinhaber || '—'}</td>
-                <td className="whitespace-nowrap px-3 py-2 font-mono text-xs">{m.iban || '—'}</td>
-                <td className="whitespace-nowrap px-3 py-2">{m.bank || '—'}</td>
-                <td className="whitespace-nowrap px-3 py-2 font-mono text-xs">{m.bic || '—'}</td>
+                {showBank && (
+                  <>
+                    <td className="whitespace-nowrap px-3 py-2">{m.kontoinhaber || '—'}</td>
+                    <td className="whitespace-nowrap px-3 py-2 font-mono text-xs">{m.iban || '—'}</td>
+                    <td className="whitespace-nowrap px-3 py-2">{m.bank || '—'}</td>
+                    <td className="whitespace-nowrap px-3 py-2 font-mono text-xs">{m.bic || '—'}</td>
+                  </>
+                )}
                 <td className="whitespace-nowrap px-3 py-2 text-xs">{m.email || '—'}</td>
                 <td className="min-w-[12rem] px-3 py-2 text-xs text-ink-dim">{m.bemerkungen || '—'}</td>
                 <td className="whitespace-nowrap px-3 py-2 text-xs text-ink-dim">{m.lastUpdate || '—'}</td>
+                <td className="whitespace-nowrap px-3 py-2">
+                  <StatusTag kind={m.berechnung === 'Berechnungsrelevant' ? 'approved' : 'blocked'}>
+                    {m.berechnung === 'Berechnungsrelevant' ? 'Berechnungsrelevant' : 'Nicht relevant'}
+                  </StatusTag>
+                </td>
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={16} className="px-3 py-6 text-center text-ink-dim">
+                <td colSpan={showBank ? 17 : 13} className="px-3 py-6 text-center text-ink-dim">
                   Keine Treffer für „{query}".
                 </td>
               </tr>
@@ -163,8 +175,9 @@ export default function TnData() {
       </Card>
 
       <p className="text-xs text-ink-dim">
-        Quelle: Hauptdatei, Tab „Alle_TN_Daten". Bankdaten sind nur in dieser
-        Admin-Ansicht sichtbar (NFR-01) — TN sehen ausschließlich ihre eigenen Daten.
+        Quelle: Hauptdatei, Tab „Alle_TN_Daten". Bankdaten sind nur für Admins
+        sichtbar (NFR-01) — Dozent:innen sehen alle übrigen Stammdaten, TN
+        ausschließlich ihre eigenen Daten.
       </p>
     </div>
   );

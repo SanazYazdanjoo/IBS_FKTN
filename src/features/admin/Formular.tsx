@@ -134,16 +134,22 @@ export default function FormularScreen() {
           {/* Linke Spalte: Name/Vorname · Straße/Hausnr. · PLZ/Ort — Wert auf der Zeile darüber */}
           <ValueLine x={52.7} y={136} value={nachname} />
           <ValueLine x={168.2} y={136} value={vorname} />
+          <FieldLine x={52.7} y={160} width={100} />
+          <FieldLine x={168.2} y={160} width={115} />
           <Static x={52.7} y={162.8}>Name</Static>
           <Static x={168.2} y={162.8}>Vorname</Static>
 
           <ValueLine x={52.7} y={183} value={master?.strasse ?? ''} />
           <ValueLine x={168.2} y={183} value={master?.hausnr ?? ''} />
+          <FieldLine x={52.7} y={208} width={100} />
+          <FieldLine x={168.2} y={208} width={115} />
           <Static x={52.7} y={210.8}>Straße</Static>
           <Static x={168.2} y={210.8}>Hausnr.</Static>
 
           <ValueLine x={52.7} y={231} value={master?.plz ?? ''} />
           <ValueLine x={168.2} y={231} value={master?.ort ?? ''} />
+          <FieldLine x={52.7} y={256} width={100} />
+          <FieldLine x={168.2} y={256} width={115} />
           <Static x={52.7} y={258.8}>PLZ</Static>
           <Static x={168.2} y={258.8}>Ort</Static>
 
@@ -307,6 +313,11 @@ function ValueLine({ x, y, value }: { x: number; y: number; value: string }) {
   );
 }
 
+/** Ausfülllinie unter einem Wert-Feld (wie bei den Unterschriftszeilen). */
+function FieldLine({ x, y, width }: { x: number; y: number; width: number }) {
+  return <div className="absolute border-t border-black" style={{ left: mm(x), top: mm(y), width: mm(width) }} />;
+}
+
 /** Fahrpreis-Zeile: Bezeichnung links, Betrag rechtsbündig vor dem €-Zeichen (wie im Original). */
 function FareRow({ y, label, value }: { y: number; label: string; value: string }) {
   return (
@@ -323,6 +334,7 @@ function FareRow({ y, label, value }: { y: number; label: string; value: string 
       <span className="absolute" style={{ left: mm(485.4), top: mm(y - 2) }}>
         €
       </span>
+      <div className="absolute border-b border-black/15" style={{ left: mm(52.6), top: mm(y + 10), width: mm(444.8) }} />
     </>
   );
 }
