@@ -282,7 +282,7 @@ function DetailPanel({
             method={view.result.method === 'VMT_SINGLE_FARES' ? 'VMT_SINGLE_FARES' : 'PRO_RATA'}
           />
         )}
-        
+
         {proRata && (
           <FormulaBox
             label="A · Anteiliges Abo"
@@ -569,5 +569,43 @@ function FareInlineEditor({
       </div>
       {error && <p className="mt-1 text-xs font-semibold text-danger">{error}</p>}
     </div>
+  );
+}
+
+/**
+ * Verdict-Zeile: A gegen B in einer Zeile, Gewinner markiert. Die
+ * FormulaBoxen darunter zeigen weiterhin die Herleitung — hier steht nur
+ * das Ergebnis des Vergleichs, damit es nicht aus einem Label gelesen
+ * werden muss.
+ */
+function ComparisonVerdict({
+  proRataEur,
+  vmtEur,
+  method,
+}: {
+  proRataEur: number;
+  vmtEur: number;
+  method: 'PRO_RATA' | 'VMT_SINGLE_FARES';
+}) {
+  const rows = [
+    { id: 'A', label: 'A · Anteiliges Abo', amountEur: proRataEur, wins: method === 'PRO_RATA' },
+    { id: 'B', label: 'B · VMT-Einzelfahrten', amountEur: vmtEur, wins: method === 'VMT_SINGLE_FARES' },
+  ].sort((x, y) => x.amountEur - y.amountEur);
+
+  return (
+    <table className="min-w-full text-left text-sm">
+      <caption className="sr-only">Vergleich A gegen B, günstigste Variante zuerst</caption>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r.id} className={`border-b border-line/60 last:border-0 ${r.wins ? 'font-semibold' : 'text-ink-dim'}`}>
+            <td className="py-2 pr-3">
+              {r.label}
+              {r.wins && <span className="ml-2 text-primary">✓ günstiger — wird erstattet</span>}
+            </td>
+            <td className="py-2 pr-3 text-right">{formatEuro(r.amountEur)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
