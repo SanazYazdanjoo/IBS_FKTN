@@ -100,7 +100,7 @@ export default function MonthMatrix({
               <th
                 key={d.date}
                 colSpan={2}
-                className={`border border-[var(--border)] px-1 text-center text-[11px] ${
+                className={`border border-[var(--border)] border-l-2 border-r-2 border-l-[var(--line)] border-r-[var(--line)] px-1 text-center text-[11px] ${
                   d.locked ? 'bg-[var(--muted)] text-[var(--text-dim)]' : 'bg-[var(--muted)]'
                 }`}
               >
@@ -122,7 +122,7 @@ export default function MonthMatrix({
                 key={d.date}
                 colSpan={2}
                 title={d.reason}
-                className={`border border-[var(--border)] px-1 text-center text-[11px] tabular-nums ${
+                className={`border border-[var(--border)] border-l-2 border-r-2 border-l-[var(--line)] border-r-[var(--line)] px-1 text-center text-[11px] tabular-nums ${
                   d.locked ? 'bg-[var(--muted)] text-[var(--text-dim)]' : 'bg-[var(--muted)]'
                 }`}
               >
@@ -132,8 +132,8 @@ export default function MonthMatrix({
           </tr>
           <tr className="text-[10px] text-[var(--text-dim)]">
             {days.flatMap((d) => [
-              <th key={d.date + 'v'} className="border border-[var(--border)] px-1">V</th>,
-              <th key={d.date + 'n'} className="border border-[var(--border)] px-1">N</th>,
+              <th key={d.date + 'v'} className="border border-[var(--border)] border-l-2 border-l-[var(--line)] px-1">V</th>,
+              <th key={d.date + 'n'} className="border border-[var(--border)] border-r-2 border-r-[var(--line)] px-1">N</th>,
             ])}
           </tr>
         </thead>
@@ -165,7 +165,14 @@ export default function MonthMatrix({
                   const day: DayMarks =
                     byDate.get(d.date) ?? { date: d.date, morning: '', afternoon: '' };
                   return (['morning', 'afternoon'] as const).map((session) => (
-                    <td key={d.date + session} className="border border-[var(--border)] p-0">
+                    <td
+                      key={d.date + session}
+                      className={`border border-[var(--border)] p-0 ${
+                        session === 'morning'
+                          ? 'border-l-2 border-l-[var(--line)]'
+                          : 'border-r-2 border-r-[var(--line)]'
+                      }`}
+                    >
                       <CodeCell
                         code={day[session]}
                         locked={d.locked}

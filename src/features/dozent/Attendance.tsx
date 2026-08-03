@@ -357,8 +357,7 @@ export default function DozentAttendance() {
             <thead>
               <tr className="text-left text-xs text-ink-dim">
                 <th className="pr-3 pb-1">TN</th>
-                <th className="pr-3 pb-1">Nachname</th>
-                <th className="pr-3 pb-1">Vorname</th>
+                <th className="pr-3 pb-1">Name</th>
                 <th className="pb-1 text-right">
                   Anwesend
                   <br />({label})
@@ -374,10 +373,7 @@ export default function DozentAttendance() {
                       <CourseChip id={r.participantId} />
                     </td>
                     <td className="pr-3 py-0.5">
-                      <TnName id={r.participantId} name={nach} chip={false} />
-                    </td>
-                    <td className="pr-3 py-0.5">
-                      <TnName id={r.participantId} name={vor} chip={false} />
+                      <TnName id={r.participantId} name={`${vor} ${nach}`} chip={false} />
                     </td>
                     <td className="py-0.5 text-right font-bold">{monthTotal(r)}</td>
                   </tr>
@@ -427,10 +423,9 @@ export default function DozentAttendance() {
             <thead>
               <tr className="sticky top-0 z-10 text-left text-xs">
                 <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-1">TN</th>
-                <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-1">Nachname</th>
-                <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-1">Vorname</th>
+                <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-1">Name</th>
                 {dates.map((d) => (
-                  <th key={d} colSpan={2} className="border border-[var(--border)] bg-[var(--muted)] px-2 py-1 text-center whitespace-nowrap">
+                  <th key={d} colSpan={2} className="border border-[var(--border)] border-l-2 border-r-2 border-l-[var(--line)] border-r-[var(--line)] bg-[var(--muted)] px-2 py-1 text-center whitespace-nowrap">
                     {dayHeader(d)}
                   </th>
                 ))}
@@ -442,10 +437,10 @@ export default function DozentAttendance() {
                 </th>
               </tr>
               <tr className="text-center text-[11px] text-ink-dim">
-                <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-0.5" colSpan={3} />
+                <th className="border border-[var(--border)] bg-[var(--muted)] px-2 py-0.5" colSpan={2} />
                 {dates.flatMap((d) => [
-                  <th key={d + 'v'} className="border border-[var(--border)] bg-[var(--muted)] px-2 py-0.5">V</th>,
-                  <th key={d + 'n'} className="border border-[var(--border)] bg-[var(--muted)] px-2 py-0.5">N</th>,
+                  <th key={d + 'v'} className="border border-[var(--border)] border-l-2 border-l-[var(--line)] bg-[var(--muted)] px-2 py-0.5">V</th>,
+                  <th key={d + 'n'} className="border border-[var(--border)] border-r-2 border-r-[var(--line)] bg-[var(--muted)] px-2 py-0.5">N</th>,
                 ])}
                 <th className="border border-[var(--border)] bg-[var(--muted)]" />
                 <th className="border border-[var(--border)] bg-[var(--muted)]" />
@@ -469,10 +464,7 @@ export default function DozentAttendance() {
                       <CourseChip id={r.participantId} />
                     </td>
                     <td className="border border-[var(--border)] px-2 py-1">
-                      <TnName id={r.participantId} name={nach} chip={false} />
-                    </td>
-                    <td className="border border-[var(--border)] px-2 py-1">
-                      <TnName id={r.participantId} name={vor} chip={false} />
+                      <TnName id={r.participantId} name={`${vor} ${nach}`} chip={false} />
                     </td>
                     {weekDays.flatMap((day) => {
                       const holiday = holidayByDate.get(day.date);
@@ -481,7 +473,14 @@ export default function DozentAttendance() {
                       // dort gelegentlich Klausuren/Workshops stattfinden.
                       const locked = holiday !== undefined;
                       const cells = (['morning', 'afternoon'] as const).map((session) => (
-                        <td key={day.date + session} className="border border-[var(--border)] p-0">
+                        <td
+                          key={day.date + session}
+                          className={`border border-[var(--border)] p-0 ${
+                            session === 'morning'
+                              ? 'border-l-2 border-l-[var(--line)]'
+                              : 'border-r-2 border-r-[var(--line)]'
+                          }`}
+                        >
                           <CodeCell
                             code={day[session]}
                             locked={locked}

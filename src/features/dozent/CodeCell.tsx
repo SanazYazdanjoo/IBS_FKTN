@@ -51,7 +51,7 @@ export function cellFill(code: AttendanceCode, locked: boolean, weekend = false)
   // A = abgemeldet ohne Nachweis: kein klarer Fehltag, muss vom Dozenten
   // nochmal geprüft und ggf. korrigiert werden — daher gelb wie ein offenes Feld.
   if (code === 'A') return 'bg-[var(--highlight)] text-black font-semibold';
-  if (code === 'U') return 'bg-[var(--danger)]/15 text-[var(--danger)] font-semibold';
+  if (code === 'U') return 'bg-[var(--danger)] text-white font-semibold';
   return 'bg-[var(--surface)] text-[var(--text)] font-medium';
 }
 
