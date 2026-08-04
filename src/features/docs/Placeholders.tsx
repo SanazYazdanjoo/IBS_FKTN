@@ -8,7 +8,7 @@
  * style.
  */
 import { useEffect, useState } from 'react';
-import { Card, Page, SecondaryButton } from '../../app/ui';
+import { Card, SecondaryButton } from '../../app/ui';
 
 export function Placeholder({ title }: { title: string }) {
   return (
@@ -34,14 +34,14 @@ export function AutoReminderEmails() {
  */
 export function PlaceholderVergleichsrechnung() {
   return (
-    <Page>
+    <div className="p-4 sm:p-6 lg:p-8">
       <h1 className="text-2xl font-semibold text-display">
         VMT Vergleichsrechnung
       </h1>
       <Card>
         <p className="text-sm text-ink-dim">This page has been replaced by the new Rate & Fare Management page.</p>
       </Card>
-    </Page>
+    </div>
   );
 }
 

@@ -95,6 +95,13 @@ export interface ProcessException {
   approvedByManager: boolean;
 }
 
+/** Ablehnung durch die Freigabe (Approver) — geht direkt zurück an den Admin, ohne manuelle Relais. */
+export interface RejectionRecord {
+  reason: string;
+  rejectedBy: string;
+  rejectedAt: string;
+}
+
 // ── Participant month record ──────────────────────────────────────────────
 export interface MonthRecord {
   participantId: string;
@@ -120,4 +127,6 @@ export interface MonthRecord {
   status: ProcessStatus;
   signature: SignatureRecord;
   exceptions: ProcessException[];
+  /** Ablehnungen der Freigabe, neueste zuerst. */
+  rejectionHistory?: RejectionRecord[];
 }

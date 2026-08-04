@@ -3,10 +3,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
 import { useVmtFares } from '../../app/vmt-fares-context';
-import { Card, ExceptionFlag, Eyebrow, KnownFlag, PrimaryButton, SecondaryButton, TnName, statusLabel } from '../../app/ui';
+import { Card, DangerButton, ExceptionFlag, Eyebrow, KnownFlag, PrimaryButton, TnName, statusLabel } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
-import { isBulkApprovable } from '../../domain/approval';
+import { isBulkApprovable, rejectClaim } from '../../domain/approval';
 import { toFareLookup } from '../../domain/vmtFares';
 import { monthLabel } from '../../adapters/mock/seed';
 import { logChange } from '../../app/auditLog';
@@ -19,11 +19,18 @@ export default function ManagerQueue() {
   const vmtSingleFaresEur = toFareLookup(fares);
   const [records, setRecords] = useState<MonthRecord[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
+  const [showRejectForm, setShowRejectForm] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
 
   const reload = () => storage.listMonthRecords(user, MONTH).then(setRecords);
   useEffect(() => {
     reload();
   }, [user, storage, storageVersion, MONTH]);
+
+  useEffect(() => {
+    setShowRejectForm(false);
+    setRejectReason('');
+  }, [selected]);
 
   const queue = useMemo(
     () =>
@@ -54,6 +61,19 @@ export default function ManagerQueue() {
     logChange(
       user.name,
       `Ausnahme genehmigt + freigegeben: ${record.participantId} · ${monthLabel(MONTH)}`,
+    );
+  };
+
+  const reject = async (record: MonthRecord, reason: string) => {
+    const next = rejectClaim(record, reason, user.name);
+    await storage.saveMonthRecord(user, next);
+    setSelected(null);
+    setShowRejectForm(false);
+    setRejectReason('');
+    reload();
+    logChange(
+      user.name,
+      `Abgelehnt: ${record.participantId} · ${monthLabel(MONTH)} · ${statusLabel(record.status)} → ${statusLabel('AWAITING_CORRECTION')} — „${reason}"`,
     );
   };
 
@@ -161,8 +181,28 @@ export default function ManagerQueue() {
               {current.record.exceptions.length === 0 && (
                 <PrimaryButton onClick={() => approve(current.record)}>Freigeben ✓</PrimaryButton>
               )}
-              <SecondaryButton>Ablehnen mit Kommentar…</SecondaryButton>
+              <DangerButton onClick={() => setShowRejectForm((v) => !v)}>
+                {showRejectForm ? 'Ablehnen abbrechen' : 'Ablehnen mit Kommentar…'}
+              </DangerButton>
             </div>
+            {showRejectForm && (
+              <div className="mt-3 space-y-2 rounded-xl border border-danger/40 p-3">
+                <label className="block text-sm font-semibold">Ablehnungsgrund (Pflicht)</label>
+                <textarea
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  rows={3}
+                  className="w-full rounded-lg border border-line p-2 text-sm"
+                  placeholder="Begründung — geht direkt an den Admin zur Korrektur zurück."
+                />
+                <DangerButton
+                  disabled={rejectReason.trim().length === 0}
+                  onClick={() => reject(current.record, rejectReason)}
+                >
+                  Ablehnung bestätigen
+                </DangerButton>
+              </div>
+            )}
             <p className="mt-2 text-xs text-ink-dim">
               → geht digital an Buchhaltung, kein Scan, kein Sekretariat (P11)
             </p>

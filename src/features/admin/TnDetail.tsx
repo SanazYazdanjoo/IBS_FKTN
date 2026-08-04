@@ -18,6 +18,7 @@ import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
 import { useVmtFares } from '../../app/vmt-fares-context';
 import {
+  Callout,
   Card,
   CheckItem,
   ExceptionFlag,
@@ -381,6 +382,14 @@ export default function TnDetail() {
                 })`}
             </div>
           </div>
+
+          {record.rejectionHistory && record.rejectionHistory.length > 0 && (
+            <Callout kind="problem">
+              Von {record.rejectionHistory[0].rejectedBy} abgelehnt (
+              {new Date(record.rejectionHistory[0].rejectedAt).toLocaleDateString('de-DE')}): „
+              {record.rejectionHistory[0].reason}"
+            </Callout>
+          )}
 
           {/* Belege — kompakt nebeneinander, jeder Beleg ein Chip */}
           <Card>
