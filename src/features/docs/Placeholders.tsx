@@ -1,13 +1,14 @@
 /**
- * Platzhalterseiten für Funktionen, die noch nicht gebaut sind, sowie die
- * Dokumentationsseite.
+ * Placeholder pages for features that are not yet built, as well as the
+ * documentation page.
  *
- * Bewusst als eigene Menüpunkte sichtbar und nicht versteckt: der geplante
- * Umfang bleibt so für alle Beteiligten erkennbar. Damit niemand sie für
- * fertig hält, sind die Einträge in der Navigation gedämpft dargestellt.
+ * These are intentionally visible as menu items and not hidden: the planned
+ * scope remains visible to all stakeholders. To ensure no one mistakes them
+ * for finished features, the navigation entries are displayed in a subdued
+ * style.
  */
 import { useEffect, useState } from 'react';
-import { Card, SecondaryButton } from '../../app/ui';
+import { Card, Page, SecondaryButton } from '../../app/ui';
 
 export function Placeholder({ title }: { title: string }) {
   return (
@@ -24,6 +25,24 @@ export function Placeholder({ title }: { title: string }) {
 
 export function AutoReminderEmails() {
   return <Placeholder title="Auto-Reminder Emails" />;
+}
+
+/**
+ * This placeholder is now obsolete as the functionality is provided
+ * by the new `RatesManagement` page.
+ * @deprecated
+ */
+export function PlaceholderVergleichsrechnung() {
+  return (
+    <Page>
+      <h1 className="text-2xl font-semibold text-display">
+        VMT Vergleichsrechnung
+      </h1>
+      <Card>
+        <p className="text-sm text-ink-dim">This page has been replaced by the new Rate & Fare Management page.</p>
+      </Card>
+    </Page>
+  );
 }
 
 type DocSection = {
