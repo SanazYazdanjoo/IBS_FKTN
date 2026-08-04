@@ -6,12 +6,7 @@
  * Umfang bleibt so für alle Beteiligten erkennbar. Damit niemand sie für
  * fertig hält, sind die Einträge in der Navigation gedämpft dargestellt.
  */
-import { useRef, useState } from 'react';
-import type {
-  KeyboardEvent as ReactKeyboardEvent,
-  PointerEvent as ReactPointerEvent,
-  WheelEvent as ReactWheelEvent,
-} from 'react';
+import { useEffect, useState } from 'react';
 import { Card, SecondaryButton } from '../../app/ui';
 
 export function Placeholder({ title }: { title: string }) {
@@ -31,180 +26,224 @@ export function AutoReminderEmails() {
   return <Placeholder title="Auto-Reminder Emails" />;
 }
 
-/** Ablageort der Grafik; die Datei wird separat hinterlegt. */
-const DOC_SVG = `${import.meta.env.BASE_URL}assets/documentation.svg`;
+type DocSection = {
+  id: string;
+  title: string;
+  content: { heading: string; text: string }[];
+};
 
-const MIN_SCALE = 1;
-const MAX_SCALE = 5;
-const ZOOM_STEP = 1.4;
+const DOC_STORAGE_KEY = 'app-documentation-content';
 
-type Pan = { x: number; y: number };
+const defaultDocs: DocSection[] = [
+  {
+    id: 'overview',
+    title: 'Overview & Quick Start',
+    content: [
+      {
+        heading: 'Application Purpose',
+        text: 'A functional prototype for digitalizing the travel-cost reimbursement workflow. Built as part of an HCI research project, this application covers the process from submission by a participant (TN) to final approval.',
+      },
+      {
+        heading: 'Role Breakdown',
+        text: 'The system is built for five roles: TN (Teilnehmer), Dozent, Manager, Admin, and Accounting. Each role has a specific login and access to tasks relevant to their part in the workflow.',
+      },
+      {
+        heading: 'Quick Start Commands',
+        text: 'To get the application running locally, use the following commands:\n`npm install` - to install dependencies.\n`npm test` - to run the full test suite.\n`npm run dev` - to start the development server.',
+      },
+    ],
+  },
+  {
+    id: 'tn-workflow',
+    title: 'Participant & Submission Workflow',
+    content: [
+      {
+        heading: 'Guided Step-by-Step Mode',
+        text: 'For participants with lower digital literacy, a guided "Schritt-für-Schritt" mode is available. This simplifies the submission process into a series of clear, single-action steps.',
+      },
+      {
+        heading: 'Localization',
+        text: 'The participant (TN) flow supports multiple languages (currently German and English) to accommodate users with language barriers. The language can be switched directly in the UI.',
+      },
+      {
+        heading: 'Mobile Camera Capture',
+        text: 'Participants can use their device camera to capture and upload required documents like tickets and certificates directly within the application, streamlining the proof submission process.',
+      },
+    ],
+  },
+  {
+    id: 'admin-ops',
+    title: 'Admin & Course Operations',
+    content: [
+      {
+        heading: 'Attendance Legend Rules',
+        text: 'The rules for which attendance marks (E, K, X, etc.) count as reimbursable are encoded in `src/domain/rules.ts`. This logic is configurable to handle historical variations in interpretation.',
+      },
+      {
+        heading: 'Formula Trace',
+        text: 'Every reimbursement calculation provides a full trace, ensuring transparency. The UI for TNs, Admins, and Managers shows the exact same numbers derived from the same pure-function computation.',
+      },
+      {
+        heading: 'Live VMT Comparison Engine',
+        text: 'The "Vergleichsrechnung" screen includes a live editor for VMT single fares, replacing manual per-case lookups. Changes are reflected instantly across the application.',
+      },
+    ],
+  },
+  {
+    id: 'approvals',
+    title: 'Approval Chain & Management',
+    content: [
+      {
+        heading: 'Digital Hand-offs',
+        text: 'The workflow is designed for fully digital hand-offs between roles, from TN submission to Manager and Accounting approval, reducing paper-based processes.',
+      },
+      {
+        heading: 'Signature Modes',
+        text: 'The application supports both paper-based (Modus A) and digital (Modus B) signatures. Modus B is implemented but pending a final ruling from finance and data protection officers.',
+      },
+      {
+        heading: 'Deputy Rules',
+        text: 'The system includes a configurable rule for activating a deputy if a manager is absent for a specified number of days. The rule is displayed, but automation is pending integration with a real "away" status.',
+      },
+    ],
+  },
+  {
+    id: 'data-protection',
+    title: 'Data Protection & Logging',
+    content: [
+      {
+        heading: 'Pseudonymous Analytics',
+        text: 'The app features a local-only, pseudonymous event log to measure process metrics like cycle times and error rates. No PII is ever recorded, and all identifiers are salted and hashed.',
+      },
+      {
+        heading: 'Local Storage Safeguards',
+        text: 'All data, including participant information and event logs, is stored locally in the browser (IndexedDB, localStorage). No data is transmitted to any external server, ensuring DSGVO compliance.',
+      },
+      {
+        heading: 'Retention Policies',
+        text: 'The event log has a 90-day retention policy. Older data is automatically pruned. Users can also export or delete their log data at any time from the settings menu.',
+      },
+    ],
+  },
+  {
+    id: 'architecture',
+    title: 'File Architecture & Storage',
+    content: [
+      {
+        heading: 'Adapter-based Persistence',
+        text: 'Persistence logic is abstracted behind a `StorageAdapter`. The app ships with a mock adapter for demo data and an Excel adapter that can read/write to a single file or a folder with automatic backups.',
+      },
+      {
+        heading: 'Data Isolation',
+        text: 'Access control is enforced at the adapter level, not in the UI. A user can only query their own records; attempting to access others\' data throws an `AccessDeniedError`.',
+      },
+      {
+        heading: 'Demo Data Generation',
+        text: 'The mock seed data is generated from committed demo Excel workbooks via `npm run seed:build`. This ensures the demo data perfectly mirrors the structure of live-loaded data.',
+      },
+    ],
+  },
+];
 
 export function Documentation() {
-  const [failed, setFailed] = useState(false);
-  const [scale, setScale] = useState(MIN_SCALE);
-  const [pan, setPan] = useState<Pan>({ x: 0, y: 0 });
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{ startX: number; startY: number; pan: Pan } | null>(null);
+  const [docs, setDocs] = useState<DocSection[]>(defaultDocs);
+  const [activeSectionId, setActiveSectionId] = useState(defaultDocs[0].id);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Verschieben darf das Bild nie ganz aus dem sichtbaren Bereich treiben —
-  // sonst verliert man beim Zoomen leicht die Orientierung.
-  function clampPan(next: Pan, atScale: number): Pan {
-    const rect = viewportRef.current?.getBoundingClientRect();
-    if (!rect) return next;
-    const maxX = ((atScale - 1) * rect.width) / 2;
-    const maxY = ((atScale - 1) * rect.height) / 2;
-    return {
-      x: Math.min(maxX, Math.max(-maxX, next.x)),
-      y: Math.min(maxY, Math.max(-maxY, next.y)),
-    };
-  }
-
-  function zoomBy(factor: number) {
-    setScale((prev) => {
-      const next = Math.min(MAX_SCALE, Math.max(MIN_SCALE, prev * factor));
-      setPan((p) => (next === MIN_SCALE ? { x: 0, y: 0 } : clampPan(p, next)));
-      return next;
-    });
-  }
-
-  function resetZoom() {
-    setScale(MIN_SCALE);
-    setPan({ x: 0, y: 0 });
-  }
-
-  // Zoomen per Strg/Cmd + Scrollen — üblicher Desktop-Konvention folgend,
-  // damit normales Scrollen der Seite nicht versehentlich blockiert wird.
-  function handleWheel(e: ReactWheelEvent<HTMLDivElement>) {
-    if (!(e.ctrlKey || e.metaKey)) return;
-    e.preventDefault();
-    zoomBy(e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP);
-  }
-
-  function handlePointerDown(e: ReactPointerEvent<HTMLDivElement>) {
-    if (scale <= MIN_SCALE) return;
-    dragRef.current = { startX: e.clientX, startY: e.clientY, pan };
-    e.currentTarget.setPointerCapture(e.pointerId);
-  }
-
-  function handlePointerMove(e: ReactPointerEvent<HTMLDivElement>) {
-    const drag = dragRef.current;
-    if (!drag) return;
-    const next = {
-      x: drag.pan.x + (e.clientX - drag.startX),
-      y: drag.pan.y + (e.clientY - drag.startY),
-    };
-    setPan(clampPan(next, scale));
-  }
-
-  function endDrag() {
-    dragRef.current = null;
-  }
-
-  function handleKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
-    if (e.key === '+' || e.key === '=') {
-      e.preventDefault();
-      zoomBy(ZOOM_STEP);
-    } else if (e.key === '-') {
-      e.preventDefault();
-      zoomBy(1 / ZOOM_STEP);
-    } else if (e.key === '0') {
-      e.preventDefault();
-      resetZoom();
+  useEffect(() => {
+    try {
+      const storedDocs = localStorage.getItem(DOC_STORAGE_KEY);
+      if (storedDocs) {
+        setDocs(JSON.parse(storedDocs));
+      }
+    } catch (error) {
+      console.error('Failed to load documentation from localStorage', error);
+      setDocs(defaultDocs);
     }
-  }
+  }, []);
 
-  const zoomed = scale > MIN_SCALE;
+  useEffect(() => {
+    try {
+      localStorage.setItem(DOC_STORAGE_KEY, JSON.stringify(docs));
+    } catch (error) {
+      console.error('Failed to save documentation to localStorage', error);
+    }
+  }, [docs]);
+
+  const handleContentChange = (sectionIndex: number, contentIndex: number, newText: string) => {
+    const newDocs = [...docs];
+    newDocs[sectionIndex].content[contentIndex].text = newText;
+    setDocs(newDocs);
+  };
+
+  const activeSection = docs.find((s) => s.id === activeSectionId) ?? docs[0];
+  const activeSectionIndex = docs.findIndex((s) => s.id === activeSectionId);
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-[var(--text-display)]">
-            Prozess &amp; Aufbau
+            In-App Documentation
           </h1>
         </div>
-
-        {!failed && (
-          <div className="flex items-center gap-2">
-            <SecondaryButton
-              onClick={() => zoomBy(1 / ZOOM_STEP)}
-              disabled={scale <= MIN_SCALE}
-              className="px-3 py-1.5"
-              logId="docs.zoom-out"
-            >
-              <span aria-hidden>−</span>
-              <span className="sr-only">Verkleinern</span>
-            </SecondaryButton>
-            <span className="w-12 text-center text-sm tabular-nums text-ink-dim">
-              {Math.round(scale * 100)}%
-            </span>
-            <SecondaryButton
-              onClick={() => zoomBy(ZOOM_STEP)}
-              disabled={scale >= MAX_SCALE}
-              className="px-3 py-1.5"
-              logId="docs.zoom-in"
-            >
-              <span aria-hidden>+</span>
-              <span className="sr-only">Vergrößern</span>
-            </SecondaryButton>
-            <SecondaryButton
-              onClick={resetZoom}
-              disabled={!zoomed}
-              className="px-3 py-1.5 text-xs"
-              logId="docs.zoom-reset"
-            >
-              Zurücksetzen
-            </SecondaryButton>
-          </div>
-        )}
+        <SecondaryButton
+          onClick={() => setIsEditing(!isEditing)}
+          className="px-3 py-1.5 text-xs"
+          logId="docs.toggle-edit"
+        >
+          {isEditing ? 'Save & View' : 'Edit Documentation'}
+        </SecondaryButton>
       </div>
 
       <Card>
-        {failed ? (
-          // Kein stiller Leerraum: fehlt die Datei, steht hier, welche
-          // erwartet wird und wohin sie gehoert.
-          <p className="text-sm text-ink-dim">
-            Noch keine Grafik hinterlegt. Erwartet wird{' '}
-            <code className="rounded bg-muted px-1">public/assets/documentation.svg</code> —
-            nach dem Ablegen erscheint sie hier automatisch.
-          </p>
-        ) : (
-          <>
-            <div
-              ref={viewportRef}
-              role="group"
-              aria-label="Zoombarer Ausschnitt der Dokumentationsgrafik"
-              tabIndex={0}
-              onWheel={handleWheel}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={endDrag}
-              onPointerLeave={endDrag}
-              onDoubleClick={resetZoom}
-              onKeyDown={handleKeyDown}
-              className="overflow-hidden rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-              style={{ cursor: zoomed ? (dragRef.current ? 'grabbing' : 'grab') : 'default' }}
-            >
-              <img
-                src={DOC_SVG}
-                alt="Dokumentation des Prozesses"
-                onError={() => setFailed(true)}
-                draggable={false}
-                className="h-auto w-full select-none"
-                style={{
-                  transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
-                  transformOrigin: 'center center',
-                  transition: dragRef.current ? 'none' : 'transform 0.1s ease-out',
-                }}
-              />
+        <div className="flex gap-8">
+          <nav className="w-1/4 flex-shrink-0">
+            <ul className="space-y-1 font-medium">
+              {docs.map((section) => (
+                <li key={section.id}>
+                  <button
+                    onClick={() => setActiveSectionId(section.id)}
+                    className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                      activeSectionId === section.id
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-ink hover:bg-muted'
+                    }`}
+                  >
+                    {section.title}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <main className="w-3/4 border-l border-line pl-8">
+            <div className="space-y-6">
+              <h2 className="font-display text-xl font-semibold text-ink-display">
+                {activeSection.title}
+              </h2>
+              {activeSection.content.map((item, contentIndex) => (
+                <div key={contentIndex} className="space-y-2">
+                  <h3 className="font-semibold text-ink">{item.heading}</h3>
+                  {isEditing ? (
+                    <textarea
+                      value={item.text}
+                      onChange={(e) =>
+                        handleContentChange(activeSectionIndex, contentIndex, e.target.value)
+                      }
+                      className="font-body w-full rounded-md border border-stroke bg-surface p-2 text-sm text-ink-dim focus:border-primary focus:ring-primary/40"
+                      rows={item.text.split('\n').length + 1}
+                    />
+                  ) : (
+                    <p className="font-body whitespace-pre-wrap text-sm text-ink-dim">
+                      {item.text}
+                    </p>
+                  )}
+                </div>
+              ))}
             </div>
-            <p className="mt-2 text-xs text-ink-dim">
-              Zoomen: Buttons oben, oder Strg/Cmd + Scrollen. Bei Zoom lässt sich das Bild
-              durch Ziehen verschieben; Doppelklick oder „Zurücksetzen" springt zurück.
-            </p>
-          </>
-        )}
+          </main>
+        </div>
       </Card>
     </div>
   );
