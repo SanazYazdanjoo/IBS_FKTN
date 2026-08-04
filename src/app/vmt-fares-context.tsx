@@ -1,12 +1,25 @@
 /**
  * Fahrpreis-Kontext: VMT-Einzelfahrpreise im Speicher, zur Laufzeit änderbar
- * (P15). Gleicher Aufbau wie `rules-context.tsx` — kein Backend, kein
- * localStorage; ein Preis, der hier geändert wird, wirkt sich sofort auf jede
- * Ansicht aus, die über diesen Kontext liest (Vergleichsrechnung, TN-Detail).
+ * (P15). Gleicher Aufbau wie `rules-context.tsx`, inkl. localStorage-Spiegel
+ * — ein Preis, der hier geändert wird, wirkt sich sofort auf jede Ansicht
+ * aus, die über diesen Kontext liest (Vergleichsrechnung, TN-Detail), und
+ * übersteht einen Seiten-Reload.
  */
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { VmtFareTable } from '../domain/vmtFares';
 import { vmtFaresSeed } from '../adapters/mock/seed';
+
+const STORAGE_KEY = 'ibs-vmt-fares-v1';
+
+function loadFromStorage(): VmtFareTable {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return vmtFaresSeed;
+    return { ...vmtFaresSeed, ...JSON.parse(raw) };
+  } catch {
+    return vmtFaresSeed;
+  }
+}
 
 interface VmtFaresContextValue {
   fares: VmtFareTable;
@@ -16,12 +29,22 @@ interface VmtFaresContextValue {
    * falls der Preis von dort übernommen statt frei eingegeben wurde.
    */
   setFarePrice: (participantId: string, priceEur: number, tariffZoneId?: string) => void;
+  resetFares: () => void;
 }
 
 const VmtFaresContext = createContext<VmtFaresContextValue | null>(null);
 
 export function VmtFaresProvider({ children }: { children: ReactNode }) {
-  const [fares, setFares] = useState<VmtFareTable>(vmtFaresSeed);
+  const [fares, setFares] = useState<VmtFareTable>(loadFromStorage);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(fares));
+    } catch {
+      // localStorage kann in seltenen Fällen nicht verfügbar sein — die
+      // Preise bleiben dann nur für die laufende Sitzung erhalten.
+    }
+  }, [fares]);
 
   const setFarePrice = (participantId: string, priceEur: number, tariffZoneId?: string) => {
     const id = participantId.toUpperCase();
@@ -36,8 +59,12 @@ export function VmtFaresProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  const resetFares = () => setFares(vmtFaresSeed);
+
   return (
-    <VmtFaresContext.Provider value={{ fares, setFarePrice }}>{children}</VmtFaresContext.Provider>
+    <VmtFaresContext.Provider value={{ fares, setFarePrice, resetFares }}>
+      {children}
+    </VmtFaresContext.Provider>
   );
 }
 

@@ -13,6 +13,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { SessionProvider, useSession } from './session';
 import { RulesProvider } from './rules-context';
 import { VmtFaresProvider } from './vmt-fares-context';
+import { VmtTariffProvider } from './vmt-tariff-context';
 import { ParticipantNamesProvider } from './participant-names';
 import { LocaleProvider, useLocale } from '../i18n/LocaleContext';
 import { LOCALE_LABELS, SUPPORTED_LOCALES, type Locale } from '../i18n/translations';
@@ -31,6 +32,7 @@ import YearCalendar from '../features/admin/YearCalendar';
 import CalendarOverlay from './CalendarOverlay';
 import { AutoReminderEmails, Documentation } from '../features/docs/Placeholders';
 import Vergleichsrechnung from '../features/admin/Vergleichsrechnung';
+import RatesManagement from '../features/admin/RatesManagement';
 import TnData from '../features/admin/TnData';
 import AuditLogScreen from '../features/admin/AuditLog';
 import TnDetail from '../features/admin/TnDetail';
@@ -78,6 +80,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/dozent', label: 'Anwesenheit', roles: ['DOZENT', 'ADMIN'] },
   { to: '/admin/daten', label: 'TN-Daten', roles: ['ADMIN', 'DOZENT'] },
   { to: '/vergleichsrechnung', label: 'Vergleichsrechnung', roles: ['ADMIN', 'ACCOUNTING'] },
+  { to: '/admin/raten', label: 'Raten & Tarife', roles: ['ADMIN', 'ACCOUNTING'] },
   { to: '/manager', label: 'Freigaben', roles: ['MANAGER', 'ADMIN'] },
   { to: '/reminder', label: '(WIP) Auto-Reminder Emails', roles: ['ADMIN'], pending: true },
   { to: '/settings', label: '(WIP) Einstellungen', roles: ['ADMIN'], end: true, pending: true },
@@ -379,6 +382,7 @@ function Shell() {
               <Route path="/admin/kalender" element={<YearCalendar />} />
               <Route path="/reminder" element={<AutoReminderEmails />} />
               <Route path="/vergleichsrechnung" element={<Vergleichsrechnung />} />
+              <Route path="/admin/raten" element={<RatesManagement />} />
               <Route path="/dokumentation" element={<Documentation />} />
               <Route path="/admin/daten" element={<TnData />} />
               <Route path="/admin/protokoll" element={<AuditLogScreen />} />
@@ -416,6 +420,7 @@ export default function App() {
       <LoggingBridge>
         <RulesProvider>
           <VmtFaresProvider>
+          <VmtTariffProvider>
           <ParticipantNamesProvider>
           <LocaleProvider>
           <HashRouter>
@@ -423,6 +428,7 @@ export default function App() {
           </HashRouter>
           </LocaleProvider>
           </ParticipantNamesProvider>
+          </VmtTariffProvider>
           </VmtFaresProvider>
         </RulesProvider>
       </LoggingBridge>

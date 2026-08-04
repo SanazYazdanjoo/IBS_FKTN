@@ -36,6 +36,7 @@ import MonthContextBox from '../../app/MonthContextBox';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
 import { useVmtFares } from '../../app/vmt-fares-context';
+import { useVmtTariff } from '../../app/vmt-tariff-context';
 import {
   Callout,
   Card,
@@ -50,7 +51,6 @@ import {
 } from '../../app/ui';
 import { collectComparisonCases, type ComparisonCase } from '../../domain/vergleichsrechnung';
 import { parseGermanDecimal, toFareLookup, type VmtFareRecord } from '../../domain/vmtFares';
-import { VMT_TARIFF_GROUPS, findTariffZone } from '../../domain/vmtTariff';
 import { formatEuro, roundEuro } from '../../domain/reimbursement';
 import { monthLabel } from '../../adapters/mock/seed';
 import type { MonthRecord } from '../../domain/types';
@@ -522,6 +522,7 @@ function FareOptionEditor({
   canEdit: boolean;
   onChange: (patch: Partial<FareOptionRow>) => void;
 }) {
+  const { groups, findZone } = useVmtTariff();
   return (
     <div className="flex flex-wrap items-center gap-2">
       <select
@@ -530,7 +531,7 @@ function FareOptionEditor({
         data-log-id="vergleich-row-zone-select"
         onChange={(e) => {
           const nextId = e.target.value || undefined;
-          const zone = nextId ? findTariffZone(nextId) : undefined;
+          const zone = nextId ? findZone(nextId) : undefined;
           onChange({
             tariffZoneId: nextId,
             raw: zone ? zone.einzelfahrtEur.toFixed(2).replace('.', ',') : row.raw,
@@ -539,7 +540,7 @@ function FareOptionEditor({
         className="rounded-lg border border-line bg-surface px-2 py-1 text-xs focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <option value="">— manuell —</option>
-        {VMT_TARIFF_GROUPS.map((group) => (
+        {groups.map((group) => (
           <optgroup key={group.label} label={group.label}>
             {group.zones.map((z) => (
               <option key={z.id} value={z.id}>

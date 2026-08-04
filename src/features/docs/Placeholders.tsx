@@ -27,24 +27,6 @@ export function AutoReminderEmails() {
   return <Placeholder title="Auto-Reminder Emails" />;
 }
 
-/**
- * This placeholder is now obsolete as the functionality is provided
- * by the new `RatesManagement` page.
- * @deprecated
- */
-export function PlaceholderVergleichsrechnung() {
-  return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <h1 className="text-2xl font-semibold text-display">
-        VMT Vergleichsrechnung
-      </h1>
-      <Card>
-        <p className="text-sm text-ink-dim">This page has been replaced by the new Rate & Fare Management page.</p>
-      </Card>
-    </div>
-  );
-}
-
 type DocSection = {
   id: string;
   title: string;
