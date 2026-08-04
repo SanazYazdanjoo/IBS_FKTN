@@ -3,32 +3,30 @@ import { useEffect, useState } from 'react';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
 import { Card, Eyebrow, PrimaryButton, SecondaryButton, StatusPipeline } from '../../app/ui';
-import { computeMonthView } from '../../domain/compute';
-import { checkCompleteness, requiredProofs } from '../../domain/submission';
 import { formatEuro } from '../../domain/reimbursement';
 import { monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
 import type { MonthRecord, ProofKind, TicketType } from '../../domain/types';
+import type { RuleConfig } from '../../domain/rules';
 import { useLogger } from '../../logging/react.tsx';
 import { EventType } from '../../logging/events.ts';
 import { logStatusTransition, logUploadOutcome, logUploadStart } from '../../logging/domainEvents.ts';
-
-const PROOF_LABELS: Record<ProofKind, string> = {
-  TICKET_PHOTO: 'Ticket-Foto / Screenshot',
-  PAYMENT_PROOF: 'Kontoauszug (geschwärzt)',
-  INVOICE: 'Rechnung',
-  LICENSE_PLATE: 'Kennzeichen-Nummer',
-  GENERAL_INFO: 'Allgemeine Info (Name, Zeitraum)',
-  PRAKTIKUM_CONTRACT: 'Praktikumsvertrag',
-  DISTANCE_PROOF: 'Entfernungsnachweis',
-};
-
-const TICKET_OPTIONS: { type: TicketType; label: string; hint: string }[] = [
-  { type: 'ABO', label: 'Deutschlandticket (Abo)', hint: 'Ticket-Screenshot + Kontoauszug' },
-  { type: 'ONLINE', label: 'Online-Einzelticket', hint: 'Rechnung/Beleg' },
-  { type: 'PKW', label: 'PKW', hint: 'km-Angabe, ≥ 3 km' },
-];
+import { useT } from '../../i18n/LocaleContext';
+import { deriveTnFlowState, type TnFlowState } from './tnFlowState';
+import PhotoCapture from './PhotoCapture';
+import TnFlowStepMode from './TnFlowStepMode';
 
 type Step = 'home' | 'ticketType' | 'upload';
+type FlowMode = 'standard' | 'step';
+
+const FLOW_MODE_KEY = 'tn-flow-mode';
+
+function readStoredMode(): FlowMode {
+  try {
+    return localStorage.getItem(FLOW_MODE_KEY) === 'step' ? 'step' : 'standard';
+  } catch {
+    return 'standard';
+  }
+}
 
 function daysUntil15th(): number {
   const now = new Date();
@@ -40,9 +38,10 @@ function daysUntil15th(): number {
 export default function TnFlow() {
   const { user, storage, month: MONTH } = useSession();
   const { rules } = useRules();
-  const logger = useLogger();
+  const t = useT();
   const [record, setRecord] = useState<MonthRecord | null>(null);
   const [step, setStep] = useState<Step>('home');
+  const [mode, setMode] = useState<FlowMode>(readStoredMode);
 
   useEffect(() => {
     if (!user.participantId) return;
@@ -53,31 +52,88 @@ export default function TnFlow() {
   }, [user, storage, MONTH]);
 
   if (!user.participantId) {
-    return <Card>Diese Ansicht ist für TN-Nutzer:innen. Bitte oben eine TN-Rolle wählen.</Card>;
+    return <Card>{t.common.roleGate}</Card>;
   }
-  if (!record) return <p className="text-ink-dim">Lädt…</p>;
+  if (!record) return <p className="text-ink-dim">{t.common.loading}</p>;
 
   const persist = async (next: MonthRecord) => {
     await storage.saveMonthRecord(user, next);
     setRecord(next);
   };
 
-  const { attendance, result } = computeMonthView(
-    record,
-    rules,
-    vmtSingleFaresEur[record.participantId],
+  const setModePersisted = (next: FlowMode) => {
+    setMode(next);
+    try {
+      localStorage.setItem(FLOW_MODE_KEY, next);
+    } catch {
+      // Sitzung bleibt gültig, auch wenn localStorage fehlt.
+    }
+  };
+
+  const flowState = deriveTnFlowState(record, rules, vmtSingleFaresEur[record.participantId]);
+
+  if (mode === 'step') {
+    return (
+      <TnFlowStepMode
+        record={record}
+        flowState={flowState}
+        rules={rules}
+        onSwitchToStandard={() => setModePersisted('standard')}
+        onPersist={persist}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <ModeSwitcher mode={mode} onChange={setModePersisted} />
+      <StandardFlow
+        record={record}
+        flowState={flowState}
+        rules={rules}
+        step={step}
+        setStep={setStep}
+        persist={persist}
+      />
+    </div>
   );
-  const completeness = checkCompleteness(
-    {
-      ticketType: record.ticketType,
-      hasPraktikum: record.hasPraktikum,
-      praktikumContractAlreadyOnFile: record.documents.some(
-        (d) => d.kind === 'PRAKTIKUM_CONTRACT' && d.state === 'VERIFIED',
-      ),
-      aboCardAlreadyOnFile: false,
-    },
-    record.documents,
+}
+
+function ModeSwitcher({ mode, onChange }: { mode: FlowMode; onChange: (m: FlowMode) => void }) {
+  const t = useT();
+  return (
+    <div className="flex items-center justify-end gap-2 text-sm">
+      <span className="text-xs uppercase tracking-label text-ink-dim">{t.modeSwitch.label}</span>
+      <select
+        value={mode}
+        onChange={(e) => onChange(e.target.value as FlowMode)}
+        className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold"
+        aria-label={t.modeSwitch.label}
+      >
+        <option value="standard">{t.modeSwitch.standard}</option>
+        <option value="step">{t.modeSwitch.stepByStep}</option>
+      </select>
+    </div>
   );
+}
+
+function StandardFlow({
+  record,
+  flowState,
+  rules,
+  step,
+  setStep,
+  persist,
+}: {
+  record: MonthRecord;
+  flowState: TnFlowState;
+  rules: RuleConfig;
+  step: Step;
+  setStep: (s: Step) => void;
+  persist: (next: MonthRecord) => Promise<void>;
+}) {
+  const t = useT();
+  const logger = useLogger();
 
   if (step === 'ticketType') {
     return (
@@ -96,7 +152,8 @@ export default function TnFlow() {
     return (
       <UploadStep
         record={record}
-        completeness={completeness}
+        completeness={flowState.completeness}
+        required={flowState.required}
         onUpload={async (kind, fileName) => {
           const start = performance.now();
           logUploadStart(logger, kind, 'image/jpeg', 0);
@@ -130,64 +187,60 @@ export default function TnFlow() {
   // Home
   const daysLeft = daysUntil15th();
   const hasSubmittedProof = record.documents.length > 0;
+  const { result, attendance } = flowState;
 
   return (
     <div className="space-y-4">
       <Card>
-        <Eyebrow>{monthLabel(MONTH)} 2026 · Home</Eyebrow>
+        <Eyebrow>{t.home.eyebrow(monthLabel(record.month))}</Eyebrow>
         {record.status === 'NOT_SUBMITTED' && daysLeft > 0 && (
-          <p className="mt-1 font-display text-lg text-primary">
-            Noch {daysLeft} Tage bis zum 15.!
-          </p>
+          <p className="mt-1 font-display text-lg text-primary">{t.home.daysLeft(daysLeft)}</p>
         )}
         <div className="mt-2">
           {result.eligible && hasSubmittedProof ? (
             <>
               <p className="font-display text-2xl font-bold">
-                {formatEuro(result.amountEur)} unterwegs zu dir
+                {t.home.amountHeadline(formatEuro(result.amountEur))}
               </p>
               <div className="mt-2">
                 <StatusPipeline status={record.status} />
               </div>
               <details className="mt-3 text-sm">
                 <summary className="cursor-pointer font-semibold text-primary">
-                  So wurde gerechnet
+                  {t.home.traceSummary}
                 </summary>
                 <p className="mt-1 text-ink-dim">
                   {result.trace.proRata
                     ? `${result.trace.proRata.formula} = ${formatEuro(result.trace.proRata.amountEur)}`
                     : result.trace.pkw
                     ? `${result.trace.pkw.formula} = ${formatEuro(result.trace.pkw.amountEur)}`
-                    : `Endbetrag: ${formatEuro(result.amountEur)}`}
+                    : `${formatEuro(result.amountEur)}`}
                   {result.trace.vmt && (
-                    <> · Vergleich VMT: {formatEuro(result.trace.vmt.amountEur)}</>
+                    <> · {t.home.traceVmtGloss(formatEuro(result.trace.vmt.amountEur))}</>
                   )}
                 </p>
                 {attendance.unexcusedDays > 0 && (
-                  <p className="mt-1 text-ink-dim">
-                    Abzug: {attendance.unexcusedDays} unentschuldigter Tag
-                    {attendance.unexcusedDays > 1 ? 'e' : ''}
-                  </p>
+                  <p className="mt-1 text-ink-dim">{t.home.unexcusedDeduction(attendance.unexcusedDays)}</p>
                 )}
                 <p className="mt-1 text-xs text-ink-dim">keine Blackbox mehr (P3)</p>
               </details>
             </>
           ) : (
-            <p className="text-ink-dim">Dein Juli: noch nichts eingereicht</p>
+            <p className="text-ink-dim">{t.home.notSubmittedYet(monthLabel(record.month))}</p>
           )}
         </div>
       </Card>
 
       <Card>
-        <Eyebrow>Aufgaben</Eyebrow>
+        <Eyebrow>{t.tasks.eyebrow}</Eyebrow>
         <ul className="mt-2 space-y-2">
           {!hasSubmittedProof && (
             <li className="flex items-center justify-between">
               <span>
-                Nachweise hochladen <span className="text-ink-dim">· ca. 2 Minuten</span>
+                {t.tasks.uploadTask} <span className="text-ink-dim">{t.tasks.uploadTaskHint}</span>
               </span>
               <PrimaryButton onClick={() => setStep('ticketType')} logId="tn-start-upload">
-                Los geht's →
+                {t.tasks.startUpload}
               </PrimaryButton>
             </li>
           )}
@@ -197,7 +250,7 @@ export default function TnFlow() {
             </li>
           )}
           {record.status === 'SENT_TO_ACCOUNTING' && (
-            <li className="text-ink-dim">Warten auf Auszahlung… du bekommst eine Nachricht.</li>
+            <li className="text-ink-dim">{t.tasks.waitingForPayout}</li>
           )}
         </ul>
       </Card>
@@ -214,31 +267,34 @@ function TicketTypeStep({
   onSelect: (t: TicketType) => void;
   onBack: () => void;
 }) {
+  const t = useT();
+  const ticketTypes: TicketType[] = ['ABO', 'ONLINE', 'PKW'];
   return (
     <Card>
-      <Eyebrow>Schritt 1/2 · Ticketart</Eyebrow>
-      <h2 className="mt-1 font-display text-xl font-bold">Womit fährst du?</h2>
+      <Eyebrow>{t.ticketType.eyebrow}</Eyebrow>
+      <h2 className="mt-1 font-display text-xl font-bold">{t.ticketType.heading}</h2>
       <div className="mt-3 space-y-2">
-        {TICKET_OPTIONS.map((opt) => (
-          <button
-            key={opt.type}
-            onClick={() => onSelect(opt.type)}
-            className={`block w-full rounded-xl border p-3 text-left transition ${
-              record.ticketType === opt.type
-                ? 'border-primary bg-blush-weak'
-                : 'border-line hover:border-primary'
-            }`}
-          >
-            <span className="font-semibold">{opt.label}</span>
-            <span className="block text-sm text-ink-dim">{opt.hint}</span>
-          </button>
-        ))}
+        {ticketTypes.map((type) => {
+          const opt = t.ticketType.options[type];
+          return (
+            <button
+              key={type}
+              onClick={() => onSelect(type)}
+              className={`block w-full rounded-xl border p-3 text-left transition ${
+                record.ticketType === type
+                  ? 'border-primary bg-blush-weak'
+                  : 'border-line hover:border-primary'
+              }`}
+            >
+              <span className="font-semibold">{opt.label}</span>
+              <span className="block text-sm text-ink-dim">{opt.hint}</span>
+            </button>
+          );
+        })}
       </div>
-      <p className="mt-3 text-xs text-ink-dim">
-        Auswahl wird gemerkt — nächsten Monat vorausgefüllt
-      </p>
+      <p className="mt-3 text-xs text-ink-dim">{t.ticketType.rememberedHint}</p>
       <SecondaryButton onClick={onBack} className="mt-4">
-        ← Zurück
+        {t.common.back}
       </SecondaryButton>
     </Card>
   );
@@ -247,26 +303,23 @@ function TicketTypeStep({
 function UploadStep({
   record,
   completeness,
+  required,
   onUpload,
   onSubmit,
   onBack,
 }: {
   record: MonthRecord;
-  completeness: ReturnType<typeof checkCompleteness>;
+  completeness: TnFlowState['completeness'];
+  required: ProofKind[];
   onUpload: (kind: ProofKind, fileName: string) => void;
   onSubmit: () => void;
   onBack: () => void;
 }) {
-  const required = requiredProofs({
-    ticketType: record.ticketType,
-    hasPraktikum: record.hasPraktikum,
-    praktikumContractAlreadyOnFile: false,
-    aboCardAlreadyOnFile: false,
-  });
+  const t = useT();
 
   return (
     <Card>
-      <Eyebrow>Schritt 2/2 · Nachweise</Eyebrow>
+      <Eyebrow>{t.upload.eyebrow}</Eyebrow>
       <ul className="mt-3 space-y-2">
         {required.map((kind) => {
           const doc = record.documents.find((d) => d.kind === kind);
@@ -281,33 +334,27 @@ function UploadStep({
                   {uploaded ? '✓' : '○'}
                 </span>
                 <span>
-                  {PROOF_LABELS[kind]}
+                  {t.upload.proofLabels[kind]}
                   {doc?.fileName && (
                     <span className="block text-xs text-ink-dim">{doc.fileName}</span>
                   )}
                 </span>
               </span>
               {!uploaded && (
-                <SecondaryButton
-                  onClick={() => onUpload(kind, `${kind.toLowerCase()}_${Date.now()}.jpg`)}
-                >
-                  Datei wählen
-                </SecondaryButton>
+                <PhotoCapture onCapture={(fileName) => onUpload(kind, fileName)} logId={`tn-upload-${kind}`} />
               )}
             </li>
           );
         })}
       </ul>
-      <p className="mt-3 text-xs text-ink-dim">
-        Wird sicher in der IBS-Cloud gespeichert — kein Versand per E-Mail nötig. (NFR-01)
-      </p>
+      <p className="mt-3 text-xs text-ink-dim">{t.upload.privacyHint}</p>
       <div className="mt-4 flex items-center gap-2">
         <PrimaryButton onClick={onSubmit} disabled={!completeness.complete} logId="tn-submit">
           {completeness.complete
-            ? 'Absenden — vollständig ✓'
-            : `Absenden — ${required.length - completeness.missing.length}/${required.length} vollständig`}
+            ? t.upload.submitComplete
+            : t.upload.submitPartial(required.length - completeness.missing.length, required.length)}
         </PrimaryButton>
-        <SecondaryButton onClick={onBack}>← Zurück</SecondaryButton>
+        <SecondaryButton onClick={onBack}>{t.common.back}</SecondaryButton>
       </div>
     </Card>
   );
@@ -320,15 +367,14 @@ function SignatureTask({
 }: {
   record: MonthRecord;
   onSigned: (r: MonthRecord) => void;
-  rules: ReturnType<typeof useRules>['rules'];
+  rules: RuleConfig;
 }) {
+  const t = useT();
   if (rules.signatureMode === 'PAPER') {
     return (
       <div className="rounded-xl border border-line p-3">
-        <p className="font-semibold">Formular unterschreiben</p>
-        <p className="text-sm text-ink-dim">
-          im Institut oder per Post (Modus A · FR-09/P7)
-        </p>
+        <p className="font-semibold">{t.signature.paperTitle}</p>
+        <p className="text-sm text-ink-dim">{t.signature.paperHint}</p>
         <SecondaryButton
           className="mt-2"
           onClick={() =>
@@ -339,18 +385,16 @@ function SignatureTask({
             })
           }
         >
-          So geht's →
+          {t.signature.paperAction}
         </SecondaryButton>
-        <p className="mt-1 text-xs text-ink-dim">
-          Bei Modus B (digitale Bestätigung): 30 Sekunden in der App.
-        </p>
+        <p className="mt-1 text-xs text-ink-dim">{t.signature.paperDigitalNote}</p>
       </div>
     );
   }
   return (
     <div className="rounded-xl border border-line p-3">
-      <p className="font-semibold">Digital bestätigen</p>
-      <p className="text-sm text-ink-dim">30 Sekunden — kein Weg ins Institut (P7)</p>
+      <p className="font-semibold">{t.signature.digitalTitle}</p>
+      <p className="text-sm text-ink-dim">{t.signature.digitalHint}</p>
       <PrimaryButton
         className="mt-2"
         onClick={() =>
@@ -361,8 +405,10 @@ function SignatureTask({
           })
         }
       >
-        Jetzt bestätigen
+        {t.signature.digitalAction}
       </PrimaryButton>
     </div>
   );
 }
+
+export { SignatureTask, daysUntil15th };

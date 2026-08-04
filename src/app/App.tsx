@@ -14,6 +14,8 @@ import { SessionProvider, useSession } from './session';
 import { RulesProvider } from './rules-context';
 import { VmtFaresProvider } from './vmt-fares-context';
 import { ParticipantNamesProvider } from './participant-names';
+import { LocaleProvider, useLocale } from '../i18n/LocaleContext';
+import { LOCALE_LABELS, SUPPORTED_LOCALES, type Locale } from '../i18n/translations';
 import HeaderSearch from './HeaderSearch';
 import { LoggingProvider, useScreenLog } from '../logging/react.tsx';
 import { DevPanel } from '../logging/DevPanel.tsx';
@@ -213,6 +215,7 @@ function Header() {
         >
           Kalender
         </button>
+        <LanguageSwitcher />
         <RoleSwitcher />
       </div>
       <CalendarOverlay open={calendarOpen} onClose={() => setCalendarOpen(false)} />
@@ -262,6 +265,33 @@ function RoleSwitcher() {
         {perRole.map((u) => (
           <option key={u.id} value={u.id}>
             {u.name}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+/**
+ * Sprachumschalter (FR-15, P1). Wirkt aktuell nur auf den TN-Bereich — die
+ * i18n-Extraktion ist bewusst auf `src/features/tn/` begrenzt (siehe
+ * REQUIREMENTS.md); im Header, weil dort jede Rolle sie findet, unabhängig
+ * davon, welche Ansicht gerade offen ist.
+ */
+function LanguageSwitcher() {
+  const { locale, setLocale } = useLocale();
+  return (
+    <label className="flex items-center gap-1 text-sm" title="Sprache / Language">
+      <span aria-hidden="true">🌐</span>
+      <select
+        value={locale}
+        onChange={(e) => setLocale(e.target.value as Locale)}
+        aria-label="Sprache / Language"
+        className="rounded-full border border-line bg-surface px-2 py-1.5 text-sm"
+      >
+        {SUPPORTED_LOCALES.map((l) => (
+          <option key={l} value={l}>
+            {LOCALE_LABELS[l]}
           </option>
         ))}
       </select>
@@ -387,9 +417,11 @@ export default function App() {
         <RulesProvider>
           <VmtFaresProvider>
           <ParticipantNamesProvider>
+          <LocaleProvider>
           <HashRouter>
             <Shell />
           </HashRouter>
+          </LocaleProvider>
           </ParticipantNamesProvider>
           </VmtFaresProvider>
         </RulesProvider>
