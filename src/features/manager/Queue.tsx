@@ -2,17 +2,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
+import { useVmtFares } from '../../app/vmt-fares-context';
 import { Card, ExceptionFlag, Eyebrow, KnownFlag, PrimaryButton, SecondaryButton, TnName, statusLabel } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
-import { monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { toFareLookup } from '../../domain/vmtFares';
+import { monthLabel } from '../../adapters/mock/seed';
 import { logChange } from '../../app/auditLog';
 import type { MonthRecord } from '../../domain/types';
 
 export default function ManagerQueue() {
   const { user, storage, storageVersion, month: MONTH } = useSession();
   const { rules } = useRules();
+  const { fares } = useVmtFares();
+  const vmtSingleFaresEur = toFareLookup(fares);
   const [records, setRecords] = useState<MonthRecord[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -29,7 +33,7 @@ export default function ManagerQueue() {
           const view = computeMonthView(record, rules, vmtSingleFaresEur[record.participantId]);
           return { record, ...view, bulkOk: isBulkApprovable(record, rules) };
         }),
-    [records, rules],
+    [records, rules, vmtSingleFaresEur],
   );
 
   const current = queue.find((q) => q.record.participantId === selected) ?? queue[0];

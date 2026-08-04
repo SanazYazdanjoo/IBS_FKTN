@@ -11,11 +11,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
+import { useVmtFares } from '../../app/vmt-fares-context';
 import { Card, Eyebrow, statusColorClass, statusLabel } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { PROCESS_GROUPS, countByGroup } from '../../domain/processGroups';
+import { toFareLookup } from '../../domain/vmtFares';
 
-import { MONTHS, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { MONTHS } from '../../adapters/mock/seed';
 import type { MonthRecord, ProcessStatus } from '../../domain/types';
 
 const STATUS_ORDER: ProcessStatus[] = [
@@ -37,6 +39,8 @@ export default function DashboardOverview({
 }) {
   const { user, storage, storageVersion } = useSession();
   const { rules } = useRules();
+  const { fares } = useVmtFares();
+  const vmtSingleFaresEur = toFareLookup(fares);
   const [byMonth, setByMonth] = useState<MonthRecord[][]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -72,7 +76,7 @@ export default function DashboardOverview({
           groupCounts: countByGroup(records),
         };
       }),
-    [byMonth, rules],
+    [byMonth, rules, vmtSingleFaresEur],
   );
 
   const statusCounts = useMemo(() => {

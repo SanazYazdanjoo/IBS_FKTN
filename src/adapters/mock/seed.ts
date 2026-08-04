@@ -14,7 +14,7 @@ import type {
   TicketType,
 } from '../../domain/types';
 import { MONTH_LABELS, RAW_MASTERS, RAW_SEED } from './seedData';
-import { toFareLookup, type VmtFareTable } from '../../domain/vmtFares';
+import type { VmtFareTable } from '../../domain/vmtFares';
 
 /** Alle Monate mit Daten — Länge folgt MONTH_LABELS aus der Testdaten-Übersicht. */
 export const MONTHS = MONTH_LABELS.map((label, i) => ({
@@ -74,13 +74,6 @@ export const seedRecords: MonthRecord[] = RAW_SEED.map((r) => ({
 export const vmtFaresSeed: VmtFareTable = {
   PK10: { participantId: 'PK10', priceEur: 2.4, updatedAt: '2026-01-15' },
 };
-
-/**
- * Preis-Snapshot zum Ladezeitpunkt — für Ansichten, die (noch) nicht auf den
- * Fahrpreis-Kontext migriert sind. Nicht live: Preisänderungen aus der
- * Vergleichsrechnung wirken sich hier nicht mehr aus (siehe docs/DECISIONS.md).
- */
-export const vmtSingleFaresEur: Record<string, number> = toFareLookup(vmtFaresSeed);
 
 /** Nachname/Vorname je TN — Spalten der Anwesenheitsliste & Übersicht. */
 export const tnNames: Record<string, { nach: string; vor: string }> = Object.fromEntries(

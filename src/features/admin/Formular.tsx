@@ -6,10 +6,11 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
+import { useVmtFares } from '../../app/vmt-fares-context';
 import { Card, Eyebrow, PrimaryButton, SecondaryButton } from '../../app/ui';
 import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
-import { vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { toFareLookup } from '../../domain/vmtFares';
 import { mm, PAGE_W_PT, PAGE_H_PT } from './formularLayout';
 import { logChange } from '../../app/auditLog';
 import {
@@ -27,6 +28,8 @@ export default function FormularScreen() {
   const { participantId } = useParams<{ participantId: string }>();
   const { user, storage, formularContext, month: MONTH } = useSession();
   const { rules } = useRules();
+  const { fares } = useVmtFares();
+  const vmtSingleFaresEur = toFareLookup(fares);
   const [record, setRecord] = useState<MonthRecord | null>(null);
   const [savedPath, setSavedPath] = useState('');
   const [error, setError] = useState('');
@@ -44,7 +47,7 @@ export default function FormularScreen() {
     const view = computeMonthView(record, rules, vmtSingleFaresEur[record.participantId]);
     const master = getMaster(storage, record.participantId);
     return { record, view, master, month, year };
-  }, [record, rules, storage, month, year]);
+  }, [record, rules, storage, month, year, vmtSingleFaresEur]);
 
   if (error) return <Card className="border-danger"><p className="text-sm text-danger">{error}</p></Card>;
   if (!record || !data) return <p className="text-ink-dim">Lädt…</p>;

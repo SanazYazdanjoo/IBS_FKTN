@@ -107,18 +107,17 @@ from the dropdown stays traceable to a Stand, but existing manually-entered
 fares are **not** revalidated automatically (no code re-checks a free-typed
 number against a newer tariff); that stays a manual review step.
 
-**Known gap:** only `TnDetail.tsx` and `/vergleichsrechnung` itself read
-`VmtFaresProvider` live. `Dashboard.tsx`, `DashboardOverview.tsx`,
-`TnFlow.tsx`, `Formular.tsx`, and `Queue.tsx` still read the seed snapshot
-(`vmtSingleFaresEur`, derived once from `vmtFaresSeed` at load) rather than
-the live context, so a fare edited on `/vergleichsrechnung` won't be
-reflected there until reload. Migrating those five call sites was left out
-of this change on purpose — the approval queue and the Formular filler are
-explicitly out of scope for the Vergleichsrechnung work, and touching the
-Dashboard screens for this alone would widen the change for no requirement
-that asked for it. Worth revisiting together with the `StorageAdapter`
-migration above, at which point every reader would naturally go through
-one adapter call instead of two parallel sources.
+**2026-08-04 update — the five-file gap above is closed:** `Dashboard.tsx`,
+`DashboardOverview.tsx`, `TnFlow.tsx`, `Formular.tsx`, and `Queue.tsx` now
+all call `useVmtFares()` and derive their lookup with `toFareLookup(fares)`
+locally, the same pattern `TnDetail.tsx` and `/vergleichsrechnung` already
+used. Every reader in the app now recomputes from the live context, so a
+fare edited on `/vergleichsrechnung` is reflected everywhere immediately —
+no reload needed. The now-unused seed snapshot (`vmtSingleFaresEur` in
+`src/adapters/mock/seed.ts`, derived once from `vmtFaresSeed` at load) was
+deleted along with its now-dead `toFareLookup` import in that file, since
+nothing reads it anymore. Still true: this all still lives in-memory, not
+behind `StorageAdapter` — see "Where this stops being enough" above.
 
 ## Auto-Reminder emails — copy only, no send automation (FR-01)
 

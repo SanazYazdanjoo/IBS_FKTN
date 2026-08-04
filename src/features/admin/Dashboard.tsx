@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
+import { useVmtFares } from '../../app/vmt-fares-context';
 import {
   Card,
   Eyebrow,
@@ -23,7 +24,8 @@ import { computeMonthView } from '../../domain/compute';
 import { formatEuro } from '../../domain/reimbursement';
 import { isBulkApprovable } from '../../domain/approval';
 import { courseTypeFromId } from '../../adapters/excel/values';
-import { monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { toFareLookup } from '../../domain/vmtFares';
+import { monthLabel } from '../../adapters/mock/seed';
 import { logChange } from '../../app/auditLog';
 import { GERMAN_MONTHS } from '../../adapters/excel/attendanceWorkbook';
 import type { MonthRecord, ProcessStatus, ProofKind } from '../../domain/types';
@@ -72,6 +74,8 @@ export default function AdminDashboard({ embedded = false }: { embedded?: boolea
 function DashboardMonthView() {
   const { user, storage, storageVersion, dataSource, month: monthStr } = useSession();
   const { rules } = useRules();
+  const { fares } = useVmtFares();
+  const vmtSingleFaresEur = toFareLookup(fares);
   const [records, setRecords] = useState<MonthRecord[]>([]);
   const year = dataSource.kind === 'EXCEL' ? dataSource.year : 2026;
   const month = Number(monthStr.split('-')[1]);
@@ -91,7 +95,7 @@ function DashboardMonthView() {
           const view = computeMonthView(record, rules, vmtSingleFaresEur[record.participantId]);
           return { record, ...view, bulkOk: isBulkApprovable(record, rules) };
         }),
-    [records, rules, courseFilter, statusFilter],
+    [records, rules, courseFilter, statusFilter, vmtSingleFaresEur],
   );
 
   const pkCount = records.filter((r) => courseTypeFromId(r.participantId) === 'PK').length;

@@ -21,13 +21,20 @@
   --color-paper-100:#f3f1ec;
   --color-paper-200:#e7e4dc;
   /* Role palette — one role, one colour; lane fills run at full saturation */
-  --role-tn:#2f8f86;          /* Participant (TN) — all three participant personas */
-  --role-dozent:#2e6fa0;      /* Dozent — persona · internship coordination */
+     /* Dozent — persona · internship coordination */
   --role-system:#b99a3e;      /* App / System — TO-BE lane only */
-  --role-admin:#c1613d;       /* Admin persona */
-  --role-approver:#6e8c3a;    /* Approver persona */
-  --role-secretary:#5c6b76;   /* Secretary lane */
-  --role-finance:#8fa13c;     /* Accounting / Finance persona */
+  
+  
+  --tn: #346280;
+  --dozent: #408B8B;
+  --intern: #3B8080;
+  --admin: #BD6E6E;
+  --edoc: #89916F;
+  --kst: #647B26;
+  --fin: #425F0B;
+  --awo: #2E400C;
+  
+  --ekn: #212F05;
   /* Note states — fill + ink pair, state carried by fill and left rule, never by text alone */
   --note-bg:#fbefee;      --note-ink:#8e3b34;
   --problem-bg:#f6d2ce;   --problem-ink:#9a3a22;

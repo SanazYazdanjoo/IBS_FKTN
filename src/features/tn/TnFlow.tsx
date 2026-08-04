@@ -2,9 +2,11 @@
 import { useEffect, useState } from 'react';
 import { useSession } from '../../app/session';
 import { useRules } from '../../app/rules-context';
+import { useVmtFares } from '../../app/vmt-fares-context';
 import { Card, Eyebrow, PrimaryButton, SecondaryButton, StatusPipeline } from '../../app/ui';
 import { formatEuro } from '../../domain/reimbursement';
-import { monthLabel, vmtSingleFaresEur } from '../../adapters/mock/seed';
+import { toFareLookup } from '../../domain/vmtFares';
+import { monthLabel } from '../../adapters/mock/seed';
 import type { MonthRecord, ProofKind, TicketType } from '../../domain/types';
 import type { RuleConfig } from '../../domain/rules';
 import { useLogger } from '../../logging/react.tsx';
@@ -38,6 +40,8 @@ function daysUntil15th(): number {
 export default function TnFlow() {
   const { user, storage, month: MONTH } = useSession();
   const { rules } = useRules();
+  const { fares } = useVmtFares();
+  const vmtSingleFaresEur = toFareLookup(fares);
   const t = useT();
   const [record, setRecord] = useState<MonthRecord | null>(null);
   const [step, setStep] = useState<Step>('home');
