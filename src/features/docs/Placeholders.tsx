@@ -149,9 +149,11 @@ export function Documentation() {
   const [docs, setDocs] = useState<DocSection[]>(defaultDocs);
   const [activeSectionId, setActiveSectionId] = useState(defaultDocs[0].id);
   const [isEditing, setIsEditing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     try {
+      // Attempt to load customized docs from localStorage
       const storedDocs = localStorage.getItem(DOC_STORAGE_KEY);
       if (storedDocs) {
         setDocs(JSON.parse(storedDocs));
@@ -164,6 +166,7 @@ export function Documentation() {
 
   useEffect(() => {
     try {
+      // Persist any edits to localStorage
       localStorage.setItem(DOC_STORAGE_KEY, JSON.stringify(docs));
     } catch (error) {
       console.error('Failed to save documentation to localStorage', error);
@@ -176,31 +179,80 @@ export function Documentation() {
     setDocs(newDocs);
   };
 
-  const activeSection = docs.find((s) => s.id === activeSectionId) ?? docs[0];
-  const activeSectionIndex = docs.findIndex((s) => s.id === activeSectionId);
+  const lowerCaseQuery = searchQuery.toLowerCase();
+  const filteredDocs =
+    searchQuery.trim() === ''
+      ? docs
+      : docs.filter(
+          (section) =>
+            section.title.toLowerCase().includes(lowerCaseQuery) ||
+            section.content.some(
+              (item) =>
+                item.heading.toLowerCase().includes(lowerCaseQuery) ||
+                item.text.toLowerCase().includes(lowerCaseQuery),
+            ),
+        );
+
+  // If the active section is filtered out, select the first available one.
+  useEffect(() => {
+    if (filteredDocs.length > 0 && !filteredDocs.find((d) => d.id === activeSectionId)) {
+      setActiveSectionId(filteredDocs[0].id);
+    }
+  }, [searchQuery, activeSectionId, filteredDocs]);
+
+  const activeSection = filteredDocs.find((s) => s.id === activeSectionId) ?? filteredDocs[0];
+  const activeSectionIndex = docs.findIndex((s) => s.id === activeSection.id);
+
+  const highlightText = (text: string, highlight: string) => {
+    if (!highlight.trim()) {
+      return text;
+    }
+    const regex = new RegExp(`(${highlight})`, 'gi');
+    const parts = text.split(regex);
+    return (
+      <>
+        {parts.map((part, i) =>
+          regex.test(part) ? (
+            <mark key={i} className="bg-highlight/70 px-0.5 py-0 rounded-sm">
+              {part}
+            </mark>
+          ) : (
+            part
+          ),
+        )}
+      </>
+    );
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold text-[var(--text-display)]">
-            In-App Documentation
-          </h1>
+        <h1 className="text-2xl font-semibold text-[var(--text-display)]">
+          In-App Documentation
+        </h1>
+        <div className="flex items-center gap-3">
+          <input
+            type="search"
+            placeholder="Search documentation..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-48 rounded-md border border-stroke bg-surface px-3 py-1.5 text-sm focus:border-primary focus:ring-primary/40"
+          />
+          <SecondaryButton
+            onClick={() => setIsEditing(!isEditing)}
+            className="px-3 py-1.5 text-xs"
+            logId="docs.toggle-edit"
+          >
+            {isEditing ? 'Save & View' : 'Edit Documentation'}
+          </SecondaryButton>
         </div>
-        <SecondaryButton
-          onClick={() => setIsEditing(!isEditing)}
-          className="px-3 py-1.5 text-xs"
-          logId="docs.toggle-edit"
-        >
-          {isEditing ? 'Save & View' : 'Edit Documentation'}
-        </SecondaryButton>
       </div>
 
       <Card>
         <div className="flex gap-8">
           <nav className="w-1/4 flex-shrink-0">
             <ul className="space-y-1 font-medium">
-              {docs.map((section) => (
+              {filteredDocs.map((section) => (
                 <li key={section.id}>
                   <button
                     onClick={() => setActiveSectionId(section.id)}
@@ -214,34 +266,47 @@ export function Documentation() {
                   </button>
                 </li>
               ))}
+              {filteredDocs.length === 0 && (
+                <li className="px-3 py-2 text-sm text-ink-dim">No results found.</li>
+              )}
             </ul>
           </nav>
 
           <main className="w-3/4 border-l border-line pl-8">
-            <div className="space-y-6">
-              <h2 className="font-display text-xl font-semibold text-ink-display">
-                {activeSection.title}
-              </h2>
-              {activeSection.content.map((item, contentIndex) => (
-                <div key={contentIndex} className="space-y-2">
-                  <h3 className="font-semibold text-ink">{item.heading}</h3>
-                  {isEditing ? (
-                    <textarea
-                      value={item.text}
-                      onChange={(e) =>
-                        handleContentChange(activeSectionIndex, contentIndex, e.target.value)
-                      }
-                      className="font-body w-full rounded-md border border-stroke bg-surface p-2 text-sm text-ink-dim focus:border-primary focus:ring-primary/40"
-                      rows={item.text.split('\n').length + 1}
-                    />
-                  ) : (
-                    <p className="font-body whitespace-pre-wrap text-sm text-ink-dim">
-                      {item.text}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+            {activeSection ? (
+              <div className="space-y-6">
+                <h2 className="font-display text-xl font-semibold text-ink-display">
+                  {activeSection.title}
+                </h2>
+                {activeSection.content.map((item, contentIndex) => (
+                  <div key={contentIndex} className="space-y-2">
+                    <h3 className="font-semibold text-ink">
+                      {highlightText(item.heading, searchQuery)}
+                    </h3>
+                    {isEditing ? (
+                      <textarea
+                        value={item.text}
+                        onChange={(e) =>
+                          handleContentChange(activeSectionIndex, contentIndex, e.target.value)
+                        }
+                        className="font-body w-full rounded-md border border-stroke bg-surface p-2 text-sm text-ink-dim focus:border-primary focus:ring-primary/40"
+                        rows={Math.max(3, item.text.split('\n').length + 1)}
+                      />
+                    ) : (
+                      <p className="font-body whitespace-pre-wrap text-sm text-ink-dim">
+                        {highlightText(item.text, searchQuery)}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              searchQuery && (
+                <p className="text-sm text-ink-dim">
+                  Select a section from the left to view its content.
+                </p>
+              )
+            )}
           </main>
         </div>
       </Card>
